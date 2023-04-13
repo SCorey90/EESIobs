@@ -20,7 +20,8 @@ void EESI() {
 
     TFile * fo = new TFile( "EESIplots.root", "RECREATE" );
 
-    auto * mMass = new TH1F("mMass", "Parent (#rho^{0})  Mass; Mass (GeV); Counts", 500, 0.65, 0.9);
+    auto * mMass = new TH1F("mMass", "Parent (#rho^{0})  Mass; Mass (GeV); Counts", 500, 0, 2);
+    auto * mPperp = new TH1F("mPperp", "Parent (#rho^{0}) Transverse Momentum; Transverse Momentum (GeV); counts", 500, 0, 1);
     auto * mPairPhi = new TH1F("mPairPhi", "#pi_{#pm} #phi distribution;#phi (rad);# events", 500, -6.28, 6.28);
     auto * mPxvsPy = new TH2F("mPxvsPy", "#rho^{0} 2D momentum dist; P_{x} (GeV); P_{y} (GeV); Counts", 200, -0.1, 0.1, 200, -0.1, 0.1);
 
@@ -53,6 +54,7 @@ void EESI() {
         double PairPhi = acos(cosphi);
 
         if ( chipipi <10 && dca1 <1 && dca2 <1 ){
+		mPperp->Fill( absPperp );
             if ( lv.M() > 0.65 && lv.M() <0.9){
                 mMass->Fill( lv.M() );
                 if ( PcrossQ > 0 ){mPxvsPy->Fill( absPperp*cos(PairPhi), absPperp*sin(PairPhi)); }
@@ -69,6 +71,11 @@ makeCanvas();
 mMass->SetLineColor(kBlack);
 mMass->Draw();
 gPad->Print( "plot_mMass.pdf" );
+
+makeCanvas();
+mPperp->SetLineColor(kBlack);
+mPperp->Draw();
+gPad->Print( "plot_mPperp.pdf" );
 
 makeCanvas();
 mPairPhi->SetLineColor(kBlack);
