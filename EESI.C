@@ -22,9 +22,14 @@ void EESI() {
 
     auto * mMass = new TH1F("mMass", "Parent (#rho^{0})  Mass; Mass (GeV); Counts", 500, 0, 2);
     auto * mPperp = new TH1F("mPperp", "Parent (#rho^{0}) Transverse Momentum; Transverse Momentum (GeV); counts", 500, 0, 1);
-    auto * mPairPhi = new TH1F("mPairPhi", "#pi_{#pm} #phi distribution;#phi (rad);# events", 500, -6.28, 6.28);
+    auto * mPairPhi = new TH1F("mPairPhi", "#pi_{#pm} #phi distribution;#phi (rad);# events", 500, -3.13, 3.13);
     auto * mPxvsPy = new TH2F("mPxvsPy", "#rho^{0} 2D momentum dist; P_{x} (GeV); P_{y} (GeV); Counts", 200, -0.1, 0.1, 200, -0.1, 0.1);
+    auto *mPhivsMass = new TH2F("mPhivsMass", "#pi_{#pm} #phi distribution vs. parent mass; #phi (rad); Parent Mass (GeV); Counts", 100, -3.14, 3.14, 100, 0.65, 0.9);
+    auto *mPhivsPT = new TH2F("mPhivsPT", "#pi^{#pm} #phi distribution vs. parent P_{T}; #phi (rad); Parent P_{T} (GeV); Counts", 100, -3.14, 3.14, 100, 0, 0.25);
+    auto *mPhivsRapidity = new TH2F("mPhivsRapidity", "#pi^{#pm} #phi distribution vs. Rapidity; #phi (rad); Rapidity (GeV); Counts", 100, -3.14, 3.14, 100, -2, 2);
 
+
+    auto * mPhiFit = new TF1("mPhiFit", "[0] + [1]*cos(x) + [2]*cos(2*x) + [3]*cos(3*x) + [4]*cos(4*x)", -3.14, 3.14);
     //Open pairDST
     TFile *myFile = TFile::Open("/Users/samcorey/code/data/pair_dst_Run12UU.root");
     TTreeReader myReader("PairDst", myFile);
@@ -36,6 +41,7 @@ void EESI() {
         double chipipi = pow( pair->d1_mNSigmaPion, 2) + pow( pair->d2_mNSigmaPion, 2);
         double dca1 = pair->d1_mDCA;
         double dca2 = pair->d2_mDCA;
+        Float_t mRapidity = pair->mRapidity;
         
         Float_t mMassVal = pair->mMass; 
         lv1.SetPtEtaPhiM( pair->d1_mPt, pair->d1_mEta, pair->d1_mPhi, 0.135 );
@@ -55,14 +61,25 @@ void EESI() {
 
         if ( chipipi <10 && dca1 <1 && dca2 <1 ){
 		mPperp->Fill( absPperp );
+		mMass->Fill( lv.M() );
             if ( lv.M() > 0.65 && lv.M() <0.9){
-                mMass->Fill( lv.M() );
                 if ( PcrossQ > 0 ){mPxvsPy->Fill( absPperp*cos(PairPhi), absPperp*sin(PairPhi)); }
 		if ( PcrossQ < 0 ){mPxvsPy->Fill( absPperp*cos(PairPhi), -absPperp*sin(PairPhi)); }
-                if ( PcrossQ < 0 && absPperp < 0.06){ mPairPhi->Fill ( PairPhi - 3.1415); }
-                if ( PcrossQ > 0 && absPperp < 0.06){ mPairPhi->Fill ( 3.1415 - PairPhi ); }
+                if ( PcrossQ < 0 && absPperp < 0.06){ 
+                    mPairPhi->Fill ( PairPhi - 3.1415); 
+                    mPhivsMass->Fill ( PairPhi - 3.1415, lv.M());
+                    mPhivsPT->Fill ( PairPhi - 3.1415, absPperp);
+                    mPhivsRapidity->Fill ( PairPhi - 3.1415, mRapidity);
+                }
+                if ( PcrossQ > 0 && absPperp < 0.06){
+                    mPairPhi->Fill ( 3.1415 - PairPhi );
+                    mPhivsMass->Fill ( 3.1415 - PairPhi, lv.M()); 
+                    mPhivsPT->Fill ( 3.1415 - PairPhi, absPperp); 
+                    mPhivsRapidity->Fill ( 3.1415 - PairPhi, mRapidity); 
+                }
             }
         }
+    mPairPhi->Fit("mPhiFit");
     }
 
 fo -> cd();
@@ -83,9 +100,29 @@ mPairPhi->Draw();
 gPad->Print( "plot_mPairPhi.pdf" );
 
 makeCanvas();
+mPhiFit->SetLineColor(kBlack);
+mPhiFit->Draw();
+gPad->Print( "plot_mPhiFit.pdf" );
+
+makeCanvas();
 gStyle->SetPalette(1);
 mPxvsPy->Draw("colz");
 gPad->Print( "plot_mPxvsPy.pdf" );
+
+makeCanvas();
+gStyle->SetPalette(1);
+mPhivsMass->Draw("colz");
+gPad->Print( "plot_mPhivsMass.pdf" );
+
+makeCanvas();
+gStyle->SetPalette(1);
+mPhivsPT->Draw("colz");
+gPad->Print( "plot_mPhivsPT.pdf" );
+
+makeCanvas();
+gStyle->SetPalette(1);
+mPhivsRapidity->Draw("colz");
+gPad->Print( "plot_mPhivsRapidity.pdf" );
 
 fo->Write();
 }
