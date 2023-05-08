@@ -15,28 +15,34 @@ void makeCanvas()  {
     can->SetRightMargin(0.35);
 }
 
-void histBin(hist) {
-    int nbinsy = hist->GetNBinsY;
-    int nbinsx = hist->GetNBinsX;
+void histMoments( TH2F* hist) {
+    int nbinsy = hist->GetNbinsY();
+    int nbinsx = hist->GetNbinsX();
     double phivals[nbinsx];
-    double yerrors[nbinsx];
     double weights[nbinsx];
-    double ybinvals[nbinsy];
     double cos2phi_moments[nbinsy];
     for (int i = 1; i < nbinsy+1; i++) {
-        ybinvals[i-1] = hist.GetYAxis->GetBinCenter(i);
-        1dhist = hist->ProjecionX("1dhist", i, i);
+        auto* onedhist = hist->ProjectionX("1dhist", i, i);
 	for (int j = 1; j < nbinsx+1; j++) {
-            phivals[j-1] = 1dhist.GetXaxis()->GetBinCenter(j);
-            weights[j-1] = 1dhist->GetBinContent(j);
-            yerrors[j-1] = 1dhist->GetBinError(j);
+            phivals[j-1] = onedhist->GetXaxis()->GetBinCenter(j);
+            weights[j-1] = onedhist->GetBinContent(j);
         }
         cos2phi_moments[i-1] = 0;
         for (int k = 0; k < nbinsx; k++){
             cos2phi_moments[i-1] += weights[k] * cos(2*phivals[k]) / nbinsx;
         }
     }
-    return nbinsy, ybinvals, cos2phi_moments
+    
+    return cos2phi_moments;
+}
+
+void histYbins( TH2F* hist) {
+    int nbinsy = hist->GetNbinsY();
+    double ybinvals[nbinsy];
+    for (int i = 1; i < nbinsy+1; i++) {
+        ybinvals[i-1] = hist->GetYaxis()->GetBinCenter(i);
+    }
+    return ybinvals;
 }
 
 void EESI() {
@@ -107,8 +113,7 @@ void EESI() {
                 }
             }
         }
-    int PTnbinsy, double PTbinvals, double PTcos2phi_moments = histBin(mPhivsPT);
-    auto * mPTmomentsplot = new TGraph(PTnbins, PTbinvals, PTcos2phi_moments);
+    auto * mPTmomentsplot = new TGraph(mPhivsPT->GetNbinsY(), histYbins(mPhivsPT), histMoments(mPhivsPT));
     }
 mPairPhi->Fit(mPhiFit);
 
@@ -157,7 +162,7 @@ gPad->Print( "plot_mPhivsRapidity.pdf" );
 
 makeCanvas();
 mPTmomentsplot->Draw("ap");
-gpad->Print( "plot_mPTmomentsplot.pdf" );
+gPad->Print( "plot_mPTmomentsplot.pdf" );
 
 fo->Write();
 }
