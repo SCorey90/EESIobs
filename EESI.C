@@ -12,7 +12,31 @@ int ican2 = 0;
 void makeCanvas()  {
     TCanvas * can = new TCanvas( TString::Format( "can%d", ican2++ ), "", 900, 600);
     //can->SetTopMargin(0.04);
-    //can->SetRightMargin(0.01);
+    can->SetRightMargin(0.35);
+}
+
+void histBin(hist) {
+    int nbinsy = hist->GetNBinsY;
+    int nbinsx = hist->GetNBinsX;
+    double phivals[nbinsx];
+    double yerrors[nbinsx];
+    double weights[nbinsx];
+    double ybinvals[nbinsy];
+    double cos2phi_moments[nbinsy];
+    for (int i = 1; i < nbinsy+1; i++) {
+        ybinvals[i-1] = hist.GetYAxis->GetBinCenter(i);
+        1dhist = hist->ProjecionX("1dhist", i, i);
+	for (int j = 1; j < nbinsx+1; j++) {
+            phivals[j-1] = 1dhist.GetXaxis()->GetBinCenter(j);
+            weights[j-1] = 1dhist->GetBinContent(j);
+            yerrors[j-1] = 1dhist->GetBinError(j);
+        }
+        cos2phi_moments[i-1] = 0;
+        for (int k = 0; k < nbinsx; k++){
+            cos2phi_moments[i-1] += weights[k] * cos(2*phivals[k]) / nbinsx;
+        }
+    }
+    return nbinsy, ybinvals, cos2phi_moments
 }
 
 void EESI() {
@@ -63,24 +87,30 @@ void EESI() {
 		mPperp->Fill( absPperp );
 		mMass->Fill( lv.M() );
             if ( lv.M() > 0.65 && lv.M() <0.9){
-                if ( PcrossQ > 0 ){mPxvsPy->Fill( absPperp*cos(PairPhi), absPperp*sin(PairPhi)); }
-		if ( PcrossQ < 0 ){mPxvsPy->Fill( absPperp*cos(PairPhi), -absPperp*sin(PairPhi)); }
+                if ( PcrossQ > 0 ){
+                    mPxvsPy->Fill( absPperp*cos(PairPhi), absPperp*sin(PairPhi));
+                    mPhivsPT->Fill ( PairPhi - 3.1415, absPperp);
+                }
+		if ( PcrossQ < 0 ){
+                    mPxvsPy->Fill( absPperp*cos(PairPhi), -absPperp*sin(PairPhi)); 
+                    mPhivsPT->Fill ( 3.1415 - PairPhi, absPperp); 
+                }
                 if ( PcrossQ < 0 && absPperp < 0.06){ 
                     mPairPhi->Fill ( PairPhi - 3.1415); 
                     mPhivsMass->Fill ( PairPhi - 3.1415, lv.M());
-                    mPhivsPT->Fill ( PairPhi - 3.1415, absPperp);
                     mPhivsRapidity->Fill ( PairPhi - 3.1415, mRapidity);
                 }
                 if ( PcrossQ > 0 && absPperp < 0.06){
                     mPairPhi->Fill ( 3.1415 - PairPhi );
-                    mPhivsMass->Fill ( 3.1415 - PairPhi, lv.M()); 
-                    mPhivsPT->Fill ( 3.1415 - PairPhi, absPperp); 
+                    mPhivsMass->Fill ( 3.1415 - PairPhi, lv.M());  
                     mPhivsRapidity->Fill ( 3.1415 - PairPhi, mRapidity); 
                 }
             }
         }
-    mPairPhi->Fit("mPhiFit");
+    int PTnbinsy, double PTbinvals, double PTcos2phi_moments = histBin(mPhivsPT);
+    auto * mPTmomentsplot = new TGraph(PTnbins, PTbinvals, PTcos2phi_moments);
     }
+mPairPhi->Fit(mPhiFit);
 
 fo -> cd();
 
@@ -96,6 +126,7 @@ gPad->Print( "plot_mPperp.pdf" );
 
 makeCanvas();
 mPairPhi->SetLineColor(kBlack);
+gStyle->SetOptFit();
 mPairPhi->Draw();
 gPad->Print( "plot_mPairPhi.pdf" );
 
@@ -123,6 +154,10 @@ makeCanvas();
 gStyle->SetPalette(1);
 mPhivsRapidity->Draw("colz");
 gPad->Print( "plot_mPhivsRapidity.pdf" );
+
+makeCanvas();
+mPTmomentsplot->Draw("ap");
+gpad->Print( "plot_mPTmomentsplot.pdf" );
 
 fo->Write();
 }
