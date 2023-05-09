@@ -29,7 +29,7 @@ double* histMoments( TH2F* hist) {
         }
         cos2phi_moments[i-1] = 0;
         for (int k = 0; k < nbinsx; k++){
-            cos2phi_moments[i-1] += weights[k] * cos(2*phivals[k]) / nbinsx;
+            cos2phi_moments[i-1] += weights[k] * cos(2*phivals[k]) / (onedhist->GetEntries());
         }
     }
     
