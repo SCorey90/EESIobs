@@ -113,12 +113,12 @@ void EESI() {
                 }
             }
         }
-   // auto *mPTmomentsplot = new TGraph(mPhivsPT->GetNbinsY(), histYbins(mPhivsPT), histMoments(mPhivsPT));
-   // mPTmomentsplot->Draw("AC*");
     }
 mPairPhi->Fit(mPhiFit);
 
 auto *mPTmomentsplot = new TGraph(mPhivsPT->GetNbinsY(), histYbins(mPhivsPT), histMoments(mPhivsPT));
+auto *mMassmomentsplot = new TGraph(mPhivsMass->GetNbinsY(), histYbins(mPhivsMass), histMoments(mPhivsMass));
+auto *mRapiditymomentsplot = new TGraph(mPhivsRapidity->GetNbinsY(), histYbins(mPhivsRapidity), histMoments(mPhivsRapidity));
 
 fo -> cd();
 
@@ -167,6 +167,16 @@ makeCanvas();
 mPTmomentsplot->SetTitle("cos(2#phi) moments vs. P_{T}; P_{T} (GeV); <cos(2#phi)>");
 mPTmomentsplot->Draw("AC*");
 gPad->Print( "plot_mPTmomentsplot.pdf" );
+
+makeCanvas();
+mMassmomentsplot->SetTitle("cos(2#phi) moments vs. Mass; Mass (GeV); <cos(2#phi)>");
+mMassmomentsplot->Draw("AC*");
+gPad->Print( "plot_mPTmomentsplot.pdf" );
+
+//makeCanvas();
+//mRapiditymomentsplot->SetTitle("cos(2#phi) moments vs. Rapidity; Rapidity; <cos(2#phi)>");
+//mRapiditymomentsplot->Draw("AC*");
+//gPad->Print( "plot_mRapiditymomentsplot.pdf" );
 
 fo->Write();
 }
