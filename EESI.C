@@ -15,12 +15,12 @@ void makeCanvas()  {
     can->SetRightMargin(0.35);
 }
 
-void histMoments( TH2F* hist) {
+double* histMoments( TH2F* hist) {
     int nbinsy = hist->GetNbinsY();
     int nbinsx = hist->GetNbinsX();
     double phivals[nbinsx];
     double weights[nbinsx];
-    double cos2phi_moments[nbinsy];
+    double *cos2phi_moments = new double[nbinsy];
     for (int i = 1; i < nbinsy+1; i++) {
         auto* onedhist = hist->ProjectionX("1dhist", i, i);
 	for (int j = 1; j < nbinsx+1; j++) {
@@ -36,9 +36,9 @@ void histMoments( TH2F* hist) {
     return cos2phi_moments;
 }
 
-void histYbins( TH2F* hist) {
+double* histYbins( TH2F* hist) {
     int nbinsy = hist->GetNbinsY();
-    double ybinvals[nbinsy];
+    double *ybinvals = new double[nbinsy];
     for (int i = 1; i < nbinsy+1; i++) {
         ybinvals[i-1] = hist->GetYaxis()->GetBinCenter(i);
     }
@@ -113,9 +113,12 @@ void EESI() {
                 }
             }
         }
-    auto * mPTmomentsplot = new TGraph(mPhivsPT->GetNbinsY(), histYbins(mPhivsPT), histMoments(mPhivsPT));
+   // auto *mPTmomentsplot = new TGraph(mPhivsPT->GetNbinsY(), histYbins(mPhivsPT), histMoments(mPhivsPT));
+   // mPTmomentsplot->Draw("AC*");
     }
 mPairPhi->Fit(mPhiFit);
+
+auto *mPTmomentsplot = new TGraph(mPhivsPT->GetNbinsY(), histYbins(mPhivsPT), histMoments(mPhivsPT));
 
 fo -> cd();
 
@@ -161,7 +164,8 @@ mPhivsRapidity->Draw("colz");
 gPad->Print( "plot_mPhivsRapidity.pdf" );
 
 makeCanvas();
-mPTmomentsplot->Draw("ap");
+mPTmomentsplot->SetTitle("cos(2#phi) moments vs. P_{T}; P_{T} (GeV); <cos(2#phi)>");
+mPTmomentsplot->Draw("AC*");
 gPad->Print( "plot_mPTmomentsplot.pdf" );
 
 fo->Write();
