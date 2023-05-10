@@ -158,6 +158,7 @@ mPairPhi->SetLineColor(kBlack);
 gStyle->SetOptFit();
 mPairPhi->Draw();
 gPad->Print( "plot_mPairPhi.pdf" );
+gPad->Print( "plot_mPairPhi.png" );
 
 makeCanvas();
 mPhiFit->SetLineColor(kBlack);
@@ -173,6 +174,7 @@ makeCanvas();
 gStyle->SetPalette(1);
 mPhivsMass->Draw("colz");
 gPad->Print( "plot_mPhivsMass.pdf" );
+gPad->Print( "plot_mPhivsMass.png" );
 
 makeCanvas();
 gStyle->SetPalette(1);
@@ -183,16 +185,19 @@ makeCanvas();
 gStyle->SetPalette(1);
 mPhivsPT->Draw("colz");
 gPad->Print( "plot_mPhivsPT.pdf" );
+gPad->Print( "plot_mPhivsPT.png" );
 
 makeCanvas();
 gStyle->SetPalette(1);
 mPhivsRapidity->Draw("colz");
 gPad->Print( "plot_mPhivsRapidity.pdf" );
+gPad->Print( "plot_mPhivsRapidity.png" );
 
 makeCanvas();
 mPTmomentsplot->SetTitle("cos(2#phi) moments vs. P_{T}; P_{T} (GeV); 2<cos(2#phi)>");
 mPTmomentsplot->Draw("AC*");
 gPad->Print( "plot_mPTmomentsplot.pdf" );
+gPad->Print( "plot_mPTmomentsplot.png" );
 
 makeCanvas();
 mMassmomentsplot->SetTitle("cos(2#phi) moments vs. Mass; Mass (GeV); 2<cos(2#phi)>");
@@ -200,11 +205,13 @@ mMassmomentsplot->SetMinimum(0);
 mMassmomentsplot->SetMaximum(1);
 mMassmomentsplot->Draw("AC*");
 gPad->Print( "plot_mMassmomentsplot.pdf" );
+gPad->Print( "plot_mMassmomentsplot.png" );
 
 makeCanvas();
 mRapiditymomentsplot->SetTitle("cos(2#phi) moments vs. Rapidity; Rapidity; 2<cos(2#phi)>");
 mRapiditymomentsplot->Draw("AC*");
 gPad->Print( "plot_mRapiditymomentsplot.pdf" );
+gPad->Print( "plot_mRapiditymomentsplot.png" );
 
 makeCanvas();
 mPTcos4phimoments->SetTitle("cos(4#phi) moments vs. P_{T}; P_{T} (GeV); 4<cos(4#phi)>");
@@ -227,7 +234,7 @@ mLowMassmomentsplot->SetTitle("cos(2#phi) moments vs. Mass; Mass (GeV); 2<cos(2#
 //mLowMassmomentsplot->SetMaximum(1);
 mLowMassmomentsplot->Draw("AC*");
 gPad->Print( "plot_mLowMassmomentsplot.pdf" );
-
+gPad->Print( "plot_mLowMassmomentsplot.png" );
 
 fo->Write();
 }
