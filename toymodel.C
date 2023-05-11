@@ -33,7 +33,7 @@ TLorentzVector *random_LV( double ptmin, double ptmax, double etamin, double eta
 TLorentzVector *decay_LV( TLorentzVector *lv0, double daughter_mass ) {
     TLorentzVector *lv1 = new TLorentzVector;
     double phi = rng.Uniform(-3.141592, 3.141592);
-    double theta = rng.Uniform(0, 3.141592);
+    double theta = acos(rng.Uniform(-1, 1)); //+ lv0->Phi();
     double absP1 = sqrt((lv0->M()*lv0->M()/4) - daughter_mass*daughter_mass);
     lv1->SetPxPyPzE( (absP1*sin(theta)*cos(phi)), (absP1*sin(theta)*sin(phi)), (absP1*cos(theta)), (sqrt(absP1*absP1 + daughter_mass*daughter_mass)) );
     lv1->Boost(lv0->BoostVector());
@@ -49,6 +49,9 @@ void toymodel() {
     auto *mRhoPT = new TH1F("mRhoPT", "#rho^{0} P_{T}; P_{T} (GeV); counts", 100, 0, 1.5);
     auto *mPairPT = new TH1F("mPairPT", "#pi^{+}#pi^{-} pair P_{T}; P_{T} (GeV); counts", 100, 0, 1.5);
 
+    auto *mRandomTheta = new TH1F("mRandomTheta", "Uniform #theta", 100, 0, 3.1415);
+    auto *mRandomCos = new TH1F("mRandomCos", "Uniform Cos#theta", 100, 0, 3.1415);
+    
     double m_pi = 0.139;
     for (int i = 0; i < 10000000; i++) {
         TLorentzVector *lv0 = random_LV(0, 1.5, -6, 6, -3.141592, 3.141592, 2*m_pi, 1.5);
@@ -67,7 +70,12 @@ void toymodel() {
             mReconstructedM->Fill(lvRecon.M()); 
             mPairPT->Fill(lvRecon.Pt());
         }
+        mRandomTheta->Fill( rng.Uniform(0, 3.1415) );
+        mRandomCos->Fill( acos(rng.Uniform(-1, 1)) );
     }
+
+TH1F* mMassMCbyRC = (TH1F*)mRhoM->Clone("mMassMCbyRC");
+TH1F* mPTMCbyRC = (TH1F*)mRhoPT->Clone("mPTMCbyRC");
 
 fo -> cd();
 
@@ -94,6 +102,27 @@ mPairPT->SetLineColor(kBlack);
 mPairPT->Draw();
 gPad->Print( "plot_mToyPairPT.pdf" );
 gPad->Print( "plot_mToyPairPT.png" );
+
+makeCanvas();
+mMassMCbyRC->Divide(mReconstructedM);
+mMassMCbyRC->SetLineColor(kBlack);
+mMassMCbyRC->SetTitle("#rho^{0}/#pi^{+}+#pi^{-}; Mass (GeV); ratio of counts");
+mMassMCbyRC->Draw();
+gPad->Print( "plot_mMassMCbyRC.pdf" );
+gPad->Print( "plot_mMassMCbyRC.png" );
+
+makeCanvas();
+mPTMCbyRC->Divide(mPairPT);
+mPTMCbyRC->SetLineColor(kBlack);
+mPTMCbyRC->SetTitle("#rho^{0}/#pi^{+}+#pi^{-}; P_{T} (GeV); ratio of counts");
+mPTMCbyRC->Draw();
+gPad->Print( "plot_mPTMCbyRC.pdf" );
+gPad->Print( "plot_mPTMCbyRC.png" );
+
+makeCanvas();
+mRandomCos->SetLineColor(kBlack);
+mRandomCos->Draw();
+gPad->Print( "plot_mRandomCos.png" );
 
 fo->Write();
 }

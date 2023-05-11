@@ -38,6 +38,23 @@ double* histMoments( TH2F* hist , int n) {
     return cosnphi_moments;
 }
 
+double* moment_error( TH2F* hist, int n ) {
+    int nbinsx = hist->GetNbinsX();
+    int nbinsy = hist->GetNbinsY();
+    double *moment_errors = new double[nbinsy];
+    for (int i = 1; i < nbinsy+1; i++) {
+        auto* onedhist = hist->ProjectionX("1dhist", i, i);
+        auto* momenthist = new TH1F("momenthist", "ncosnphi moments", nbinsx, -1*n, 1*n);
+        for (int j = 1; j < nbinsx+1; j++) {
+            for (int k = 0; k < onedhist->GetBinContent(j); k++) {
+                momenthist->Fill( n * cos( n * (onedhist->GetXaxis()->GetBinCenter(j))));
+            }
+        }
+        moment_errors[i-1] = momenthist->GetMeanError();
+    }
+    return moment_errors;
+}       
+
 double* histYbins( TH2F* hist) {
     int nbinsy = hist->GetNbinsY();
     double *ybinvals = new double[nbinsy];
@@ -133,13 +150,13 @@ void EESI() {
     }
 mPairPhi->Fit(mPhiFit);
 
-auto *mPTmomentsplot = new TGraph(mPhivsPT->GetNbinsY(), histYbins(mPhivsPT), histMoments(mPhivsPT, 2));
-auto *mMassmomentsplot = new TGraph(mPhivsMass->GetNbinsY(), histYbins(mPhivsMass), histMoments(mPhivsMass, 2));
-auto *mLowMassmomentsplot = new TGraph(mPhivsLowMass->GetNbinsY(), histYbins(mPhivsLowMass), histMoments(mPhivsLowMass, 2));
-auto *mRapiditymomentsplot = new TGraph(mPhivsRapidity->GetNbinsY(), histYbins(mPhivsRapidity), histMoments(mPhivsRapidity, 2));
-auto *mPTcos4phimoments = new TGraph(mPhivsPT->GetNbinsY(), histYbins(mPhivsPT), histMoments(mPhivsPT, 4));
-auto *mMasscos4phimoments = new TGraph(mPhivsMass->GetNbinsY(), histYbins(mPhivsMass), histMoments(mPhivsMass, 4));
-auto *mRapiditycos4phimoments = new TGraph(mPhivsRapidity->GetNbinsY(), histYbins(mPhivsRapidity), histMoments(mPhivsRapidity, 4));
+auto *mPTmomentsplot = new TGraphErrors(mPhivsPT->GetNbinsY(), histYbins(mPhivsPT), histMoments(mPhivsPT, 2), 0, moment_error(mPhivsPT, 2));
+auto *mMassmomentsplot = new TGraphErrors(mPhivsMass->GetNbinsY(), histYbins(mPhivsMass), histMoments(mPhivsMass, 2), 0, moment_error(mPhivsMass, 2));
+auto *mLowMassmomentsplot = new TGraphErrors(mPhivsLowMass->GetNbinsY(), histYbins(mPhivsLowMass), histMoments(mPhivsLowMass, 2), 0, moment_error(mPhivsLowMass, 2));
+auto *mRapiditymomentsplot = new TGraphErrors(mPhivsRapidity->GetNbinsY(), histYbins(mPhivsRapidity), histMoments(mPhivsRapidity, 2), 0, moment_error(mPhivsRapidity, 2));
+auto *mPTcos4phimoments = new TGraphErrors(mPhivsPT->GetNbinsY(), histYbins(mPhivsPT), histMoments(mPhivsPT, 4), 0, moment_error(mPhivsPT, 4));
+auto *mMasscos4phimoments = new TGraphErrors(mPhivsMass->GetNbinsY(), histYbins(mPhivsMass), histMoments(mPhivsMass, 4), 0, moment_error(mPhivsMass, 4));
+auto *mRapiditycos4phimoments = new TGraphErrors(mPhivsRapidity->GetNbinsY(), histYbins(mPhivsRapidity), histMoments(mPhivsRapidity, 4), 0, moment_error(mPhivsRapidity, 4));
 
 fo -> cd();
 
@@ -212,6 +229,11 @@ mRapiditymomentsplot->SetTitle("cos(2#phi) moments vs. Rapidity; Rapidity; 2<cos
 mRapiditymomentsplot->Draw("AC*");
 gPad->Print( "plot_mRapiditymomentsplot.pdf" );
 gPad->Print( "plot_mRapiditymomentsplot.png" );
+mRapiditymomentsplot->SetMinimum(0);
+mRapiditymomentsplot->SetMaximum(0.5);
+mRapiditymomentsplot->Draw("AC*");
+gPad->Print( "plot_mZoomedRapiditymomentsplot.pdf" );
+gPad->Print( "plot_mZoomedRapiditymomentsplot.png" );
 
 makeCanvas();
 mPTcos4phimoments->SetTitle("cos(4#phi) moments vs. P_{T}; P_{T} (GeV); 4<cos(4#phi)>");
