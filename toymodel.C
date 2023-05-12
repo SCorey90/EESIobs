@@ -7,7 +7,7 @@
 #include "TLorentzVector.h"
 #include "TCanvas.h"
 #include "FemtoPairFormat.h"
-#include "TRandom3.h"
+#include "TRandom3.h"`"
 
 int ican2 = 0;
 void makeCanvas()  {
@@ -33,12 +33,33 @@ TLorentzVector *random_LV( double ptmin, double ptmax, double etamin, double eta
 TLorentzVector *decay_LV( TLorentzVector *lv0, double daughter_mass ) {
     TLorentzVector *lv1 = new TLorentzVector;
     double phi = rng.Uniform(-3.141592, 3.141592);
-    double theta = acos(rng.Uniform(-1, 1)); //+ lv0->Phi();
+    double theta = acos(rng.Uniform(-1, 1));
     double absP1 = sqrt((lv0->M()*lv0->M()/4) - daughter_mass*daughter_mass);
     lv1->SetPxPyPzE( (absP1*sin(theta)*cos(phi)), (absP1*sin(theta)*sin(phi)), (absP1*cos(theta)), (sqrt(absP1*absP1 + daughter_mass*daughter_mass)) );
     lv1->Boost(lv0->BoostVector());
     return lv1;
 }
+
+double calc_Phi( TLorentzVector lv1, TLorentzVector lv2) {
+    TLorentzVector lvPlus = lv1 + lv2;
+    TLorentzVector lvMinus = lv1 - lv2;
+    double Px = lvPlus.Px();
+    double Py = lvPlus.Py();
+    double Qx = lvMinus.Px();
+    double Qy = lvMinus.Py();
+    double absPperp = pow((Px*Px)+(Py*Py), 0.5);
+    double absQperp = pow((Qx*Qx)+(Qy*Qy), 0.5);
+    double PcrossQ = (Px*Qy) - (Py*Qx);
+    double PdotQ = (Px*Qx) + (Py*Qy);
+    double cosphi = (Px*Qx + Py*Qy) / (absPperp*absQperp);
+    double PairPhi = acos(cosphi);
+    if ( PcrossQ > 0 ){ 
+        return PairPhi - 3.141592;
+    } else { 
+        return 3.141592 - PairPhi;
+    }
+}
+    
 
 void toymodel() {
     TH1F("h1", "ntuple", 100, -4, 4);
@@ -46,36 +67,41 @@ void toymodel() {
 
     auto *mRhoM = new TH1F("mRhoM", "#rho^{0} mass; mass (GeV); counts", 1000, 0, 1.5);
     auto *mReconstructedM = new TH1F("mReconstructedM", "Sum of #pi^{+}#pi^{-} mass; mass (GeV); counts", 1000, 0, 1.5);
-    auto *mRhoPT = new TH1F("mRhoPT", "#rho^{0} P_{T}; P_{T} (GeV); counts", 100, 0, 1.5);
-    auto *mPairPT = new TH1F("mPairPT", "#pi^{+}#pi^{-} pair P_{T}; P_{T} (GeV); counts", 100, 0, 1.5);
-
-    auto *mRandomTheta = new TH1F("mRandomTheta", "Uniform #theta", 100, 0, 3.1415);
-    auto *mRandomCos = new TH1F("mRandomCos", "Uniform Cos#theta", 100, 0, 3.1415);
+    auto *mRhoPT = new TH1F("mRhoPT", "#rho^{0} P_{T}; #rho^{0} P_{T} (GeV); counts", 100, 0, 0.2);
+    auto *mPairPT = new TH1F("mPairPT", "#pi^{+}#pi^{-} pair P_{T}; pair P_{T} (GeV); counts", 100, 0, 0.2);
     
+    auto * mPairPhi = new TH1F("mPairPhi", "model #pi_{#pm} #phi distribution;#phi (rad);# events", 500, -3.13, 3.13);
+    auto * mPhivsPT = new TH2F("mPhivsPT", "model #pi^{#pm} #phi distribution vs. parent P_{T}; #phi (rad); Parent P_{T} (GeV); Counts", 100, -3.14, 3.14, 100, 0, 0.25);
+    auto * mCos2phivsPT = new TH2F("mCos2phivsPT", "model cos2#phi distribution vs P_{T}; 2cos2#phi; Parent P_{T} (GeV); Counts", 100, -1, 1, 100, 0, 0.25);
+
     double m_pi = 0.139;
     for (int i = 0; i < 10000000; i++) {
-        TLorentzVector *lv0 = random_LV(0, 1.5, -6, 6, -3.141592, 3.141592, 2*m_pi, 1.5);
+        TLorentzVector *lv0 = random_LV(0, 0.2, -6, 6, -3.141592, 3.141592, 2*m_pi, 1.5);
         TLorentzVector *lv1 = decay_LV( lv0, m_pi);
 
         TLorentzVector rho, pi1, pi2, gauspi1, gauspi2, lvRecon;
         rho.SetPtEtaPhiM( lv0->Pt(), lv0->Eta(), lv0->Phi(), lv0->M() );
         pi1.SetPxPyPzE( lv1->Px(), lv1->Py(), lv1->Pz(), lv1->E() );
         pi2 = rho - pi1;
-        gauspi1.SetPtEtaPhiM( pi1.Pt() + rng.Gaus( 0, 0.1 ), pi1.Eta(), pi1.Phi(), pi1.M() );
-        gauspi2.SetPtEtaPhiM( pi2.Pt() + rng.Gaus( 0, 0.1 ), pi2.Eta(), pi2.Phi(), pi2.M() );
-        lvRecon = gauspi1 + gauspi2;
+        gauspi1.SetPtEtaPhiM( pi1.Pt() + rng.Gaus( 0, 0.1*pi1.Pt() ), pi1.Eta(), pi1.Phi(), pi1.M() );
+        gauspi2.SetPtEtaPhiM( pi2.Pt() + rng.Gaus( 0, 0.1*pi2.Pt() ), pi2.Eta(), pi2.Phi(), pi2.M() );
+        lvRecon = pi1 + pi2;
         mRhoM->Fill(rho.M());
-        mRhoPT->Fill(rho.Pt());
-        if ( lvRecon.Pt() > 0.7 ) { 
+        mRhoPT->Fill(abs(rho.Pt()));
+
+        if ( abs(pi1.Pt()) > 0.1 && abs(pi2.Pt()) > 0.1 ) { 
             mReconstructedM->Fill(lvRecon.M()); 
-            mPairPT->Fill(lvRecon.Pt());
+            mPairPT->Fill(abs(lvRecon.Pt()));
+            mPairPhi->Fill( calc_Phi( pi1, pi2 ));
+            mPhivsPT->Fill( calc_Phi( pi1, pi2 ), abs(lvRecon.Pt()));
+            mCos2phivsPT->Fill( 2*cos(2* calc_Phi( pi1, pi2 )), abs(lvRecon.Pt()));
         }
-        mRandomTheta->Fill( rng.Uniform(0, 3.1415) );
-        mRandomCos->Fill( acos(rng.Uniform(-1, 1)) );
     }
 
-TH1F* mMassMCbyRC = (TH1F*)mRhoM->Clone("mMassMCbyRC");
-TH1F* mPTMCbyRC = (TH1F*)mRhoPT->Clone("mPTMCbyRC");
+TH1F* mMassRCbyMC = (TH1F*)mReconstructedM->Clone("mMassMCbyRC");
+TH1F* mPTRCbyMC = (TH1F*)mPairPT->Clone("mPTMCbyRC");
+
+auto *mToyPTCos2phiMoments = mCos2phivsPT->ProfileY("mToyPTCos2phiMoments", 1, -1);
 
 fo -> cd();
 
@@ -104,25 +130,46 @@ gPad->Print( "plot_mToyPairPT.pdf" );
 gPad->Print( "plot_mToyPairPT.png" );
 
 makeCanvas();
-mMassMCbyRC->Divide(mReconstructedM);
-mMassMCbyRC->SetLineColor(kBlack);
-mMassMCbyRC->SetTitle("#rho^{0}/#pi^{+}+#pi^{-}; Mass (GeV); ratio of counts");
-mMassMCbyRC->Draw();
-gPad->Print( "plot_mMassMCbyRC.pdf" );
-gPad->Print( "plot_mMassMCbyRC.png" );
+mMassRCbyMC->Divide(mRhoM);
+mMassRCbyMC->SetLineColor(kBlack);
+mMassRCbyMC->SetTitle("#pi^{+}+#pi^{-}/#rho^{0}; Mass (GeV); ratio of counts");
+mMassRCbyMC->Draw();
+gPad->Print( "plot_mMassRCbyMC.pdf" );
+gPad->Print( "plot_mMassRCbyMC.png" );
 
 makeCanvas();
-mPTMCbyRC->Divide(mPairPT);
-mPTMCbyRC->SetLineColor(kBlack);
-mPTMCbyRC->SetTitle("#rho^{0}/#pi^{+}+#pi^{-}; P_{T} (GeV); ratio of counts");
-mPTMCbyRC->Draw();
-gPad->Print( "plot_mPTMCbyRC.pdf" );
-gPad->Print( "plot_mPTMCbyRC.png" );
+mPTRCbyMC->Divide(mRhoPT);
+mPTRCbyMC->SetLineColor(kBlack);
+mPTRCbyMC->SetTitle("#pi^{+}+#pi^{-}/#rho^{0}; P_{T} (GeV); ratio of counts");
+mPTRCbyMC->SetMinimum(0);
+mPTRCbyMC->Draw();
+gPad->Print( "plot_mPTRCbyMC.pdf" );
+gPad->Print( "plot_mPTRCbyMC.png" );
 
 makeCanvas();
-mRandomCos->SetLineColor(kBlack);
-mRandomCos->Draw();
-gPad->Print( "plot_mRandomCos.png" );
+mPairPhi->SetLineColor(kBlack);
+gStyle->SetOptFit();
+mPairPhi->Draw();
+gPad->Print( "plot_mToyPairPhi.pdf" );
+gPad->Print( "plot_mToyPairPhi.png" );
+
+makeCanvas();
+gStyle->SetPalette(1);
+mPhivsPT->Draw("colz");
+gPad->Print( "plot_mToyPhivsPT.pdf" );
+gPad->Print( "plot_mToyPhivsPT.png" );
+
+makeCanvas();
+mCos2phivsPT->Draw("colz");
+gPad->Print( "plot_mToyCos2phivsPT.pdf" );
+gPad->Print( "plot_mToyCos2phivsPT.png" );
+
+makeCanvas();
+mToyPTCos2phiMoments->SetLineColor(kBlack);
+mToyPTCos2phiMoments->Draw();
+gPad->Print( "plot_mToyPTCos2phiMoments.pdf" );
+gPad->Print( "plot_mToyPTCos2phiMoments.png" );
+
 
 fo->Write();
 }

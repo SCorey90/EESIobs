@@ -36,7 +36,7 @@ double* histMoments( TH2F* hist , int n) {
     }
     
     return cosnphi_moments;
-}
+} 
 
 double* moment_error( TH2F* hist, int n ) {
     int nbinsx = hist->GetNbinsX();
@@ -73,10 +73,12 @@ void EESI() {
     auto * mPperp = new TH1F("mPperp", "Parent (#rho^{0}) Transverse Momentum; Transverse Momentum (GeV); counts", 500, 0, 1);
     auto * mPairPhi = new TH1F("mPairPhi", "#pi_{#pm} #phi distribution;#phi (rad);# events", 500, -3.13, 3.13);
     auto * mPxvsPy = new TH2F("mPxvsPy", "#rho^{0} 2D momentum dist; P_{x} (GeV); P_{y} (GeV); Counts", 200, -0.1, 0.1, 200, -0.1, 0.1);
-    auto *mPhivsMass = new TH2F("mPhivsMass", "#pi_{#pm} #phi distribution vs. parent mass; #phi (rad); Parent Mass (GeV); Counts", 100, -3.14, 3.14, 50, 0.3, 1.35);
-    auto *mPhivsPT = new TH2F("mPhivsPT", "#pi^{#pm} #phi distribution vs. parent P_{T}; #phi (rad); Parent P_{T} (GeV); Counts", 100, -3.14, 3.14, 100, 0, 0.25);
-    auto *mPhivsRapidity = new TH2F("mPhivsRapidity", "#pi^{#pm} #phi distribution vs. Rapidity; #phi (rad); Rapidity (GeV); Counts", 100, -3.14, 3.14, 100, -2, 2);
-    auto *mPhivsLowMass = new TH2F("mPhivsLowMass", "#pi_{#pm} #phi distribution vs. parent mass; #phi (rad); Parent Mass (GeV); Counts", 100, -3.14, 3.14, 100, 0.3, 0.55);
+    auto * mPhivsMass = new TH2F("mPhivsMass", "#pi_{#pm} #phi distribution vs. parent mass; #phi (rad); Parent Mass (GeV); Counts", 100, -3.14, 3.14, 50, 0.3, 1.35);
+    auto * mPhivsPT = new TH2F("mPhivsPT", "#pi^{#pm} #phi distribution vs. parent P_{T}; #phi (rad); Parent P_{T} (GeV); Counts", 100, -3.14, 3.14, 100, 0, 0.25);
+    auto * mPhivsRapidity = new TH2F("mPhivsRapidity", "#pi^{#pm} #phi distribution vs. Rapidity; #phi (rad); Rapidity (GeV); Counts", 100, -3.14, 3.14, 100, -2, 2);
+    auto * mPhivsLowMass = new TH2F("mPhivsLowMass", "#pi_{#pm} #phi distribution vs. parent mass; #phi (rad); Parent Mass (GeV); Counts", 100, -3.14, 3.14, 100, 0.3, 0.55);
+    
+    auto * mCos2phivsPT = new TH2F("mCos2phivsPT", "cos2#phi distribution vs P_{T}", 100, -1, 1, 100, 0, 0.25);
 
     auto * mPhiFit = new TF1("mPhiFit", "[0] + [1]*cos(x) + [2]*cos(2*x) + [3]*cos(3*x) + [4]*cos(4*x)", -3.14, 3.14);
     //Open pairDST
@@ -115,10 +117,12 @@ void EESI() {
                 if ( PcrossQ > 0 ){
                     mPxvsPy->Fill( absPperp*cos(PairPhi), absPperp*sin(PairPhi));
                     mPhivsPT->Fill ( PairPhi - 3.1415, absPperp);
+                    mCos2phivsPT->Fill( 2*cos(2 *(PairPhi - 3.1415)), absPperp);
                 }
 		if ( PcrossQ < 0 ){
                     mPxvsPy->Fill( absPperp*cos(PairPhi), -absPperp*sin(PairPhi)); 
-                    mPhivsPT->Fill ( 3.1415 - PairPhi, absPperp); 
+                    mPhivsPT->Fill ( 3.1415 - PairPhi, absPperp);
+                    mCos2phivsPT->Fill( 2*cos(2 *(3.1415 - PairPhi)), absPperp);
                 }
                 if ( PcrossQ < 0 && absPperp < 0.06){ 
                     mPairPhi->Fill ( PairPhi - 3.1415); 
@@ -157,6 +161,8 @@ auto *mRapiditymomentsplot = new TGraphErrors(mPhivsRapidity->GetNbinsY(), histY
 auto *mPTcos4phimoments = new TGraphErrors(mPhivsPT->GetNbinsY(), histYbins(mPhivsPT), histMoments(mPhivsPT, 4), 0, moment_error(mPhivsPT, 4));
 auto *mMasscos4phimoments = new TGraphErrors(mPhivsMass->GetNbinsY(), histYbins(mPhivsMass), histMoments(mPhivsMass, 4), 0, moment_error(mPhivsMass, 4));
 auto *mRapiditycos4phimoments = new TGraphErrors(mPhivsRapidity->GetNbinsY(), histYbins(mPhivsRapidity), histMoments(mPhivsRapidity, 4), 0, moment_error(mPhivsRapidity, 4));
+
+auto *mv2PTcos2phimoments = mCos2phivsPT->ProfileY("mv2PTcos2phimoments", 1, -1);
 
 fo -> cd();
 
@@ -257,6 +263,15 @@ mLowMassmomentsplot->SetTitle("cos(2#phi) moments vs. Mass; Mass (GeV); 2<cos(2#
 mLowMassmomentsplot->Draw("AC*");
 gPad->Print( "plot_mLowMassmomentsplot.pdf" );
 gPad->Print( "plot_mLowMassmomentsplot.png" );
+
+makeCanvas();
+mv2PTcos2phimoments->SetLineColor(kBlack);
+mv2PTcos2phimoments->Draw();
+gPad->Print( "plot_mv2PTcos2phimoments.pdf" );
+
+makeCanvas();
+mCos2phivsPT->Draw("colz");
+gPad->Print( "plot_mCos2phivsPT.pdf" );
 
 fo->Write();
 }
