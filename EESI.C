@@ -104,6 +104,7 @@ void EESI() {
     auto * mPhivsWestZDC = new TH2F("mPhivsWestZDC", "#pi^{#pm} #phi distribution vs. ZDC West readout; #phi (rad); ZDC West counts; Counts", 100, -3.14, 3.14, 50, 0, 700);
 
     auto * mCos2phivsPT = new TH2F("mCos2phivsPT", "cos2#phi distribution vs P_{T}", 100, -1, 1, 100, 0, 0.25);
+    auto * mCos4phivsPT = new TH2F("mCos4phivsPT", "cos4#phi distribution vs P_{T}", 100, -1, 1, 100, 0, 0.25);
 
     auto * mPhiFit = new TF1("mPhiFit", "[0] + [1]*cos(x) + [2]*cos(2*x) + [3]*cos(3*x) + [4]*cos(4*x)", -3.14, 3.14);
     auto * mLinearFit = new TF1("mLinearFit", "[0] + [1]*x", -5, 5);
@@ -147,12 +148,13 @@ void EESI() {
                 mPxvsPy->Fill( absPperp*cos(PairPhi), absPperp*sin(PairPhi));
                 mPhivsPT->Fill ( PairPhi, absPperp);
                 mCos2phivsPT->Fill( 2*cos(2 *(PairPhi)), absPperp );
+                mCos4phivsPT->Fill( 4*cos(4 *(PairPhi)), absPperp );
             }
             if ( lv.M() > 0.2 && lv.M() <1.5 && absPperp < 0.06) { mPhivsMass->Fill ( PairPhi, lv.M()); }
             if ( lv.M() > 0.2 && lv.M() <0.55 && absPperp < 0.06) { mPhivsLowMass->Fill ( PairPhi, lv.M()); }
         }
     }
-mPairPhi->Fit(mPhiFit);
+//mPairPhi->Fit(mPhiFit);
 
 auto *mPTmomentsplot = new TGraphErrors(mPhivsPT->GetNbinsY(), histYbins(mPhivsPT), histMoments(mPhivsPT, 2), 0, moment_error(mPhivsPT, 2));
 auto *mMassmomentsplot = new TGraphErrors(mPhivsMass->GetNbinsY(), histYbins(mPhivsMass), histMoments(mPhivsMass, 2), 0, moment_error(mPhivsMass, 2));
@@ -164,9 +166,10 @@ auto *mMasscos4phimoments = new TGraphErrors(mPhivsMass->GetNbinsY(), histYbins(
 auto *mRapiditycos4phimoments = new TGraphErrors(mPhivsRapidity->GetNbinsY(), histYbins(mPhivsRapidity), histMoments(mPhivsRapidity, 4), 0, moment_error(mPhivsRapidity, 4));
 
 auto *mv2PTcos2phimoments = mCos2phivsPT->ProfileY("mv2PTcos2phimoments", 1, -1);
+auto *mv2PTcos4phimoments = mCos4phivsPT->ProfileY("mv2PTcos4phimoments", 1, -1);
 
 TGraph *mRapiditymomentsQuad = (TGraph*)mRapiditymomentsplot->Clone("mRapiditymomentsQuad");
-mRapiditymomentsplot->Fit(mLinearFit,"", "", -1.6, 1.6);
+mRapiditymomentsplot->Fit(mLinearFit,"", "", -0.5, 0.5);
 mRapiditymomentsQuad->Fit(mQuadraticFit,"", "", -1.6, 1.6);
 
 fo -> cd();
@@ -188,7 +191,7 @@ gPad->Print( "plot_mZDCTotal.pdf" );
 
 makeCanvas();
 mPairPhi->SetLineColor(kBlack);
-gStyle->SetOptFit();
+//gStyle->SetOptFit();
 mPairPhi->Draw();
 gPad->Print( "plot_mPairPhi.pdf" );
 gPad->Print( "plot_mPairPhi.png" );
@@ -265,7 +268,7 @@ gPad->Print( "plot_mRapiditymomentsplot.pdf" );
 gPad->Print( "plot_mRapiditymomentsplot.png" );
 mRapiditymomentsplot->SetMinimum(0);
 mRapiditymomentsplot->SetMaximum(0.5);
-gStyle->SetOptFit();
+gStyle->SetOptFit(1111);
 mRapiditymomentsplot->Draw("AC*");
 gPad->Print( "plot_mZoomedRapiditymomentsplot.pdf" );
 gPad->Print( "plot_mZoomedRapiditymomentsplot.png" );
@@ -277,7 +280,7 @@ gPad->Print( "plot_mRapiditymomentsQuad.pdf" );
 gPad->Print( "plot_mRapiditymomentsQuad.png" );
 mRapiditymomentsQuad->SetMinimum(0);
 mRapiditymomentsQuad->SetMaximum(0.5);
-gStyle->SetOptFit();
+gStyle->SetOptFit(1111);
 mRapiditymomentsQuad->Draw("AC*");
 gPad->Print( "plot_mZoomedRapiditymomentsQuad.pdf" );
 gPad->Print( "plot_mZoomedRapiditymomentsQuad.png" );
@@ -315,10 +318,21 @@ makeCanvas();
 mv2PTcos2phimoments->SetLineColor(kBlack);
 mv2PTcos2phimoments->Draw();
 gPad->Print( "plot_mv2PTcos2phimoments.pdf" );
+gPad->Print( "plot_mv2PTcos2phimoments.png" );
+
+makeCanvas();
+mv2PTcos4phimoments->SetLineColor(kBlack);
+mv2PTcos4phimoments->Draw();
+gPad->Print( "plot_mv2PTcos4phimoments.pdf" );
+gPad->Print( "plot_mv2PTcos4phimoments.png" );
 
 makeCanvas();
 mCos2phivsPT->Draw("colz");
 gPad->Print( "plot_mCos2phivsPT.pdf" );
+
+makeCanvas();
+mCos4phivsPT->Draw("colz");
+gPad->Print( "plot_mCos4phivsPT.pdf" );
 
 fo->Write();
 }
