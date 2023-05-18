@@ -21,6 +21,9 @@ void dataVmodel() {
     TFile * modelHists = TFile::Open("toymodelplots.root");
 
     dataHists->ls();
+    auto * mDataMass = (TH1F*)dataHists->Get("mMass");
+    auto * mDataPairPT = (TH1F*)dataHists->Get("mPperp");
+
     auto * mDataPairPhi = (TH1F*)dataHists->Get("mPairPhi");
 
     auto * mDataPhivsPT = (TH2F*)dataHists->Get("mPhivsPT");
@@ -28,6 +31,9 @@ void dataVmodel() {
     auto * mDataCos4phivsPT = (TH2F*)dataHists->Get("mCos4phivsPT");
     
     modelHists->ls();
+    auto * mToyMass = (TH1F*)modelHists->Get("mReconstructedM");
+    auto * mToyPairPT = (TH1F*)modelHists->Get("mPairPT");
+
     auto * mToyPairPhi = (TH1F*)modelHists->Get("mPairPhi");
     auto * mToyPairPhiwMu = (TH1F*)modelHists->Get("mPairPhiwMu");
     auto * mToyNoisyPairPhi = (TH1F*)modelHists->Get("mNoisyPairPhi");
@@ -41,14 +47,65 @@ void dataVmodel() {
     TFile * fo = new TFile( "dataVmodelplots.root", "RECREATE" );
 
     //analysis
-    mToyPairPhi->Scale(1/mToyPairPhi->GetMean());
-    mDataPairPhi->Scale(1/mDataPairPhi->GetMean());
-    
+    mToyMass->Scale(1/mToyMass->Integral());
+    mDataMass->Scale(1/mDataMass->Integral());
+    auto * mDataMinusToyMass = (TH1F*)mDataMass->Clone("mDataMinusToyMass");
+    mDataMinusToyMass->Add(mToyMass, -1);
+
+    mToyPairPT->Scale(1/mToyPairPT->Integral());
+    mDataPairPT->Scale(1/mDataPairPT->Integral());
+    auto * mDataMinusToyPairPT = (TH1F*)mDataPairPT->Clone("mDataMinusToyPairPT");
+    mDataMinusToyPairPT->Add(mToyPairPT, -1);
+
+    mToyPairPhi->Scale(2*3.1415/mToyPairPhi->GetEntries());
+    mDataPairPhi->Scale(2*3.1415/mDataPairPhi->GetEntries());
     auto * mDataMinusToyPhi = (TH1F*)mDataPairPhi->Clone("mDataMinusToyPhi");
     mDataMinusToyPhi->Add(mToyPairPhi, -1);
     
 //make plots
 fo->cd();
+
+makeCanvas();
+mToyMass->SetLineColor(kBlack);
+mToyMass->SetTitle("Toy model mass distribution; Mass (GeV); counts");
+mToyMass->Draw();
+gPad->Print( "plot_mNormToyMass.pdf" );
+gPad->Print( "plot_mNormToyMass.png" );
+
+makeCanvas();
+mDataMass->SetLineColor(kBlack);
+mDataMass->SetTitle("Data mass distribution; Mass (GeV); counts");
+mDataMass->Draw();
+gPad->Print( "plot_mNormDataMass.pdf" );
+gPad->Print( "plot_mNormDataMass.png" );
+
+makeCanvas();
+mDataMinusToyMass->SetLineColor(kBlack);
+mDataMinusToyMass->SetTitle("Data-toy model mass distribution; Mass (GeV); counts");
+mDataMinusToyMass->Draw();
+gPad->Print( "plot_mDataMinusToyMass.pdf" );
+gPad->Print( "plot_mDataminusToyMass.png" );
+
+makeCanvas();
+mToyPairPT->SetLineColor(kBlack);
+mToyPairPT->SetTitle("Toy model mass distribution; Mass (GeV); counts");
+mToyPairPT->Draw();
+gPad->Print( "plot_mNormToyPairPT.pdf" );
+gPad->Print( "plot_mNormToyPairPT.png" );
+
+makeCanvas();
+mDataPairPT->SetLineColor(kBlack);
+mDataPairPT->SetTitle("Data pair P_{T} distribution; P_{T} (GeV); counts");
+mDataPairPT->Draw();
+gPad->Print( "plot_mNormDataPairPT.pdf" );
+gPad->Print( "plot_mNormDataPairPT.png" );
+
+makeCanvas();
+mDataMinusToyPairPT->SetLineColor(kBlack);
+mDataMinusToyPairPT->SetTitle("Data-toy model pair P_{T} distribution; P_{T} (GeV); counts");
+mDataMinusToyPairPT->Draw();
+gPad->Print( "plot_mDataMinusToyPairPT.pdf" );
+gPad->Print( "plot_mDataminusToyPairPT.png" );
 
 makeCanvas();
 mToyPairPhi->SetLineColor(kBlack);

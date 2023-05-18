@@ -33,7 +33,7 @@ TLorentzVector *random_LV( double ptmin, double ptmax, double etamin, double eta
 //Two body decay, but only returns one lv; the other is lv0-lv1
 TLorentzVector *decay_LV( TLorentzVector *lv0, double daughter_mass ) {
     TLorentzVector *lv1 = new TLorentzVector;
-    double phi = rng.Uniform(0, 2*3.141592);
+    double phi = rng.Uniform(-3.141592, 3.141592);
     double theta = acos(rng.Uniform(-1, 1));
     double absP1 = sqrt((lv0->M()*lv0->M()/4) - daughter_mass*daughter_mass);
     lv1->SetPxPyPzE( (absP1*sin(theta)*cos(phi)), (absP1*sin(theta)*sin(phi)), (absP1*cos(theta)), (sqrt(absP1*absP1 + daughter_mass*daughter_mass)) );
@@ -51,7 +51,7 @@ TLorentzVector *asym_decay( TLorentzVector lv1, double mass1, double mass2, doub
         double phi = rng.Uniform(-3.141592, 3.141592);
         double theta = acos(rng.Uniform(-1, 1));
         new_lv->SetPxPyPzE( daughter1_absP*sin(theta)*cos(phi) , daughter1_absP*sin(theta)*sin(phi) , daughter1_absP*cos(theta) , daughter1_E );
-        new_lv->Boost(lv1.BoostVector());
+        new_lv->Boost(-lv1.BoostVector());
     }
     return new_lv;
 }
@@ -82,15 +82,22 @@ void toymodel() {
     TFile *fo = new TFile( "toymodelplots.root", "RECREATE" );
 
     auto *mRhoM = new TH1F("mRhoM", "#rho^{0} mass; mass (GeV); counts", 1000, 0, 1.5);
-    auto *mReconstructedM = new TH1F("mReconstructedM", "Sum of #pi^{+}#pi^{-} mass; mass (GeV); counts", 1000, 0, 1.5);
+    auto *mReconstructedM = new TH1F("mReconstructedM", "Sum of #pi^{+}#pi^{-} mass; mass (GeV); counts", 500, 0, 2);
     auto *mRhoPT = new TH1F("mRhoPT", "#rho^{0} P_{T}; #rho^{0} P_{T} (GeV); counts", 100, 0, 0.2);
-    auto *mPairPT = new TH1F("mPairPT", "#pi^{+}#pi^{-} pair P_{T}; pair P_{T} (GeV); counts", 100, 0, 0.4);
+    auto *mPairPT = new TH1F("mPairPT", "P_{T}(#pi^{+}+#pi^{-}); P_{T} (Rad); counts", 500, 0, 1);
     auto *mPairPTwMu = new TH1F("mPairPTwMu", "#pi^{+}#pi^{-} pair P_{T}; pair P_{T} (GeV); counts", 100, 0, 0.4);
     auto *mNoisyPairPT = new TH1F("mNoisyPairPT", "#pi^{+}#pi^{-} pair P_{T}; pair P_{T} (GeV); counts", 100, 0, 0.4);
     auto *mCutPairPT = new TH1F("mCutPairPT", "#pi^{+}#pi^{-} pair P_{T}; pair P_{T} (GeV); counts", 100, 0, 0.4);
 
-    auto * mPi1PT = new TH1F("mPi1PT", "model #pi^{#pm} P_{T} distribution;#P_T (rad);# events", 500, 0, 1);
-    auto * mPairQT = new TH1F("mPairQT", "p_{T}(#pi^{+}) - p_{T}(#pi^{-}); pair Q_{T} (GeV); counts", 100, 0, 2);    
+    auto * mPi1PT = new TH1F("mPi1PT", "model #pi^{#pm} P_{T} distribution;P_{T} (GeV);# events", 500, 0, 1.5);
+    auto * mPi1PTwMu = new TH1F("mPi1PTwMu", "model #pi^{#pm} P_{T} distribution;P_{T} (GeV);# events", 500, 0, 1.5);
+    auto * mNoisyPi1PT = new TH1F("mNoisyPi1PT", "model #pi^{#pm} P_{T} distribution;P_{T} (GeV);# events", 500, 0, 1.5);
+    auto * mCutPi1PT = new TH1F("mCutPi1PT", "model #pi^{#pm} P_{T} distribution;P_{T} (GeV);# events", 500, 0, 1.5);
+
+    auto * mPairQT = new TH1F("mPairQT", "P_{T}((#pi^{+} - #pi^{-}); P_{T} (GeV); counts", 100, 0, 1.5);    
+    auto * mPairQTwMu = new TH1F("mPairQTwMu", "P_{T}((#pi^{+} - #pi^{-}); P_{T} (GeV); counts", 100, 0, 1.5);    
+    auto * mNoisyPairQT = new TH1F("mNoisyPairQT", "P_{T}((#pi^{+} - #pi^{-}); P_{T} (GeV); counts", 100, 0, 1.5);    
+    auto * mCutPairQT = new TH1F("mCutPairQT", "P_{T}((#pi^{+} - #pi^{-}); P_{T} (GeV); counts", 100, 0, 1.5);    
 
     auto * mPairPhi = new TH1F("mPairPhi", "model #pi_{#pm} #phi distribution;#phi (rad);# events", 500, -3.13, 3.13);
     auto * mPairPhiwMu = new TH1F("mPairPhiwMu", "model #pi_{#pm} #phi distribution;#phi (rad);# events", 500, -3.13, 3.13);
@@ -144,7 +151,12 @@ void toymodel() {
         mNoisyPairPT->Fill( lvRecon.Pt() );
         
         mPi1PT->Fill( pi1.Pt() );
+        mPi1PTwMu->Fill( pi_or_mu1.Pt() );
+        mNoisyPi1PT->Fill( gauspi1.Pt() );
+
         mPairQT->Fill( (pi1 - pi2).Pt() );
+        mPairQTwMu->Fill( (pi_or_mu1-pi_or_mu2).Pt() );
+        mNoisyPairQT->Fill( (gauspi1 - gauspi2).Pt() );
 
         mPairPhi->Fill( calc_Phi(pi1, pi2) );
         mPairPhiwMu->Fill( calc_Phi(pi_or_mu1, pi_or_mu2) );
@@ -158,7 +170,9 @@ void toymodel() {
             double pairPhi = calc_Phi( gauspi1, gauspi2 );
             double reconPT = lvRecon.Pt();
             mReconstructedM->Fill(lvRecon.M()); 
+            mCutPi1PT->Fill( gauspi1.Pt() );
             mCutPairPT->Fill(reconPT);
+            mCutPairQT->Fill( (gauspi1 - gauspi2).Pt() );
             mCutPairPhi->Fill( pairPhi );
             mPhivsPT->Fill( pairPhi, reconPT);
             mCos2phivsPT->Fill( 2*cos(2* pairPhi), reconPT);
@@ -218,6 +232,47 @@ gPad->Print( "plot_mToyPairPT.pdf" );
 gPad->Print( "plot_mToyPairPT.png" );
 
 makeCanvas();
+mPi1PT->SetLineColor(kBlack);
+mPi1PTwMu->SetLineColor(kRed);
+mNoisyPi1PT->SetLineColor(kBlue);
+mCutPi1PT->SetLineColor(kOrange);
+mPi1PT->Draw();
+mNoisyPi1PT->Draw("SAME");
+mPi1PTwMu->Draw("SAME");
+mCutPi1PT->Draw("SAME");
+mPi1PT->SetMinimum(0);
+mPi1PT->SetMaximum(70000);
+auto legend3 = new TLegend(0.65,0.1,0.95,0.4);
+legend3->SetHeader("Legend","C"); // option "C" allows to center the header
+legend3->AddEntry(mPi1PT,"No #pi->#mu decay, no noise, no cut");
+legend3->AddEntry(mPi1PTwMu,"With #pi->#mu decay, no noise, no cut");
+legend3->AddEntry(mNoisyPi1PT,"With #pi->#mu decay, with noise, no cut");
+legend3->AddEntry(mCutPi1PT,"With #pi->#mu decay, with noise, with cut");
+legend3->Draw();
+gPad->Print( "plot_mToyPi1PT.pdf" );
+gPad->Print( "plot_mToyPi1PT.png" );
+
+makeCanvas();
+mPairQT->SetLineColor(kBlack);
+mPairQTwMu->SetLineColor(kRed);
+mNoisyPairQT->SetLineColor(kBlue);
+mCutPairQT->SetLineColor(kOrange);
+mPairQT->Draw();
+mNoisyPairQT->Draw("SAME");
+mPairQTwMu->Draw("SAME");
+mCutPairQT->Draw("SAME");
+mPairQT->SetMinimum(0);
+auto legend4 = new TLegend(0.65,0.1,0.95,0.4);
+legend4->SetHeader("Legend","C"); // option "C" allows to center the header
+legend4->AddEntry(mPairQT,"No #pi->#mu decay, no noise, no cut");
+legend4->AddEntry(mPairQTwMu,"With #pi->#mu decay, no noise, no cut");
+legend4->AddEntry(mNoisyPairQT,"With #pi->#mu decay, with noise, no cut");
+legend4->AddEntry(mCutPairQT,"With #pi->#mu decay, with noise, with cut");
+legend4->Draw();
+gPad->Print( "plot_mToyPairQT.pdf" );
+gPad->Print( "plot_mToyPairQT.png" );
+
+makeCanvas();
 mMassRCbyMC->Divide(mRhoM);
 mMassRCbyMC->SetLineColor(kBlack);
 mMassRCbyMC->SetTitle("#pi^{+}+#pi^{-}/#rho^{0}; Mass (GeV); ratio of counts");
@@ -260,18 +315,6 @@ mPairPhi->SetLineColor(kBlack);
 mPairPhi->Draw();
 gPad->Print( "plot_mToyPurePhi.pdf" );
 gPad->Print( "plot_mToyPurePhi.png" );
-
-makeCanvas();
-mPairQT->SetLineColor(kBlack);
-mPairQT->Draw();
-gPad->Print( "plot_mToyPairQT.pdf" );
-gPad->Print( "plot_mToyPairQT.png" );
-
-makeCanvas();
-mPi1PT->SetLineColor(kBlack);
-mPi1PT->Draw();
-gPad->Print( "plot_mToyPi1PT.pdf" );
-gPad->Print( "plot_mToyPi1PT.png" );
 
 makeCanvas();
 gStyle->SetPalette(1);
