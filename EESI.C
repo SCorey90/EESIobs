@@ -106,6 +106,9 @@ void EESI() {
     auto * mCos2phivsPT = new TH2F("mCos2phivsPT", "cos2#phi distribution vs P_{T}", 100, -1, 1, 100, 0, 0.25);
     auto * mCos4phivsPT = new TH2F("mCos4phivsPT", "cos4#phi distribution vs P_{T}", 100, -1, 1, 100, 0, 0.25);
 
+    auto * mCos2phivsMass = new TH2F("mCos2phivsMass", "cos2#phi distribution vs Mass", 100, -1, 1, 100, 0.3, 1.35);
+    auto * mCos4phivsMass = new TH2F("mCos4phivsMass", "cos4#phi distribution vs Mass", 100, -1, 1, 100, 0.3, 1.35);
+
     auto * mPhiFit = new TF1("mPhiFit", "[0] + [1]*cos(x) + [2]*cos(2*x) + [3]*cos(3*x) + [4]*cos(4*x)", -3.14, 3.14);
     auto * mLinearFit = new TF1("mLinearFit", "[0] + [1]*x", -5, 5);
     auto * mQuadraticFit = new TF1("mQuadraticFit", "[0] + [1]*x + [2]*x*x", -5, 5);
@@ -150,7 +153,11 @@ void EESI() {
                 mCos2phivsPT->Fill( 2*cos(2 *(PairPhi)), absPperp );
                 mCos4phivsPT->Fill( 4*cos(4 *(PairPhi)), absPperp );
             }
-            if ( lv.M() > 0.2 && lv.M() <1.5 && absPperp < 0.06) { mPhivsMass->Fill ( PairPhi, lv.M()); }
+            if ( lv.M() > 0.2 && lv.M() <1.5 && absPperp < 0.06) { 
+                mPhivsMass->Fill ( PairPhi, lv.M());
+                mCos2phivsMass->Fill( 2*cos(2 *(PairPhi)), lv.M() );
+                mCos4phivsMass->Fill( 4*cos(4 *(PairPhi)), lv.M() ); 
+            }
             if ( lv.M() > 0.2 && lv.M() <0.55 && absPperp < 0.06) { mPhivsLowMass->Fill ( PairPhi, lv.M()); }
         }
     }
@@ -177,162 +184,170 @@ fo -> cd();
 makeCanvas();
 mMass->SetLineColor(kBlack);
 mMass->Draw();
-gPad->Print( "plot_mMass.pdf" );
+gPad->Print( "plots/plot_mMass.pdf" );
 
 makeCanvas();
 mPperp->SetLineColor(kBlack);
 mPperp->Draw();
-gPad->Print( "plot_mPperp.pdf" );
+gPad->Print( "plots/plot_mPperp.pdf" );
 
 makeCanvas();
 mZDCTotal->SetLineColor(kBlack);
 mZDCTotal->Draw();
-gPad->Print( "plot_mZDCTotal.pdf" );
+gPad->Print( "plots/plot_mZDCTotal.pdf" );
 
 makeCanvas();
 mPairPhi->SetLineColor(kBlack);
 //gStyle->SetOptFit();
 mPairPhi->Draw();
-gPad->Print( "plot_mPairPhi.pdf" );
-gPad->Print( "plot_mPairPhi.png" );
+gPad->Print( "plots/plot_mPairPhi.pdf" );
+gPad->Print( "plots/plot_mPairPhi.png" );
 
 makeCanvas();
 mPhiFit->SetLineColor(kBlack);
 mPhiFit->Draw();
-gPad->Print( "plot_mPhiFit.pdf" );
+gPad->Print( "plots/plot_mPhiFit.pdf" );
 
 makeCanvas();
 gStyle->SetPalette(1);
 mPxvsPy->Draw("colz");
-gPad->Print( "plot_mPxvsPy.pdf" );
+gPad->Print( "plots/plot_mPxvsPy.pdf" );
 
 makeCanvas();
 gStyle->SetPalette(1);
 mPhivsMass->Draw("colz");
-gPad->Print( "plot_mPhivsMass.pdf" );
-gPad->Print( "plot_mPhivsMass.png" );
+gPad->Print( "plots/plot_mPhivsMass.pdf" );
+gPad->Print( "plots/plot_mPhivsMass.png" );
 
 makeCanvas();
 gStyle->SetPalette(1);
 mPhivsLowMass->Draw("colz");
-gPad->Print( "plot_mPhivsLowMass.pdf" );
+gPad->Print( "plots/plot_mPhivsLowMass.pdf" );
 
 makeCanvas();
 gStyle->SetPalette(1);
 mPhivsPT->Draw("colz");
-gPad->Print( "plot_mPhivsPT.pdf" );
-gPad->Print( "plot_mPhivsPT.png" );
+gPad->Print( "plots/plot_mPhivsPT.pdf" );
+gPad->Print( "plots/plot_mPhivsPT.png" );
 
 makeCanvas();
 gStyle->SetPalette(1);
 mPhivsRapidity->Draw("colz");
-gPad->Print( "plot_mPhivsRapidity.pdf" );
-gPad->Print( "plot_mPhivsRapidity.png" );
+gPad->Print( "plots/plot_mPhivsRapidity.pdf" );
+gPad->Print( "plots/plot_mPhivsRapidity.png" );
 
 makeCanvas();
 gStyle->SetPalette(1);
 mPhivsEastZDC->Draw("colz");
-gPad->Print( "plot_mPhivsEastZDC.pdf" );
-gPad->Print( "plot_mPhivsEastZDC.png" );
+gPad->Print( "plots/plot_mPhivsEastZDC.pdf" );
+gPad->Print( "plots/plot_mPhivsEastZDC.png" );
 
 makeCanvas();
 gStyle->SetPalette(1);
 mPhivsWestZDC->Draw("colz");
-gPad->Print( "plot_mPhivsWestZDC.pdf" );
-gPad->Print( "plot_mPhivsWestZDC.png" );
+gPad->Print( "plots/plot_mPhivsWestZDC.pdf" );
+gPad->Print( "plots/plot_mPhivsWestZDC.png" );
 
 makeCanvas();
 gStyle->SetPalette(1);
 mPhivsZDC->Draw("colz");
-gPad->Print( "plot_mPhivsZDC.pdf" );
-gPad->Print( "plot_mPhivsZDC.png" );
+gPad->Print( "plots/plot_mPhivsZDC.pdf" );
+gPad->Print( "plots/plot_mPhivsZDC.png" );
 
 makeCanvas();
 mPTmomentsplot->SetTitle("cos(2#phi) moments vs. P_{T}; P_{T} (GeV); 2<cos(2#phi)>");
 mPTmomentsplot->Draw("AC*");
-gPad->Print( "plot_mPTmomentsplot.pdf" );
-gPad->Print( "plot_mPTmomentsplot.png" );
+gPad->Print( "plots/plot_mPTmomentsplot.pdf" );
+gPad->Print( "plots/plot_mPTmomentsplot.png" );
 
 makeCanvas();
 mMassmomentsplot->SetTitle("cos(2#phi) moments vs. Mass; Mass (GeV); 2<cos(2#phi)>");
 mMassmomentsplot->SetMinimum(0);
 mMassmomentsplot->SetMaximum(1);
 mMassmomentsplot->Draw("AC*");
-gPad->Print( "plot_mMassmomentsplot.pdf" );
-gPad->Print( "plot_mMassmomentsplot.png" );
+gPad->Print( "plots/plot_mMassmomentsplot.pdf" );
+gPad->Print( "plots/plot_mMassmomentsplot.png" );
 
 makeCanvas();
 mRapiditymomentsplot->SetTitle("cos(2#phi) moments vs. Rapidity; Rapidity; 2<cos(2#phi)>");
 mRapiditymomentsplot->Draw("AC*");
-gPad->Print( "plot_mRapiditymomentsplot.pdf" );
-gPad->Print( "plot_mRapiditymomentsplot.png" );
+gPad->Print( "plots/plot_mRapiditymomentsplot.pdf" );
+gPad->Print( "plots/plot_mRapiditymomentsplot.png" );
 mRapiditymomentsplot->SetMinimum(0);
 mRapiditymomentsplot->SetMaximum(0.5);
 gStyle->SetOptFit(1111);
 mRapiditymomentsplot->Draw("AC*");
-gPad->Print( "plot_mZoomedRapiditymomentsplot.pdf" );
-gPad->Print( "plot_mZoomedRapiditymomentsplot.png" );
+gPad->Print( "plots/plot_mZoomedRapiditymomentsplot.pdf" );
+gPad->Print( "plots/plot_mZoomedRapiditymomentsplot.png" );
 
 makeCanvas();
 mRapiditymomentsQuad->SetTitle("cos(2#phi) moments vs. Rapidity; Rapidity; 2<cos(2#phi)>");
 mRapiditymomentsQuad->Draw("AC*");
-gPad->Print( "plot_mRapiditymomentsQuad.pdf" );
-gPad->Print( "plot_mRapiditymomentsQuad.png" );
+gPad->Print( "plots/plot_mRapiditymomentsQuad.pdf" );
+gPad->Print( "plots/plot_mRapiditymomentsQuad.png" );
 mRapiditymomentsQuad->SetMinimum(0);
 mRapiditymomentsQuad->SetMaximum(0.5);
 gStyle->SetOptFit(1111);
 mRapiditymomentsQuad->Draw("AC*");
-gPad->Print( "plot_mZoomedRapiditymomentsQuad.pdf" );
-gPad->Print( "plot_mZoomedRapiditymomentsQuad.png" );
+gPad->Print( "plots/plot_mZoomedRapiditymomentsQuad.pdf" );
+gPad->Print( "plots/plot_mZoomedRapiditymomentsQuad.png" );
 
 makeCanvas();
 mZDCmomentsplot->SetTitle("cos(2#phi) moments vs. ZDC; (ZDC East^{2} + ZDC West^{2})^{1/2}; 2<cos(2#phi)>");
 mZDCmomentsplot->Draw("AC*");
-gPad->Print( "plot_mZDCmomentsplot.pdf" );
-gPad->Print( "plot_mZDCmomentsplot.png" );
+gPad->Print( "plots/plot_mZDCmomentsplot.pdf" );
+gPad->Print( "plots/plot_mZDCmomentsplot.png" );
 
 makeCanvas();
 mPTcos4phimoments->SetTitle("cos(4#phi) moments vs. P_{T}; P_{T} (GeV); 4<cos(4#phi)>");
 mPTcos4phimoments->Draw("AC*");
-gPad->Print( "plot_mPTcos4phimoments.pdf" );
+gPad->Print( "plots/plot_mPTcos4phimoments.pdf" );
 
 makeCanvas();
 mMasscos4phimoments->SetTitle("cos(4#phi) moments vs. Mass; Mass (GeV); 4<cos(4#phi)>");
 mMasscos4phimoments->Draw("AC*");
-gPad->Print( "plot_mMasscos4phimoments.pdf" );
+gPad->Print( "plots/plot_mMasscos4phimoments.pdf" );
 
 makeCanvas();
 mRapiditycos4phimoments->SetTitle("cos(4#phi) moments vs. Rapidity; Rapidity; 4<cos(4#phi)>");
 mRapiditycos4phimoments->Draw("AC*");
-gPad->Print( "plot_mRapiditycos4phimoments.pdf" );
+gPad->Print( "plots/plot_mRapiditycos4phimoments.pdf" );
 
 makeCanvas();
 mLowMassmomentsplot->SetTitle("cos(2#phi) moments vs. Mass; Mass (GeV); 2<cos(2#phi)>");
 //mLowMassmomentsplot->SetMinimum(0);
 //mLowMassmomentsplot->SetMaximum(1);
 mLowMassmomentsplot->Draw("AC*");
-gPad->Print( "plot_mLowMassmomentsplot.pdf" );
-gPad->Print( "plot_mLowMassmomentsplot.png" );
+gPad->Print( "plots/plot_mLowMassmomentsplot.pdf" );
+gPad->Print( "plots/plot_mLowMassmomentsplot.png" );
 
 makeCanvas();
 mv2PTcos2phimoments->SetLineColor(kBlack);
 mv2PTcos2phimoments->Draw();
-gPad->Print( "plot_mv2PTcos2phimoments.pdf" );
-gPad->Print( "plot_mv2PTcos2phimoments.png" );
+gPad->Print( "plots/plot_mv2PTcos2phimoments.pdf" );
+gPad->Print( "plots/plot_mv2PTcos2phimoments.png" );
 
 makeCanvas();
 mv2PTcos4phimoments->SetLineColor(kBlack);
 mv2PTcos4phimoments->Draw();
-gPad->Print( "plot_mv2PTcos4phimoments.pdf" );
-gPad->Print( "plot_mv2PTcos4phimoments.png" );
+gPad->Print( "plots/plot_mv2PTcos4phimoments.pdf" );
+gPad->Print( "plots/plot_mv2PTcos4phimoments.png" );
 
 makeCanvas();
 mCos2phivsPT->Draw("colz");
-gPad->Print( "plot_mCos2phivsPT.pdf" );
+gPad->Print( "plots/plot_mCos2phivsPT.pdf" );
 
 makeCanvas();
 mCos4phivsPT->Draw("colz");
-gPad->Print( "plot_mCos4phivsPT.pdf" );
+gPad->Print( "plots/plot_mCos4phivsPT.pdf" );
+
+makeCanvas();
+mCos2phivsMass->Draw("colz");
+gPad->Print( "plots/plot_mCos2phivsMass.pdf" );
+
+makeCanvas();
+mCos4phivsMass->Draw("colz");
+gPad->Print( "plots/plot_mCos4phivsMass.pdf" );
 
 fo->Write();
 }

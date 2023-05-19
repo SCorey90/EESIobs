@@ -37,7 +37,7 @@ TLorentzVector *decay_LV( TLorentzVector *lv0, double daughter_mass ) {
     double theta = acos(rng.Uniform(-1, 1));
     double absP1 = sqrt((lv0->M()*lv0->M()/4) - daughter_mass*daughter_mass);
     lv1->SetPxPyPzE( (absP1*sin(theta)*cos(phi)), (absP1*sin(theta)*sin(phi)), (absP1*cos(theta)), (sqrt(absP1*absP1 + daughter_mass*daughter_mass)) );
-    lv1->Boost(-lv0->BoostVector());
+    lv1->Boost(-(lv0->BoostVector()));
     return lv1;
 }
 
@@ -51,7 +51,7 @@ TLorentzVector *asym_decay( TLorentzVector lv1, double mass1, double mass2, doub
         double phi = rng.Uniform(-3.141592, 3.141592);
         double theta = acos(rng.Uniform(-1, 1));
         new_lv->SetPxPyPzE( daughter1_absP*sin(theta)*cos(phi) , daughter1_absP*sin(theta)*sin(phi) , daughter1_absP*cos(theta) , daughter1_E );
-        new_lv->Boost(-lv1.BoostVector());
+        new_lv->Boost(-(lv1.BoostVector()));
     }
     return new_lv;
 }
@@ -109,6 +109,10 @@ void toymodel() {
     auto * mExagPolarPhivsPT = new TH2F("mExagPolarPhivsPT", "model #pi^{#pm} #phi distribution with 20% P_{T} smear vs. parent P_{T}; P_{T}*cos(#phi) (GeV); P_{T}*sin(#phi); Counts", 100, -0.25, 0.25, 100, -0.25, 0.25);
     auto * mCos2phivsPT = new TH2F("mCos2phivsPT", "model cos2#phi distribution vs P_{T}; 2cos2#phi; Parent P_{T} (GeV); Counts", 100, -2, 2, 100, 0, 0.25);
     auto * mCos4phivsPT = new TH2F("mCos4phivsPT", "model cos4#phi distribution vs P_{T}; 4cos4#phi; Parent P_{T} (GeV); Counts", 100, -4, 4, 100, 0, 0.25);
+
+    auto * mPhivsMass = new TH2F("mPhivsMass", "model #pi^{#pm} #phi distribution vs. parent mass; #phi (rad); Parent Mass (GeV); Counts", 100, -3.14, 3.14, 100, 0, 2);
+    auto * mCos2phivsMass = new TH2F("mCos2phivsMass", "model cos2#phi distribution vs P_{T}; 2cos2#phi; Parent P_{T} (GeV); Counts", 100, -2, 2, 100, 0, 0.25);
+    auto * mCos4phivsMass = new TH2F("mCos4phivsMass", "model cos4#phi distribution vs P_{T}; 4cos4#phi; Parent P_{T} (GeV); Counts", 100, -4, 4, 100, 0, 0.25);
 
     auto * mGaus = new TH2F("mGaus", "Gaussian Testing; P_{T}; Gaus(0, 0.1*P_{T})", 100, 0, 0.2, 100, -0.2, 0.2);
     auto * mLowPTPhi = new TH1F("mLowPTPhi", "#phi hist at p_{T}<0.1 MeV; #phi (rad); counts", 100, -3.5, 3.5); 
@@ -178,6 +182,10 @@ void toymodel() {
             mCos2phivsPT->Fill( 2*cos(2* pairPhi), reconPT);
             mCos4phivsPT->Fill( 4*cos(4* pairPhi), reconPT);
 
+            mPhivsMass->Fill( pairPhi, lvRecon.M());
+            mCos2phivsMass->Fill( 2*cos(2* pairPhi), lvRecon.M());
+            mCos4phivsMass->Fill( 4*cos(4* pairPhi), lvRecon.M());
+
             mPolarPhivsPT->Fill( reconPT*cos(pairPhi), reconPT*sin(pairPhi));
             mExagPolarPhivsPT->Fill( lvExag.Pt()*cos( calc_Phi( exagpi1, exagpi2)), lvExag.Pt()*sin(calc_Phi( exagpi1, exagpi2)));
             if ( reconPT < 0.0001 ) { mLowPTPhi->Fill(pairPhi); }
@@ -191,25 +199,28 @@ TH1F* mPTRCbyMC = (TH1F*)mPairPT->Clone("mPTMCbyRC");
 auto *mToyPTCos2phiMoments = mCos2phivsPT->ProfileY("mToyPTCos2phiMoments", 1, -1);
 auto *mToyPTCos4phiMoments = mCos4phivsPT->ProfileY("mToyPTCos4phiMoments", 1, -1);
 
+auto *mToyMassCos2phiMoments = mCos2phivsMass->ProfileY("mToyMassCos2phiMoments", 1, -1);
+auto *mToyMassCos4phiMoments = mCos4phivsMass->ProfileY("mToyMassCos4phiMoments", 1, -1);
+
 fo -> cd();
 
 makeCanvas();
 mRhoM->SetLineColor(kBlack);
 mRhoM->Draw();
-gPad->Print( "plot_mToyRhoM.pdf" );
-gPad->Print( "plot_mToyRhoM.png" );
+gPad->Print( "plots/plot_mToyRhoM.pdf" );
+gPad->Print( "plots/plot_mToyRhoM.png" );
 
 makeCanvas();
 mReconstructedM->SetLineColor(kBlack);
 mReconstructedM->Draw();
-gPad->Print( "plot_mToyReconstructedM.pdf" );
-gPad->Print( "plot_mToyReconstructedM.png" );
+gPad->Print( "plots/plot_mToyReconstructedM.pdf" );
+gPad->Print( "plots/plot_mToyReconstructedM.png" );
 
 makeCanvas();
 mRhoPT->SetLineColor(kBlack);
 mRhoPT->Draw();
-gPad->Print( "plot_mToyRhoPT.pdf" );
-gPad->Print( "plot_mToyRhoPT.png" );
+gPad->Print( "plots/plot_mToyRhoPT.pdf" );
+gPad->Print( "plots/plot_mToyRhoPT.png" );
 
 makeCanvas();
 mPairPT->SetLineColor(kBlack);
@@ -228,8 +239,8 @@ legend->AddEntry(mPairPTwMu,"With #pi->#mu decay, no noise, no cut");
 legend->AddEntry(mNoisyPairPT,"With #pi->#mu decay, with noise, no cut");
 legend->AddEntry(mCutPairPT,"With #pi->#mu decay, with noise, with cut");
 legend->Draw();
-gPad->Print( "plot_mToyPairPT.pdf" );
-gPad->Print( "plot_mToyPairPT.png" );
+gPad->Print( "plots/plot_mToyPairPT.pdf" );
+gPad->Print( "plots/plot_mToyPairPT.png" );
 
 makeCanvas();
 mPi1PT->SetLineColor(kBlack);
@@ -249,8 +260,8 @@ legend3->AddEntry(mPi1PTwMu,"With #pi->#mu decay, no noise, no cut");
 legend3->AddEntry(mNoisyPi1PT,"With #pi->#mu decay, with noise, no cut");
 legend3->AddEntry(mCutPi1PT,"With #pi->#mu decay, with noise, with cut");
 legend3->Draw();
-gPad->Print( "plot_mToyPi1PT.pdf" );
-gPad->Print( "plot_mToyPi1PT.png" );
+gPad->Print( "plots/plot_mToyPi1PT.pdf" );
+gPad->Print( "plots/plot_mToyPi1PT.png" );
 
 makeCanvas();
 mPairQT->SetLineColor(kBlack);
@@ -269,16 +280,16 @@ legend4->AddEntry(mPairQTwMu,"With #pi->#mu decay, no noise, no cut");
 legend4->AddEntry(mNoisyPairQT,"With #pi->#mu decay, with noise, no cut");
 legend4->AddEntry(mCutPairQT,"With #pi->#mu decay, with noise, with cut");
 legend4->Draw();
-gPad->Print( "plot_mToyPairQT.pdf" );
-gPad->Print( "plot_mToyPairQT.png" );
+gPad->Print( "plots/plot_mToyPairQT.pdf" );
+gPad->Print( "plots/plot_mToyPairQT.png" );
 
 makeCanvas();
 mMassRCbyMC->Divide(mRhoM);
 mMassRCbyMC->SetLineColor(kBlack);
 mMassRCbyMC->SetTitle("#pi^{+}+#pi^{-}/#rho^{0}; Mass (GeV); ratio of counts");
 mMassRCbyMC->Draw();
-gPad->Print( "plot_mMassRCbyMC.pdf" );
-gPad->Print( "plot_mMassRCbyMC.png" );
+gPad->Print( "plots/plot_mMassRCbyMC.pdf" );
+gPad->Print( "plots/plot_mMassRCbyMC.png" );
 
 makeCanvas();
 mPTRCbyMC->Divide(mRhoPT);
@@ -286,8 +297,8 @@ mPTRCbyMC->SetLineColor(kBlack);
 mPTRCbyMC->SetTitle("#pi^{+}+#pi^{-}/#rho^{0}; P_{T} (GeV); ratio of counts");
 mPTRCbyMC->SetMinimum(0);
 mPTRCbyMC->Draw();
-gPad->Print( "plot_mPTRCbyMC.pdf" );
-gPad->Print( "plot_mPTRCbyMC.png" );
+gPad->Print( "plots/plot_mPTRCbyMC.pdf" );
+gPad->Print( "plots/plot_mPTRCbyMC.png" );
 
 makeCanvas();
 mPairPhi->SetLineColor(kBlack);
@@ -307,68 +318,84 @@ legend2->AddEntry(mPairPhiwMu,"With #pi->#mu decay, no noise, no cut");
 legend2->AddEntry(mNoisyPairPhi,"With #pi->#mu decay, with noise, no cut");
 legend2->AddEntry(mCutPairPhi,"With #pi->#mu decay, with noise, with cut");
 legend2->Draw();
-gPad->Print( "plot_mToyPairPhi.pdf" );
-gPad->Print( "plot_mToyPairPhi.png" );
+gPad->Print( "plots/plot_mToyPairPhi.pdf" );
+gPad->Print( "plots/plot_mToyPairPhi.png" );
 
 makeCanvas();
 mPairPhi->SetLineColor(kBlack);
 mPairPhi->Draw();
-gPad->Print( "plot_mToyPurePhi.pdf" );
-gPad->Print( "plot_mToyPurePhi.png" );
+gPad->Print( "plots/plot_mToyPurePhi.pdf" );
+gPad->Print( "plots/plot_mToyPurePhi.png" );
 
 makeCanvas();
 gStyle->SetPalette(1);
 mPhivsPT->Draw("colz");
-gPad->Print( "plot_mToyPhivsPT.pdf" );
-gPad->Print( "plot_mToyPhivsPT.png" );
+gPad->Print( "plots/plot_mToyPhivsPT.pdf" );
+gPad->Print( "plots/plot_mToyPhivsPT.png" );
 
 makeCanvas();
 gStyle->SetPalette(1);
 mPolarPhivsPT->Draw("colz");
-gPad->Print( "plot_mToyPolarPhivsPT.pdf" );
-gPad->Print( "plot_mToyPolarPhivsPT.png" );
+gPad->Print( "plots/plot_mToyPolarPhivsPT.pdf" );
+gPad->Print( "plots/plot_mToyPolarPhivsPT.png" );
 
 makeCanvas();
 gStyle->SetPalette(1);
 mExagPolarPhivsPT->Draw("colz");
-gPad->Print( "plot_mToyExagPolarPhivsPT.pdf" );
-gPad->Print( "plot_mToyExagPolarPhivsPT.png" );
+gPad->Print( "plots/plot_mToyExagPolarPhivsPT.pdf" );
+gPad->Print( "plots/plot_mToyExagPolarPhivsPT.png" );
 
 makeCanvas();
 mCos2phivsPT->Draw("colz");
-gPad->Print( "plot_mToyCos2phivsPT.pdf" );
-gPad->Print( "plot_mToyCos2phivsPT.png" );
+gPad->Print( "plots/plot_mToyCos2phivsPT.pdf" );
+gPad->Print( "plots/plot_mToyCos2phivsPT.png" );
 
 makeCanvas();
 mCos4phivsPT->Draw("colz");
-gPad->Print( "plot_mToyCos4phivsPT.pdf" );
-gPad->Print( "plot_mToyCos4phivsPT.png" );
+gPad->Print( "plots/plot_mToyCos4phivsPT.pdf" );
+gPad->Print( "plots/plot_mToyCos4phivsPT.png" );
 
 makeCanvas();
 mToyPTCos2phiMoments->SetLineColor(kBlack);
 mToyPTCos2phiMoments->SetTitle("Strength of cos(2#phi) signal vs. P_{T}; P_{T} (GeV); 2<cos(2#phi)>");
 mToyPTCos2phiMoments->Draw();
-gPad->Print( "plot_mToyPTCos2phiMoments.pdf" );
-gPad->Print( "plot_mToyPTCos2phiMoments.png" );
+gPad->Print( "plots/plot_mToyPTCos2phiMoments.pdf" );
+gPad->Print( "plots/plot_mToyPTCos2phiMoments.png" );
 
 makeCanvas();
 mToyPTCos4phiMoments->SetLineColor(kBlack);
 mToyPTCos4phiMoments->SetTitle("Strength of cos(4#phi) signal vs. P_{T}; P_{T} (GeV); 4<cos(4#phi)>");
 mToyPTCos4phiMoments->Draw();
-gPad->Print( "plot_mToyPTCos4phiMoments.pdf" );
-gPad->Print( "plot_mToyPTCos4phiMoments.png" );
+gPad->Print( "plots/plot_mToyPTCos4phiMoments.pdf" );
+gPad->Print( "plots/plot_mToyPTCos4phiMoments.png" );
 
 makeCanvas();
 mLowPTPhi->SetLineColor(kBlack);
 mLowPTPhi->Draw();
-gPad->Print( "plot_mToyLowPTPhi.pdf" );
-gPad->Print( "plot_mToyLowPTPhi.png" );
+gPad->Print( "plots/plot_mToyLowPTPhi.pdf" );
+gPad->Print( "plots/plot_mToyLowPTPhi.png" );
 
 makeCanvas();
 mMidPTPhi->SetLineColor(kBlack);
 mMidPTPhi->Draw();
-gPad->Print( "plot_mToyMidPTPhi.pdf" );
-gPad->Print( "plot_mToyMidPTPhi.png" );
+gPad->Print( "plots/plot_mToyMidPTPhi.pdf" );
+gPad->Print( "plots/plot_mToyMidPTPhi.png" );
+
+makeCanvas();
+gStyle->SetPalette(1);
+mPhivsMass->Draw("colz");
+gPad->Print( "plots/plot_mToyPhivsMass.pdf" );
+gPad->Print( "plots/plot_mToyPhivsMass.png" );
+
+makeCanvas();
+mCos2phivsMass->Draw("colz");
+gPad->Print( "plots/plot_mToyCos2phivsMass.pdf" );
+gPad->Print( "plots/plot_mToyCos2phivsMass.png" );
+
+makeCanvas();
+mCos4phivsMass->Draw("colz");
+gPad->Print( "plots/plot_mToyCos4phivsMass.pdf" );
+gPad->Print( "plots/plot_mToyCos4phivsMass.png" );
 
 fo->Write();
 }
