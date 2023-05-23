@@ -22,11 +22,8 @@ double calc_Phi( TLorentzVector lv1, TLorentzVector lv2) {
     double Py = lvPlus.Py();
     double Qx = lvMinus.Px();
     double Qy = lvMinus.Py();
-    double absPperp = pow((Px*Px)+(Py*Py), 0.5);
-    double absQperp = pow((Qx*Qx)+(Qy*Qy), 0.5);
     double PcrossQ = (Px*Qy) - (Py*Qx);
-    double PdotQ = (Px*Qx) + (Py*Qy);
-    double cosphi = (Px*Qx + Py*Qy) / (absPperp*absQperp);
+    double cosphi = (Px*Qx + Py*Qy) / (lvPlus.Pt()*lvMinus.Pt());
     double PairPhi = acos(cosphi);
     if ( PcrossQ > 0 ){
         return PairPhi - 3.141592;
@@ -51,7 +48,7 @@ double* histMoments( TH2F* hist , int n) {
         cosnphi_moments[i-1] = 0;
         for (int k = 0; k < nbinsx; k++){
             if ( onedhist->GetEntries() > 0) {
-                cosnphi_moments[i-1] += weights[k] * n * cos(n*phivals[k]) / (onedhist->GetEntries());
+                cosnphi_moments[i-1] += weights[k] * 2 * cos(n*phivals[k]) / (onedhist->GetEntries());
             } else { cosnphi_moments[i-1] += 0; }
         }
     }
@@ -65,10 +62,10 @@ double* moment_error( TH2F* hist, int n ) {
     double *moment_errors = new double[nbinsy];
     for (int i = 1; i < nbinsy+1; i++) {
         auto* onedhist = hist->ProjectionX("1dhist", i, i);
-        auto* momenthist = new TH1F("momenthist", "ncosnphi moments", nbinsx, -1*n, 1*n);
+        auto* momenthist = new TH1F("momenthist", "2cosnphi moments", nbinsx, -1*n, 1*n);
         for (int j = 1; j < nbinsx+1; j++) {
             for (int k = 0; k < onedhist->GetBinContent(j); k++) {
-                momenthist->Fill( n * cos( n * (onedhist->GetXaxis()->GetBinCenter(j))));
+                momenthist->Fill( 2 * cos( n * (onedhist->GetXaxis()->GetBinCenter(j))));
             }
         }
         moment_errors[i-1] = momenthist->GetMeanError();
@@ -91,17 +88,24 @@ void EESI() {
     TFile * fo = new TFile( "EESIplots.root", "RECREATE" );
 
     auto * mMass = new TH1F("mMass", "Parent (#rho^{0})  Mass; Mass (GeV); Counts", 500, 0, 2);
-    auto * mPperp = new TH1F("mPperp", "Parent (#rho^{0}) Transverse Momentum; Transverse Momentum (GeV); counts", 500, 0, 1);
+    auto * mPperp = new TH1F("mPperp", "Parent (#rho^{0}) Transverse Momentum; Transverse Momentum (GeV); counts", 500, 0, 1.5);
+    auto * mEta = new TH1F("mEta", "Parent (#rho^{0}) Eta; Eta; counts", 500, -6, 6);
+    auto * mLVPhi = new TH1F("mLVPhi", "Parent (#rho^{0}) LV.Phi(); #phi (rad); counts", 500, -3.15, 3.15);
+    
     auto * mZDCTotal = new TH1F("mZDCtotal", "ZDC East+West readout; ZDC readout; counts", 500, 0, 1200);
-    auto * mPairPhi = new TH1F("mPairPhi", "#pi_{#pm} #phi distribution;#phi (rad);# events", 500, -3.13, 3.13);
+    auto * mPairPhi = new TH1F("mPairPhi", "#pi_{#pm} #phi distribution;#phi (rad);# events", 100, -3.13, 3.13);
     auto * mPxvsPy = new TH2F("mPxvsPy", "#rho^{0} 2D momentum dist; P_{x} (GeV); P_{y} (GeV); Counts", 200, -0.1, 0.1, 200, -0.1, 0.1);
     auto * mPhivsMass = new TH2F("mPhivsMass", "#pi_{#pm} #phi distribution vs. parent mass; #phi (rad); Parent Mass (GeV); Counts", 100, -3.14, 3.14, 50, 0.3, 1.35);
     auto * mPhivsPT = new TH2F("mPhivsPT", "#pi^{#pm} #phi distribution vs. parent P_{T}; #phi (rad); Parent P_{T} (GeV); Counts", 100, -3.14, 3.14, 100, 0, 0.25);
     auto * mPhivsRapidity = new TH2F("mPhivsRapidity", "#pi^{#pm} #phi distribution vs. Rapidity; #phi (rad); Rapidity (GeV); Counts", 100, -3.14, 3.14, 100, -2, 2);
     auto * mPhivsLowMass = new TH2F("mPhivsLowMass", "#pi_{#pm} #phi distribution vs. parent mass; #phi (rad); Parent Mass (GeV); Counts", 100, -3.14, 3.14, 100, 0.3, 0.55);
+    
     auto * mPhivsZDC = new TH2F("mPhivsZDC", "#pi^{#pm} #phi distribution vs. ZDC readout; #phi (rad); (ZDC East^{2} + ZDC West^{2})^{1/2}; Counts", 100, -3.14, 3.14, 50, 0, 1200);
     auto * mPhivsEastZDC = new TH2F("mPhivsEastZDC", "#pi^{#pm} #phi distribution vs. ZDC East readout; #phi (rad); ZDC East counts; Counts", 100, -3.14, 3.14, 50, 0, 700);
     auto * mPhivsWestZDC = new TH2F("mPhivsWestZDC", "#pi^{#pm} #phi distribution vs. ZDC West readout; #phi (rad); ZDC West counts; Counts", 100, -3.14, 3.14, 50, 0, 700);
+    auto * mPhi1n1n = new TH1F("mPhi1n1n", "#phi distribution of 1n1n ZDC peak; #phi (rad); counts", 20, -3.14, 3.14);
+    auto * mPhi2n1n = new TH1F("mPhi2n1n", "#phi distribution of 2n1n ZDC peaks; #phi (rad); counts", 20, -3.14, 3.14);
+    auto * mPhi2n2n = new TH1F("mPhi2n2n", "#phi distribution of 2n2n ZDC peak; #phi (rad); counts", 20, -3.14, 3.14);
 
     auto * mCos2phivsPT = new TH2F("mCos2phivsPT", "cos2#phi distribution vs P_{T}", 100, -1, 1, 100, 0, 0.25);
     auto * mCos4phivsPT = new TH2F("mCos4phivsPT", "cos4#phi distribution vs P_{T}", 100, -1, 1, 100, 0, 0.25);
@@ -138,6 +142,8 @@ void EESI() {
         if ( chipipi <10 && dca1 <1 && dca2 <1 ){
 		mPperp->Fill( absPperp );
 		mMass->Fill( lv.M() );
+                mEta->Fill( lv.Eta() );
+                mLVPhi->Fill( lv.Phi() );
                 mZDCTotal->Fill( TotalZDC );
             if ( lv.M() > 0.65 && lv.M() <0.9){
                 if ( absPperp < 0.06){
@@ -148,6 +154,10 @@ void EESI() {
                     mPhivsEastZDC->Fill ( PairPhi, EastZDC );
                     mPhivsWestZDC->Fill ( PairPhi, WestZDC );
                 }
+                if ( WestZDC > 30 && WestZDC < 70 && EastZDC > 30 && EastZDC < 70 ){mPhi1n1n->Fill(PairPhi);}
+                if ( WestZDC > 30 && WestZDC < 70 && EastZDC > 100 && EastZDC < 135 ){mPhi2n1n->Fill(PairPhi);}
+                if ( WestZDC > 100 && WestZDC < 135 && EastZDC > 30 && EastZDC < 70 ){mPhi2n1n->Fill(PairPhi);}
+                if ( WestZDC > 100 && WestZDC < 135 && EastZDC > 100 && EastZDC < 130 ){mPhi2n2n->Fill(PairPhi);}
                 mPxvsPy->Fill( absPperp*cos(PairPhi), absPperp*sin(PairPhi));
                 mPhivsPT->Fill ( PairPhi, absPperp);
                 mCos2phivsPT->Fill( 2*cos(2 *(PairPhi)), absPperp );
@@ -156,7 +166,7 @@ void EESI() {
             if ( lv.M() > 0.2 && lv.M() <1.5 && absPperp < 0.06) { 
                 mPhivsMass->Fill ( PairPhi, lv.M());
                 mCos2phivsMass->Fill( 2*cos(2 *(PairPhi)), lv.M() );
-                mCos4phivsMass->Fill( 4*cos(4 *(PairPhi)), lv.M() ); 
+                mCos4phivsMass->Fill( 2*cos(4 *(PairPhi)), lv.M() ); 
             }
             if ( lv.M() > 0.2 && lv.M() <0.55 && absPperp < 0.06) { mPhivsLowMass->Fill ( PairPhi, lv.M()); }
         }
@@ -171,6 +181,10 @@ auto *mZDCmomentsplot = new TGraphErrors(mPhivsZDC->GetNbinsY(), histYbins(mPhiv
 auto *mPTcos4phimoments = new TGraphErrors(mPhivsPT->GetNbinsY(), histYbins(mPhivsPT), histMoments(mPhivsPT, 4), 0, moment_error(mPhivsPT, 4));
 auto *mMasscos4phimoments = new TGraphErrors(mPhivsMass->GetNbinsY(), histYbins(mPhivsMass), histMoments(mPhivsMass, 4), 0, moment_error(mPhivsMass, 4));
 auto *mRapiditycos4phimoments = new TGraphErrors(mPhivsRapidity->GetNbinsY(), histYbins(mPhivsRapidity), histMoments(mPhivsRapidity, 4), 0, moment_error(mPhivsRapidity, 4));
+
+//mPhi1n1n->Scale(2*3.1415/(mPhi1n1n->Integral("width")));
+//mPhi2n1n->Scale(2*3.1415/(mPhi2n1n->Integral("width")));
+//mPhi2n2n->Scale(2*3.1415/(mPhi2n2n->Integral("width")));
 
 auto *mv2PTcos2phimoments = mCos2phivsPT->ProfileY("mv2PTcos2phimoments", 1, -1);
 auto *mv2PTcos4phimoments = mCos4phivsPT->ProfileY("mv2PTcos4phimoments", 1, -1);
@@ -255,6 +269,40 @@ gPad->Print( "plots/plot_mPhivsZDC.pdf" );
 gPad->Print( "plots/plot_mPhivsZDC.png" );
 
 makeCanvas();
+mPhi1n1n->SetLineColor(kBlack);
+mPhi1n1n->Draw("e1 P*");
+gPad->Print( "plots/plot_mPhi1n1n.pdf" );
+gPad->Print( "plots/plot_mPhi1n1n.png" );
+
+makeCanvas();
+mPhi2n1n->SetLineColor(kBlack);
+mPhi2n1n->Draw("e1 P*");
+gPad->Print( "plots/plot_mPhi2n1n.pdf" );
+gPad->Print( "plots/plot_mPhi2n1n.png" );
+
+makeCanvas();
+mPhi2n2n->SetLineColor(kBlack);
+mPhi2n2n->Draw("e1 P*");
+gPad->Print( "plots/plot_mPhi2n2n.pdf" );
+gPad->Print( "plots/plot_mPhi2n2n.png" );
+
+//makeCanvas();
+//mPhi1n1n->SetLineColor(kBlack);
+//mPhi1n1n->SetTitle("#phi at various ZDC peaks; #phi (rad); counts");
+//mPhi2n1n->SetLineColor(kOrange);
+//mPhi2n2n->SetLineColor(kBlue);
+//mPhi1n1n->Draw();
+//mPhi2n1n->Draw("SAME");
+//mPhi2n2n->Draw("SAME");
+//auto legend = new TLegend(0.65,0.1,0.95,0.4);
+//legend->AddEntry(mPhi1n1n,"1n1n peaks");
+//legend->AddEntry(mPhi2n1n,"2n1n peaks");
+//legend->AddEntry(mPhi2n2n,"2n2n peak");
+//legend->Draw();
+//gPad->Print( "plots/plot_mPhiNeutronPeaks.pdf" );
+//gPad->Print( "plots/plot_mPhiNeutronPeaks.png" );
+
+makeCanvas();
 mPTmomentsplot->SetTitle("cos(2#phi) moments vs. P_{T}; P_{T} (GeV); 2<cos(2#phi)>");
 mPTmomentsplot->Draw("AC*");
 gPad->Print( "plots/plot_mPTmomentsplot.pdf" );
@@ -299,17 +347,17 @@ gPad->Print( "plots/plot_mZDCmomentsplot.pdf" );
 gPad->Print( "plots/plot_mZDCmomentsplot.png" );
 
 makeCanvas();
-mPTcos4phimoments->SetTitle("cos(4#phi) moments vs. P_{T}; P_{T} (GeV); 4<cos(4#phi)>");
+mPTcos4phimoments->SetTitle("cos(4#phi) moments vs. P_{T}; P_{T} (GeV); 2<cos(4#phi)>");
 mPTcos4phimoments->Draw("AC*");
 gPad->Print( "plots/plot_mPTcos4phimoments.pdf" );
 
 makeCanvas();
-mMasscos4phimoments->SetTitle("cos(4#phi) moments vs. Mass; Mass (GeV); 4<cos(4#phi)>");
+mMasscos4phimoments->SetTitle("cos(4#phi) moments vs. Mass; Mass (GeV); 2<cos(4#phi)>");
 mMasscos4phimoments->Draw("AC*");
 gPad->Print( "plots/plot_mMasscos4phimoments.pdf" );
 
 makeCanvas();
-mRapiditycos4phimoments->SetTitle("cos(4#phi) moments vs. Rapidity; Rapidity; 4<cos(4#phi)>");
+mRapiditycos4phimoments->SetTitle("cos(4#phi) moments vs. Rapidity; Rapidity; 2<cos(4#phi)>");
 mRapiditycos4phimoments->Draw("AC*");
 gPad->Print( "plots/plot_mRapiditycos4phimoments.pdf" );
 

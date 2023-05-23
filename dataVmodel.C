@@ -65,7 +65,7 @@ void dataVmodel() {
     auto * mDataMinusToyPairPT = (TH1F*)mDataPairPT->Clone("mDataMinusToyPairPT");
     mDataMinusToyPairPT->Add(mToyPairPT, -1);
 
-    mToyPairPhi->Scale(2*3.1415/(mToyPairPhi->GetBinWidth(1) * mToyPairPhi->Integral()));
+    mToyPairPhi->Scale(2*3.1415/(mToyPairPhi->Integral("width")));
     mDataPairPhi->Scale(2*3.1415/(mDataPairPhi->GetBinWidth(1) * mDataPairPhi->Integral()));
     auto * mDataMinusToyPhi = (TH1F*)mDataPairPhi->Clone("mDataMinusToyPhi");
     mDataMinusToyPhi->Add(mToyPairPhi, -1);
@@ -188,12 +188,10 @@ mDataMinusToyPhi->SetTitle("Data-toy model #phi distribution; #phi (rad); counts
 mDataMinusToyPhiwMu->SetLineColor(kRed);
 mDataMinusToyNoisyPhi->SetLineColor(kBlue);
 mDataMinusToyCutPhi->SetLineColor(kOrange);
-mDataMinusToyPhi->SetMinimum(-1.1);
-mDataMinusToyPhi->SetMaximum(1.1);
-mDataMinusToyPhi->Draw();
+mDataMinusToyCutPhi->Draw();
 mDataMinusToyPhiwMu->Draw("SAME");
 mDataMinusToyNoisyPhi->Draw("SAME");
-mDataMinusToyCutPhi->Draw("SAME");
+mDataMinusToyPhi->Draw("SAME");
 auto legend2 = new TLegend(0.65,0.1,0.95,0.4);
 legend2->AddEntry(mDataMinusToyPhi,"No #pi->#mu decay, no noise, no cut");
 legend2->AddEntry(mDataMinusToyPhiwMu,"With #pi->#mu decay, no noise, no cut");
