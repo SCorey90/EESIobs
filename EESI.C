@@ -17,6 +17,8 @@ void makeCanvas()  {
 
 double calc_Phi( TLorentzVector lv1, TLorentzVector lv2) {
     TLorentzVector lvPlus = lv1 + lv2;
+    lv1.Boost(-lvPlus.BoostVector());
+    lv2.Boost(-lvPlus.BoostVector());
     TLorentzVector lvMinus = lv1 - lv2;
     double Px = lvPlus.Px();
     double Py = lvPlus.Py();
@@ -94,9 +96,9 @@ void EESI() {
     
     auto * mZDCTotal = new TH1F("mZDCtotal", "ZDC East+West readout; ZDC readout; counts", 500, 0, 1200);
     auto * mPairPhi = new TH1F("mPairPhi", "#pi_{#pm} #phi distribution;#phi (rad);# events", 100, -3.13, 3.13);
-    auto * mPxvsPy = new TH2F("mPxvsPy", "#rho^{0} 2D momentum dist; P_{x} (GeV); P_{y} (GeV); Counts", 200, -0.1, 0.1, 200, -0.1, 0.1);
+    auto * mPxvsPy = new TH2F("mPxvsPy", "#rho^{0} 2D momentum dist; P_{x} (GeV/c); P_{y} (GeV/c); Counts", 200, -0.1, 0.1, 200, -0.1, 0.1);
     auto * mPhivsMass = new TH2F("mPhivsMass", "#pi_{#pm} #phi distribution vs. parent mass; #phi (rad); Parent Mass (GeV); Counts", 100, -3.14, 3.14, 50, 0.3, 1.35);
-    auto * mPhivsPT = new TH2F("mPhivsPT", "#pi^{#pm} #phi distribution vs. parent P_{T}; #phi (rad); Parent P_{T} (GeV); Counts", 100, -3.14, 3.14, 100, 0, 0.25);
+    auto * mPhivsPT = new TH2F("mPhivsPT", "#pi^{#pm} #phi distribution vs. parent P_{T}; #phi (rad); Parent P_{T} (GeV/c); Counts", 100, -3.14, 3.14, 100, 0, 0.25);
     auto * mPhivsRapidity = new TH2F("mPhivsRapidity", "#pi^{#pm} #phi distribution vs. Rapidity; #phi (rad); Rapidity (GeV); Counts", 100, -3.14, 3.14, 100, -2, 2);
     auto * mPhivsLowMass = new TH2F("mPhivsLowMass", "#pi_{#pm} #phi distribution vs. parent mass; #phi (rad); Parent Mass (GeV); Counts", 100, -3.14, 3.14, 100, 0.3, 0.55);
     
@@ -107,11 +109,11 @@ void EESI() {
     auto * mPhi2n1n = new TH1F("mPhi2n1n", "#phi distribution of 2n1n ZDC peaks; #phi (rad); counts", 20, -3.14, 3.14);
     auto * mPhi2n2n = new TH1F("mPhi2n2n", "#phi distribution of 2n2n ZDC peak; #phi (rad); counts", 20, -3.14, 3.14);
 
-    auto * mCos2phivsPT = new TH2F("mCos2phivsPT", "cos2#phi distribution vs P_{T}", 100, -1, 1, 100, 0, 0.25);
-    auto * mCos4phivsPT = new TH2F("mCos4phivsPT", "cos4#phi distribution vs P_{T}", 100, -1, 1, 100, 0, 0.25);
+    auto * mCos2phivsPT = new TH2F("mCos2phivsPT", "cos2#phi distribution vs P_{T}", 100, -2, 2, 100, 0, 0.25);
+    auto * mCos4phivsPT = new TH2F("mCos4phivsPT", "cos4#phi distribution vs P_{T}", 100, -2, 2, 100, 0, 0.25);
 
-    auto * mCos2phivsMass = new TH2F("mCos2phivsMass", "cos2#phi distribution vs Mass", 100, -1, 1, 100, 0.3, 1.35);
-    auto * mCos4phivsMass = new TH2F("mCos4phivsMass", "cos4#phi distribution vs Mass", 100, -1, 1, 100, 0.3, 1.35);
+    auto * mCos2phivsMass = new TH2F("mCos2phivsMass", "cos2#phi distribution vs Mass", 100, -2, 2, 100, 0.3, 1.35);
+    auto * mCos4phivsMass = new TH2F("mCos4phivsMass", "cos4#phi distribution vs Mass", 100, -2, 2, 100, 0.3, 1.35);
 
     auto * mPhiFit = new TF1("mPhiFit", "[0] + [1]*cos(x) + [2]*cos(2*x) + [3]*cos(3*x) + [4]*cos(4*x)", -3.14, 3.14);
     auto * mLinearFit = new TF1("mLinearFit", "[0] + [1]*x", -5, 5);

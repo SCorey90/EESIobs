@@ -105,11 +105,11 @@ void dataVmodel() {
 
 auto * mToyPTCos2PhiMoments = mToyCos2PhivsPT->ProfileY("mToyPTCos2PhiMoments", 1, -1);
 auto * mDataPTCos2PhiMoments = mDataCos2PhivsPT->ProfileY("mDataPTCos2PhiMoments", 1, -1);
-auto * mDataMinusToyPTCos2PhiMoments = mDataMinusToyCos2PhivsPT->ProfileY("mDataMinusToyPTCos2PhiMoments", 1, -1);
+auto * mDatabyToyPTn2Moments = mDataCos2PhivsPT->ProfileY("mDatabyToyn2Moments", 1, -1);
+mDatabyToyPTn2Moments->Divide(mToyPTCos2PhiMoments); 
 
 auto * mToyMassCos2PhiMoments = mToyCos2PhivsMass->ProfileY("mToyMassCos2PhiMoments", 1, -1);
 auto * mDataMassCos2PhiMoments = mDataCos2PhivsMass->ProfileY("mDataMassCos2PhiMoments", 1, -1);
-auto * mDataMinusToyMassCos2PhiMoments = mDataMinusToyCos2PhivsMass->ProfileY("mDataMinusToyMassCos2PhiMoments", 1, -1);
 
 //make plots
 fo->cd();
@@ -144,14 +144,14 @@ gPad->Print( "plots/plot_mNormToyPairPT.png" );
 
 makeCanvas();
 mDataPairPT->SetLineColor(kBlack);
-mDataPairPT->SetTitle("Data pair P_{T} distribution; P_{T} (GeV); counts");
+mDataPairPT->SetTitle("Data pair P_{T} distribution; P_{T} (GeV/c); counts");
 mDataPairPT->Draw();
 gPad->Print( "plots/plot_mNormDataPairPT.pdf" );
 gPad->Print( "plots/plot_mNormDataPairPT.png" );
 
 makeCanvas();
 mDataMinusToyPairPT->SetLineColor(kBlack);
-mDataMinusToyPairPT->SetTitle("Data-toy model pair P_{T} distribution; P_{T} (GeV); counts");
+mDataMinusToyPairPT->SetTitle("Data-toy model pair P_{T} distribution; P_{T} (GeV/c); counts");
 mDataMinusToyPairPT->Draw();
 gPad->Print( "plots/plot_mDataMinusToyPairPT.pdf" );
 gPad->Print( "plots/plot_mDataminusToyPairPT.png" );
@@ -203,83 +203,80 @@ gPad->Print( "plots/plot_mDataminusToyPhi.png" );
 
 makeCanvas();
 gStyle->SetPalette(1);
-mDataPhivsPT->SetTitle("Data #phi vs. P_{T} (scaled to avg=1); #phi (rad); P_{T} (GeV); counts");
+mDataPhivsPT->SetTitle("Data #phi vs. P_{T} (scaled to avg=1); #phi (rad); P_{T} (GeV/c); counts");
 mDataPhivsPT->Draw("colz");
 gPad->Print( "plots/plot_mNormDataPhivsPT.pdf" );
 gPad->Print( "plots/plot_mNormDataPhivsPT.png" );
 
 makeCanvas();
 gStyle->SetPalette(1);
-mToyPhivsPT->SetTitle("Toy model #phi vs. P_{T} (scaled to avg=1); #phi (rad); P_{T} (GeV); counts");
+mToyPhivsPT->SetTitle("Toy model #phi vs. P_{T} (scaled to avg=1); #phi (rad); P_{T} (GeV/c); counts");
 mToyPhivsPT->Draw("colz");
 gPad->Print( "plots/plot_mNormToyPhivsPT.pdf" );
 gPad->Print( "plots/plot_mNormToyPhivsPT.png" );
 
 makeCanvas();
 gStyle->SetPalette(1);
-mDataMinusToyPhivsPT->SetTitle("Data-toy model #phi vs. P_{T} (scaled to avg=1); #phi (rad); P_{T} (GeV); counts");
+mDataMinusToyPhivsPT->SetTitle("Data-toy model #phi vs. P_{T} (scaled to avg=1); #phi (rad); P_{T} (GeV/c); counts");
 mDataMinusToyPhivsPT->Draw("colz");
 gPad->Print( "plots/plot_mDataMinusToyPhivsPT.pdf" );
 gPad->Print( "plots/plot_mDataMinusToyPhivsPT.png" );
 
 makeCanvas();
 gStyle->SetPalette(1);
-mDataCos2PhivsPT->SetTitle("Data cos(2#phi) vs. P_{T} (scaled to avg=1); cos(2#phi); P_{T} (GeV); counts");
+mDataCos2PhivsPT->SetTitle("Data cos(2#phi) vs. P_{T} (scaled to avg=1); cos(2#phi); P_{T} (GeV/c); counts");
 mDataCos2PhivsPT->Draw("colz");
 gPad->Print( "plots/plot_mNormDataCos2PhivsPT.pdf" );
 gPad->Print( "plots/plot_mNormDataCos2PhivsPT.png" );
 
 makeCanvas();
 gStyle->SetPalette(1);
-mToyCos2PhivsPT->SetTitle("Toy model cos(2#phi) vs. P_{T} (scaled to avg=1); cos(2#phi); P_{T} (GeV); counts");
+mToyCos2PhivsPT->SetTitle("Toy model cos(2#phi) vs. P_{T} (scaled to avg=1); cos(2#phi); P_{T} (GeV/c); counts");
 mToyCos2PhivsPT->Draw("colz");
 gPad->Print( "plots/plot_mNormToyCos2PhivsPT.pdf" );
 gPad->Print( "plots/plot_mNormToyCos2PhivsPT.png" );
 
 makeCanvas();
 gStyle->SetPalette(1);
-mDataMinusToyCos2PhivsPT->SetTitle("Data-toy model cos(2#phi) vs. P_{T}; cos(2#phi); P_{T} (GeV); counts");
+mDataMinusToyCos2PhivsPT->SetTitle("Data-toy model cos(2#phi) vs. P_{T}; cos(2#phi); P_{T} (GeV/c); counts");
 mDataMinusToyCos2PhivsPT->Draw("colz");
 gPad->Print( "plots/plot_mDataMinusToyCos2PhivsPT.pdf" );
 gPad->Print( "plots/plot_mDataMinusToyCos2PhivsPT.png" );
 
 makeCanvas();
-mToyPTCos2PhiMoments->SetLineColor(kBlack);
-mToyPTCos2PhiMoments->SetTitle("Toy model strength of cos(2#phi) signal vs. P_{T}; P_{T} (GeV); 2<cos(2#phi)>");
-mToyPTCos2PhiMoments->Draw();
-
-makeCanvas();
+mToyPTCos2PhiMoments->SetLineColor(kGreen);
 mDataPTCos2PhiMoments->SetLineColor(kBlack);
-mDataPTCos2PhiMoments->SetTitle("Data strength of cos(2#phi) signal vs. P_{T}; P_{T} (GeV); 2<cos(2#phi)>");
-mDataPTCos2PhiMoments->Draw();
+mToyPTCos2PhiMoments->SetTitle("Strength of cos(2#phi) signal vs. P_{T}; P_{T} (GeV/c); 2<cos(2#phi)>");
+mToyPTCos2PhiMoments->SetMaximum(0.56);
+mToyPTCos2PhiMoments->Draw();
+mDataPTCos2PhiMoments->Draw("SAME");
+auto legend3 = new TLegend(0.65,0.1,0.95,0.4);
+legend3->AddEntry(mDataPTCos2PhiMoments,"Run 12 U+U data");
+legend3->AddEntry(mToyPTCos2PhiMoments,"Toy model");
+legend3->Draw();
+gPad->Print( "plots/plot_mDataVToyPTCos2PhiMoments.pdf" );
+gPad->Print( "plots/plot_mDataVToyPTCos2PhiMoments.png" );
 
 makeCanvas();
-mDataMinusToyPTCos2PhiMoments->SetLineColor(kBlack);
-mDataMinusToyPTCos2PhiMoments->SetMinimum(-0.5);
-mDataMinusToyPTCos2PhiMoments->SetMaximum(0.5);
-mDataMinusToyPTCos2PhiMoments->SetTitle("Data minus toy model strength of cos(2#phi) signal vs. P_{T}; P_{T} (GeV); 2<cos(2#phi)>");
-mDataMinusToyPTCos2PhiMoments->Draw();
-gPad->Print( "plots/plot_mDataMinusToyPTCos2phiMoments.pdf" );
-gPad->Print( "plots/plot_mDataMinusToyPTCos2phiMoments.png" );
+mDatabyToyPTn2Moments->SetLineColor(kBlack);
+mDatabyToyPTn2Moments->SetTitle("Data/model cos2#phi signal strength; P_{T} (GeV/c); data 2<cos2#phi>/toy model 2<cos2#phi>");
+mDatabyToyPTn2Moments->Draw();
+gPad->Print( "plots/plot_mDatabyToyPTn2Moments.pdf" );
+gPad->Print( "plots/plot_mDatabyToyPTn2Moments.png" );
 
 makeCanvas();
-mToyMassCos2PhiMoments->SetLineColor(kBlack);
-mToyMassCos2PhiMoments->SetTitle("Toy model strength of cos(2#phi) signal vs. mass; mass (GeV); 2<cos(2#phi)>");
-mToyMassCos2PhiMoments->Draw();
-
-makeCanvas();
+mToyMassCos2PhiMoments->SetLineColor(kGreen);
 mDataMassCos2PhiMoments->SetLineColor(kBlack);
-mDataMassCos2PhiMoments->SetTitle("Data strength of cos(2#phi) signal vs. mass; mass (GeV); 2<cos(2#phi)>");
-mDataMassCos2PhiMoments->Draw();
-
-makeCanvas();
-mDataMinusToyMassCos2PhiMoments->SetLineColor(kBlack);
-mDataMinusToyMassCos2PhiMoments->SetMinimum(-0.5);
-mDataMinusToyMassCos2PhiMoments->SetMaximum(0.5);
-mDataMinusToyMassCos2PhiMoments->SetTitle("Data minus toy model strength of cos(2#phi) signal vs. mass; mass (GeV); 2<cos(2#phi)>");
-mDataMinusToyMassCos2PhiMoments->Draw();
-gPad->Print( "plots/plot_mDataMinusToyMassCos2phiMoments.pdf" );
-gPad->Print( "plots/plot_mDataMinusToyMassCos2phiMoments.png" );
+mToyMassCos2PhiMoments->SetTitle("Strength of cos(2#phi) signal vs. pair combined mass; mass (GeV/c); 2<cos(2#phi)>");
+mToyMassCos2PhiMoments->SetMaximum(0.7);
+mToyMassCos2PhiMoments->SetMinimum(-0.5);
+mToyMassCos2PhiMoments->Draw();
+mDataMassCos2PhiMoments->Draw("SAME");
+auto legend4 = new TLegend(0.65,0.1,0.95,0.4);
+legend4->AddEntry(mDataMassCos2PhiMoments,"Run 12 U+U data");
+legend4->AddEntry(mToyMassCos2PhiMoments,"Toy model");
+legend4->Draw();
+gPad->Print( "plots/plot_mDataVToyMassCos2PhiMoments.pdf" );
+gPad->Print( "plots/plot_mDataVToyMassCos2PhiMoments.png" );
 
 }
-

@@ -80,6 +80,8 @@ TLorentzVector *asym_decay( TLorentzVector lv1, double mass1, double mass2, doub
 
 double calc_Phi( TLorentzVector lv1, TLorentzVector lv2) {
     TLorentzVector lvPlus = lv1 + lv2;
+    lv1.Boost(-lvPlus.BoostVector());
+    lv2.Boost(-lvPlus.BoostVector());
     TLorentzVector lvMinus = lv1 - lv2;
     double Px = lvPlus.Px();
     double Py = lvPlus.Py();
@@ -110,40 +112,40 @@ void toymodel() {
 
     auto *mRhoM = new TH1F("mRhoM", "#rho^{0} mass; mass (GeV); counts", 1000, 0, 1.5);
     auto *mReconstructedM = new TH1F("mReconstructedM", "Sum of #pi^{+}#pi^{-} mass; mass (GeV); counts", 500, 0, 2);
-    auto *mRhoPT = new TH1F("mRhoPT", "#rho^{0} P_{T}; #rho^{0} P_{T} (GeV); counts", 100, 0, 1.5);
-    auto *mPairPT = new TH1F("mPairPT", "P_{T}(#pi^{+}+#pi^{-}); P_{T} (Rad); counts", 500, 0, 1);
-    auto *mPairPTwMu = new TH1F("mPairPTwMu", "#pi^{+}#pi^{-} pair P_{T}; pair P_{T} (GeV); counts", 500, 0, 1.5);
-    auto *mNoisyPairPT = new TH1F("mNoisyPairPT", "#pi^{+}#pi^{-} pair P_{T}; pair P_{T} (GeV); counts", 500, 0, 1.5);
-    auto *mCutPairPT = new TH1F("mCutPairPT", "#pi^{+}#pi^{-} pair P_{T}; pair P_{T} (GeV); counts", 500, 0, 1.5);
+    auto *mRhoPT = new TH1F("mRhoPT", "#rho^{0} P_{T}; #rho^{0} P_{T} (GeV/c)`; counts", 100, 0, 1.5);
+    auto *mPairPT = new TH1F("mPairPT", "P_{T}(#pi^{+}+#pi^{-}); P_{T} (Rad); counts", 500, 0, 1.5);
+    auto *mPairPTwMu = new TH1F("mPairPTwMu", "#pi^{+}#pi^{-} pair P_{T}; pair P_{T} (GeV/c); counts", 500, 0, 1.5);
+    auto *mNoisyPairPT = new TH1F("mNoisyPairPT", "#pi^{+}#pi^{-} pair P_{T}; pair P_{T} (GeV/c); counts", 500, 0, 1.5);
+    auto *mCutPairPT = new TH1F("mCutPairPT", "#pi^{+}#pi^{-} pair P_{T}; pair P_{T} (GeV/c); counts", 500, 0, 1.5);
 
-    auto * mPi1PT = new TH1F("mPi1PT", "model #pi^{#pm} P_{T} distribution;P_{T} (GeV);# events", 500, 0, 1.5);
-    auto * mPi1PTwMu = new TH1F("mPi1PTwMu", "model #pi^{#pm} P_{T} distribution;P_{T} (GeV);# events", 500, 0, 1.5);
-    auto * mNoisyPi1PT = new TH1F("mNoisyPi1PT", "model #pi^{#pm} P_{T} distribution;P_{T} (GeV);# events", 500, 0, 1.5);
-    auto * mCutPi1PT = new TH1F("mCutPi1PT", "model #pi^{#pm} P_{T} distribution;P_{T} (GeV);# events", 500, 0, 1.5);
+    auto * mPi1PT = new TH1F("mPi1PT", "model #pi^{#pm} P_{T} distribution;P_{T} (GeV/c);# events", 500, 0, 1.5);
+    auto * mPi1PTwMu = new TH1F("mPi1PTwMu", "model #pi^{#pm} P_{T} distribution;P_{T} (GeV/c);# events", 500, 0, 1.5);
+    auto * mNoisyPi1PT = new TH1F("mNoisyPi1PT", "model #pi^{#pm} P_{T} distribution;P_{T} (GeV/c);# events", 500, 0, 1.5);
+    auto * mCutPi1PT = new TH1F("mCutPi1PT", "model #pi^{#pm} P_{T} distribution;P_{T} (GeV/c);# events", 500, 0, 1.5);
 
-    auto * mPairQT = new TH1F("mPairQT", "P_{T}((#pi^{+} - #pi^{-}); P_{T} (GeV); counts", 100, 0, 1.5);    
-    auto * mPairQTwMu = new TH1F("mPairQTwMu", "P_{T}((#pi^{+} - #pi^{-}); P_{T} (GeV); counts", 100, 0, 1.5);    
-    auto * mNoisyPairQT = new TH1F("mNoisyPairQT", "P_{T}((#pi^{+} - #pi^{-}); P_{T} (GeV); counts", 100, 0, 1.5);    
-    auto * mCutPairQT = new TH1F("mCutPairQT", "P_{T}((#pi^{+} - #pi^{-}); P_{T} (GeV); counts", 100, 0, 1.5);    
+    auto * mPairQT = new TH1F("mPairQT", "P_{T}((#pi^{+} - #pi^{-}); P_{T} (GeV/c); counts", 100, 0, 1.5);    
+    auto * mPairQTwMu = new TH1F("mPairQTwMu", "P_{T}((#pi^{+} - #pi^{-}); P_{T} (GeV/c); counts", 100, 0, 1.5);    
+    auto * mNoisyPairQT = new TH1F("mNoisyPairQT", "P_{T}((#pi^{+} - #pi^{-}); P_{T} (GeV/c); counts", 100, 0, 1.5);    
+    auto * mCutPairQT = new TH1F("mCutPairQT", "P_{T}((#pi^{+} - #pi^{-}); P_{T} (GeV/c); counts", 100, 0, 1.5);    
 
     auto * mPairPhi = new TH1F("mPairPhi", "model #pi_{#pm} #phi distribution;#phi (rad);# events", 100, -3.13, 3.13);
     auto * mPairPhiwMu = new TH1F("mPairPhiwMu", "model #pi_{#pm} #phi distribution;#phi (rad);# events", 100, -3.13, 3.13);
     auto * mNoisyPairPhi = new TH1F("mNoisyPairPhi", "model #pi_{#pm} #phi distribution;#phi (rad);# events", 100, -3.13, 3.13);
     auto * mCutPairPhi = new TH1F("mCutPairPhi", "model #pi_{#pm} #phi distribution;#phi (rad);# events", 100, -3.13, 3.13);
 
-    auto * mPhivsPT = new TH2F("mPhivsPT", "model #pi^{#pm} #phi distribution vs. parent P_{T}; #phi (rad); Parent P_{T} (GeV); Counts", 100, -3.14, 3.14, 100, 0, 0.25);
+    auto * mPhivsPT = new TH2F("mPhivsPT", "model #pi^{#pm} #phi distribution vs. parent P_{T}; #phi (rad); Parent P_{T} (GeV/c); Counts", 100, -3.14, 3.14, 100, 0, 0.25);
     auto * mPolarPhivsPT = new TH2F("mPolarPhivsPT", "model #pi^{#pm} #phi distribution vs. parent P_{T}; P_{T}*cos(#phi) (GeV); P_{T}*sin(#phi); Counts", 100, -0.025, 0.025, 100, -0.025, 0.025);
-    auto * mExagPolarPhivsPT = new TH2F("mExagPolarPhivsPT", "model #pi^{#pm} #phi distribution with 20% P_{T} smear vs. parent P_{T}; P_{T}*cos(#phi) (GeV); P_{T}*sin(#phi); Counts", 100, -0.25, 0.25, 100, -0.25, 0.25);
-    auto * mCos2phivsPT = new TH2F("mCos2phivsPT", "model cos2#phi distribution vs P_{T}; 2cos2#phi; Parent P_{T} (GeV); Counts", 100, -2, 2, 100, 0, 0.25);
-    auto * mCos4phivsPT = new TH2F("mCos4phivsPT", "model cos4#phi distribution vs P_{T}; 4cos4#phi; Parent P_{T} (GeV); Counts", 100, -4, 4, 100, 0, 0.25);
+    auto * mExagPolarPhivsPT = new TH2F("mExagPolarPhivsPT", "model #pi^{#pm} #phi distribution with 20% P_{T} smear vs. parent P_{T}; P_{T}*cos(#phi) (GeV/c); P_{T}*sin(#phi) (GeV/c); Counts", 100, -0.25, 0.25, 100, -0.25, 0.25);
+    auto * mCos2phivsPT = new TH2F("mCos2phivsPT", "model cos2#phi distribution vs P_{T}; 2cos2#phi; Parent P_{T} (GeV/c); Counts", 100, -2, 2, 100, 0, 0.25);
+    auto * mCos4phivsPT = new TH2F("mCos4phivsPT", "model cos4#phi distribution vs P_{T}; 4cos4#phi; Parent P_{T} (GeV/c); Counts", 100, -2, 2, 100, 0, 0.25);
 
     auto * mPhivsMass = new TH2F("mPhivsMass", "model #pi^{#pm} #phi distribution vs. parent mass; #phi (rad); Parent Mass (GeV); Counts", 100, -3.14, 3.14, 100, 0, 2);
-    auto * mCos2phivsMass = new TH2F("mCos2phivsMass", "model cos2#phi distribution vs P_{T}; 2cos2#phi; Parent P_{T} (GeV); Counts", 100, -2, 2, 100, 0, 0.25);
-    auto * mCos4phivsMass = new TH2F("mCos4phivsMass", "model cos4#phi distribution vs P_{T}; 4cos4#phi; Parent P_{T} (GeV); Counts", 100, -4, 4, 100, 0, 0.25);
+    auto * mCos2phivsMass = new TH2F("mCos2phivsMass", "model cos2#phi distribution vs mass; 2cos2#phi; Parent Mass (GeV); Counts", 100, -2, 2, 100, 0.3, 1.35);
+    auto * mCos4phivsMass = new TH2F("mCos4phivsMass", "model cos4#phi distribution vs mass; 4cos4#phi; Parent Mass (GeV); Counts", 100, -2, 2, 100, 0.3, 1.35);
 
     auto * mGaus = new TH2F("mGaus", "Gaussian Testing; P_{T}; Gaus(0, 0.1*P_{T})", 100, 0, 0.2, 100, -0.2, 0.2);
-    auto * mLowPTPhi = new TH1F("mLowPTPhi", "#phi hist at p_{T}<60 MeV; #phi (rad); counts", 100, -3.5, 3.5); 
-    auto * mMidPTPhi = new TH1F("mMidPTPhi", "#phi hist at p_{T}>900 MeV; #phi (rad); counts", 100, -3.5, 3.5);
+    auto * mLowPTPhi = new TH1F("mLowPTPhi", "#phi hist at p_{T}<60 MeV/c; #phi (rad); counts", 100, -3.5, 3.5); 
+    auto * mMidPTPhi = new TH1F("mMidPTPhi", "#phi hist at p_{T}>900 MeV/c; #phi (rad); counts", 100, -3.5, 3.5);
 
     int n_events = 10000000;
     double m_pi = 0.139;
