@@ -136,16 +136,24 @@ void toymodel() {
     auto * mPhivsPT = new TH2F("mPhivsPT", "model #pi^{#pm} #phi distribution vs. parent P_{T}; #phi (rad); Parent P_{T} (GeV/c); Counts", 100, -3.14, 3.14, 100, 0, 0.25);
     auto * mPolarPhivsPT = new TH2F("mPolarPhivsPT", "model #pi^{#pm} #phi distribution vs. parent P_{T}; P_{T}*cos(#phi) (GeV); P_{T}*sin(#phi); Counts", 100, -0.025, 0.025, 100, -0.025, 0.025);
     auto * mExagPolarPhivsPT = new TH2F("mExagPolarPhivsPT", "model #pi^{#pm} #phi distribution with 20% P_{T} smear vs. parent P_{T}; P_{T}*cos(#phi) (GeV/c); P_{T}*sin(#phi) (GeV/c); Counts", 100, -0.25, 0.25, 100, -0.25, 0.25);
+    
+    auto * mCos2flatPhi = new TH1F("mCos2flatPhi", "Cos2#phi from flat #phi distribution; #phi (rad); counts", 100, -1, 1);
+    auto * mCos2flatphivsPT = new TH2F("mCos2flatvsPT", "cos2#phi from flat #phi distribution vs P_{T}; 2cos2#phi; Parent P_{T} (GeV/c); Counts", 100, -2, 2, 100, 0, 0.25);
+    auto * mCos2decayphivsPT = new TH2F("mCos2decayphivsPT", "cos2#phi from flat #phi distribution w/ possibility of #mu decay vs P_{T}; 2cos2#phi; Parent P_{T} (GeV/c); Counts", 100, -2, 2, 100, 0, 0.25);
+    auto * mCos2cutflatphivsPT = new TH2F("mCos2cutflatvsPT", "cos2#phi from flat #phi distribution vs P_{T} w/ acceptance cut; 2cos2#phi; Parent P_{T} (GeV/c); Counts", 100, -2, 2, 100, 0, 0.25);
     auto * mCos2phivsPT = new TH2F("mCos2phivsPT", "model cos2#phi distribution vs P_{T}; 2cos2#phi; Parent P_{T} (GeV/c); Counts", 100, -2, 2, 100, 0, 0.25);
     auto * mCos4phivsPT = new TH2F("mCos4phivsPT", "model cos4#phi distribution vs P_{T}; 4cos4#phi; Parent P_{T} (GeV/c); Counts", 100, -2, 2, 100, 0, 0.25);
 
+    auto * mCos2flatphivsMass = new TH2F("mCos2flatvsMass", "cos2#phi from flat #phi distribution vs. mass; 2cos2#phi; Parent Mass (GeV); Counts", 100, -2, 2, 100, 0.2, 2);
+    auto * mCos2cutflatphivsMass = new TH2F("mCos2cutflatvsMass", "cos2#phi from flat #phi distribution vs. mass w/ acceptance cut; 2cos2#phi; Parent Mass (GeV); Counts", 100, -2, 2, 100, 0.2, 2);
     auto * mPhivsMass = new TH2F("mPhivsMass", "model #pi^{#pm} #phi distribution vs. parent mass; #phi (rad); Parent Mass (GeV); Counts", 100, -3.14, 3.14, 100, 0, 2);
-    auto * mCos2phivsMass = new TH2F("mCos2phivsMass", "model cos2#phi distribution vs mass; 2cos2#phi; Parent Mass (GeV); Counts", 100, -2, 2, 100, 0.3, 1.35);
-    auto * mCos4phivsMass = new TH2F("mCos4phivsMass", "model cos4#phi distribution vs mass; 4cos4#phi; Parent Mass (GeV); Counts", 100, -2, 2, 100, 0.3, 1.35);
+    auto * mCos2phivsMass = new TH2F("mCos2phivsMass", "model cos2#phi distribution vs mass; 2cos2#phi; Parent Mass (GeV); Counts", 100, -2, 2, 100, 0.2, 2);
+    auto * mCos4phivsMass = new TH2F("mCos4phivsMass", "model cos4#phi distribution vs mass; 4cos4#phi; Parent Mass (GeV); Counts", 100, -2, 2, 100, 0.2, 2);
 
     auto * mGaus = new TH2F("mGaus", "Gaussian Testing; P_{T}; Gaus(0, 0.1*P_{T})", 100, 0, 0.2, 100, -0.2, 0.2);
     auto * mLowPTPhi = new TH1F("mLowPTPhi", "#phi hist at p_{T}<60 MeV/c; #phi (rad); counts", 100, -3.5, 3.5); 
     auto * mMidPTPhi = new TH1F("mMidPTPhi", "#phi hist at p_{T}>900 MeV/c; #phi (rad); counts", 100, -3.5, 3.5);
+    auto * mHighMidPTPhi = new TH1F("mMidPTPhi", "#phi hist at p_{T}>900 MeV/c; #phi (rad); counts", 100, -3.5, 3.5);
 
     int n_events = 10000000;
     double m_pi = 0.139;
@@ -170,10 +178,10 @@ void toymodel() {
         //add gaussian noise to pi P_T
         double noise1 = rng.Gaus( 0, 0.01*pi1.Pt() );
         double noise2 = rng.Gaus( 0, 0.01*pi2.Pt() );
-        gauspi1.SetPtEtaPhiM( pi_or_mu1.Pt() + noise1, pi_or_mu1.Eta(), pi_or_mu1.Phi(), pi_or_mu1.M() );
-        gauspi2.SetPtEtaPhiM( pi_or_mu2.Pt() + noise2, pi_or_mu2.Eta(), pi_or_mu2.Phi(), pi_or_mu2.M() );
-        exagpi1.SetPtEtaPhiM( pi1.Pt() + rng.Gaus( 0, 0.2*pi1.Pt() ), pi1.Eta(), pi1.Phi(), pi1.M() );
-        exagpi2.SetPtEtaPhiM( pi2.Pt() + rng.Gaus( 0, 0.2*pi2.Pt() ), pi2.Eta(), pi2.Phi(), pi2.M() );
+        gauspi1.SetPtEtaPhiM( pi1.Pt() + noise1, pi1.Eta(), pi1.Phi(), pi1.M() );
+        gauspi2.SetPtEtaPhiM( pi2.Pt() + noise2, pi2.Eta(), pi2.Phi(), pi2.M() );
+        pi_or_mu1.SetPtEtaPhiM( pi1.Pt() + rng.Gaus( 0, 0.01*pi_or_mu1.Pt() ), pi_or_mu1.Eta(), pi_or_mu1.Phi(), pi_or_mu1.M() );
+        pi_or_mu2.SetPtEtaPhiM( pi2.Pt() + rng.Gaus( 0, 0.01*pi_or_mu2.Pt() ), pi_or_mu2.Eta(), pi_or_mu2.Phi(), pi_or_mu2.M() );
         lvRecon = gauspi1 + gauspi2;
         lvExag = exagpi1 + exagpi2;
         
@@ -192,6 +200,18 @@ void toymodel() {
         mNoisyPairQT->Fill( (gauspi1 - gauspi2).Pt() );
 
         mPairPhi->Fill( calc_Phi(pi1, pi2) );
+        mCos2flatPhi->Fill( cos(2*calc_Phi(pi1, pi2)) );
+        mCos2flatphivsPT->Fill( 2*cos(2*calc_Phi(pi1, pi2)), (pi1+pi2).Pt());
+
+        mCos2decayphivsPT->Fill( 2*cos(2*calc_Phi(pi_or_mu1, pi_or_mu2)) , (pi_or_mu1+pi_or_mu2).Pt());
+
+        mCos2flatphivsMass->Fill( 2*cos(2*calc_Phi(pi1, pi2)), (pi1+pi2).M());        
+
+        if ( pi1.Pt() > 0.1 && pi2.Pt() > 0.1 ) {
+             mCos2cutflatphivsPT->Fill( 2*cos(2*calc_Phi(pi1, pi2)), (pi1+pi2).Pt());
+             mCos2cutflatphivsMass->Fill( 2*cos(2*calc_Phi(pi1, pi2)), (pi1+pi2).M());
+        }
+        
         mPairPhiwMu->Fill( calc_Phi(pi_or_mu1, pi_or_mu2) );
         mNoisyPairPhi->Fill( calc_Phi(gauspi1, gauspi2) );
 
@@ -212,13 +232,13 @@ void toymodel() {
                 //mCutPairPhi->Fill( pairPhi );
                 mPhivsPT->Fill( pairPhi, reconPT);
                 mCos2phivsPT->Fill( 2*cos(2* pairPhi), reconPT);
-                mCos4phivsPT->Fill( 4*cos(4* pairPhi), reconPT);
+                mCos4phivsPT->Fill( 2*cos(4* pairPhi), reconPT);
             //}
 
             //if ( reconPT < 0.06 ){
                 mPhivsMass->Fill( pairPhi, lvRecon.M());
                 mCos2phivsMass->Fill( 2*cos(2* pairPhi), lvRecon.M());
-                mCos4phivsMass->Fill( 4*cos(4* pairPhi), lvRecon.M());
+                mCos4phivsMass->Fill( 2*cos(4* pairPhi), lvRecon.M());
 
                mPolarPhivsPT->Fill( reconPT*cos(pairPhi), reconPT*sin(pairPhi));
             //}
@@ -231,8 +251,18 @@ void toymodel() {
 TH1F* mMassRCbyMC = (TH1F*)mReconstructedM->Clone("mMassMCbyRC");
 TH1F* mPTRCbyMC = (TH1F*)mPairPT->Clone("mPTMCbyRC");
 
+auto *mToyPTCos2flatphiMoments = mCos2flatphivsPT->ProfileY("mToyPTCos2flatphiMoments", 1, -1);
+
+auto *mToyPTCos2decayphiMoments = mCos2decayphivsPT->ProfileY("mToyPTCos2decayphiMoments", 1, -1);
+
+auto *mToyPTCos2cutflatphiMoments = mCos2cutflatphivsPT->ProfileY("mToyPTCos2cutflatphiMoments", 1, -1);
+
 auto *mToyPTCos2phiMoments = mCos2phivsPT->ProfileY("mToyPTCos2phiMoments", 1, -1);
 auto *mToyPTCos4phiMoments = mCos4phivsPT->ProfileY("mToyPTCos4phiMoments", 1, -1);
+
+auto *mToyMassCos2flatphiMoments = mCos2flatphivsMass->ProfileY("mToyMassCos2flatphiMoments", 1, -1);
+
+auto *mToyMassCos2cutflatphiMoments = mCos2cutflatphivsMass->ProfileY("mToyMassCos2cutflatphiMoments", 1, -1);
 
 auto *mToyMassCos2phiMoments = mCos2phivsMass->ProfileY("mToyMassCos2phiMoments", 1, -1);
 auto *mToyMassCos4phiMoments = mCos4phivsMass->ProfileY("mToyMassCos4phiMoments", 1, -1);
@@ -363,6 +393,36 @@ gPad->Print( "plots/plot_mToyPurePhi.pdf" );
 gPad->Print( "plots/plot_mToyPurePhi.png" );
 
 makeCanvas();
+mCos2flatPhi->SetLineColor(kBlack);
+mCos2flatPhi->Draw();
+gPad->Print( "plots/plot_mToyPureCos2Phi.pdf" );
+gPad->Print( "plots/plot_mToyPureCos2Phi.png" );
+
+makeCanvas();
+mCos2flatphivsPT->Draw("colz");
+gPad->Print( "plots/plot_mToyCos2flatphivsPT.pdf" );
+gPad->Print( "plots/plot_mToyCos2flatphivsPT.png" );
+
+makeCanvas();
+mToyPTCos2flatphiMoments->SetLineColor(kBlack);
+mToyPTCos2flatphiMoments->SetTitle("No detector effects strength of cos(2#phi) signal vs. P_{T}; P_{T} (GeV); 2<cos(2#phi)>");
+mToyPTCos2flatphiMoments->Draw();
+gPad->Print( "plots/plot_mToyPTCos2flatphiMoments.pdf" );
+gPad->Print( "plots/plot_mToyPTCos2flatphiMoments.png" );
+
+makeCanvas();
+mCos2cutflatphivsPT->Draw("colz");
+gPad->Print( "plots/plot_mToyCos2cutflatphivsPT.pdf" );
+gPad->Print( "plots/plot_mToyCos2cutflatphivsPT.png" );
+
+makeCanvas();
+mToyPTCos2cutflatphiMoments->SetLineColor(kBlack);
+mToyPTCos2cutflatphiMoments->SetTitle("P_{T} acceptance cut strength of cos(2#phi) signal vs. P_{T}; P_{T} (GeV); 2<cos(2#phi)>");
+mToyPTCos2cutflatphiMoments->Draw();
+gPad->Print( "plots/plot_mToyPTCos2cutflatphiMoments.pdf" );
+gPad->Print( "plots/plot_mToyPTCos2cutflatphiMoments.png" );
+
+makeCanvas();
 mCutPairPhi->SetLineColor(kBlack);
 mCutPairPhi->Draw();
 gPad->Print( "plots/plot_mToyCutPhi.pdf" );
@@ -397,14 +457,29 @@ gPad->Print( "plots/plot_mToyCos4phivsPT.pdf" );
 gPad->Print( "plots/plot_mToyCos4phivsPT.png" );
 
 makeCanvas();
-mToyPTCos2phiMoments->SetLineColor(kBlack);
+mToyPTCos2flatphiMoments->SetLineColor(kBlack);
+mToyPTCos2decayphiMoments->SetLineColor(kMagenta);
+mToyPTCos2cutflatphiMoments->SetLineColor(kOrange);
+mToyPTCos2phiMoments->SetLineColor(kBlue);
 mToyPTCos2phiMoments->SetTitle("Strength of cos(2#phi) signal vs. P_{T}; P_{T} (GeV); 2<cos(2#phi)>");
+mToyPTCos2phiMoments->SetMinimum(-1);
+mToyPTCos2phiMoments->SetMaximum(0.25);
 mToyPTCos2phiMoments->Draw();
+mToyPTCos2flatphiMoments->Draw("SAME");
+mToyPTCos2decayphiMoments->Draw("SAME");
+mToyPTCos2cutflatphiMoments->Draw("SAME");
+auto legend5 = new TLegend(0.65,0.1,0.95,0.4);
+legend5->SetHeader("Legend","C"); // option "C" allows to center the header
+legend5->AddEntry(mToyPTCos2flatphiMoments,"No effects (completely flat #phi hist)");
+legend5->AddEntry(mToyPTCos2decayphiMoments,"#pi->#mu+#nu only");
+legend5->AddEntry(mToyPTCos2cutflatphiMoments,"Detector acceptance");
+legend5->AddEntry(mToyPTCos2phiMoments,"P_{T} smear, detector acceptance");
+legend5->Draw();
 gPad->Print( "plots/plot_mToyPTCos2phiMoments.pdf" );
 gPad->Print( "plots/plot_mToyPTCos2phiMoments.png" );
 
 makeCanvas();
-mToyPTCos4phiMoments->SetLineColor(kBlack);
+mToyPTCos4phiMoments->SetLineColor(kOrange);
 mToyPTCos4phiMoments->SetTitle("Strength of cos(4#phi) signal vs. P_{T}; P_{T} (GeV); 4<cos(4#phi)>");
 mToyPTCos4phiMoments->Draw();
 gPad->Print( "plots/plot_mToyPTCos4phiMoments.pdf" );
@@ -432,6 +507,26 @@ makeCanvas();
 mCos2phivsMass->Draw("colz");
 gPad->Print( "plots/plot_mToyCos2phivsMass.pdf" );
 gPad->Print( "plots/plot_mToyCos2phivsMass.png" );
+
+makeCanvas();
+mToyMassCos2flatphiMoments->SetLineColor(kBlack);
+//mToyMassCos2decayphiMoments->SetLineColor(kPink);
+mToyMassCos2cutflatphiMoments->SetLineColor(kOrange);
+mToyMassCos2phiMoments->SetLineColor(kBlue);
+mToyMassCos2phiMoments->SetTitle("Strength of cos(2#phi) signal vs. Mass; Mass (GeV); 2<cos(2#phi)>");
+mToyMassCos2phiMoments->Draw();
+mToyMassCos2flatphiMoments->Draw("SAME");
+//mToyMassCos2decayphiMoments->Draw("SAME");
+mToyMassCos2cutflatphiMoments->Draw("SAME");
+auto legend6 = new TLegend(0.65,0.1,0.95,0.4);
+legend6->SetHeader("Legend","C"); // option "C" allows to center the header
+legend6->AddEntry(mToyMassCos2flatphiMoments,"No effects (completely flat #phi hist)");
+//legend6->AddEntry(mToyMassCos2decayphiMoments,"#pi->#mu+#nu decay only)");
+legend6->AddEntry(mToyMassCos2cutflatphiMoments,"Detector acceptance");
+legend6->AddEntry(mToyMassCos2phiMoments,"P_{T} smear, detector acceptance");
+legend6->Draw();
+gPad->Print( "plots/plot_mToyMassCos2phiMoments.pdf" );
+gPad->Print( "plots/plot_mToyMassCos2phiMoments.png" );
 
 makeCanvas();
 mCos4phivsMass->Draw("colz");

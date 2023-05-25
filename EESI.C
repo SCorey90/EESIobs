@@ -93,8 +93,10 @@ void EESI() {
     auto * mPperp = new TH1F("mPperp", "Parent (#rho^{0}) Transverse Momentum; Transverse Momentum (GeV); counts", 500, 0, 1.5);
     auto * mEta = new TH1F("mEta", "Parent (#rho^{0}) Eta; Eta; counts", 500, -6, 6);
     auto * mLVPhi = new TH1F("mLVPhi", "Parent (#rho^{0}) LV.Phi(); #phi (rad); counts", 500, -3.15, 3.15);
-    
-    auto * mZDCTotal = new TH1F("mZDCtotal", "ZDC East+West readout; ZDC readout; counts", 500, 0, 1200);
+    auto * mZDCEast = new TH1F("mZDCEast", "ZDC East; ZDC East; counts", 200, 0, 1300);
+    auto * mZDCWest = new TH1F("mZDCWest", "ZDC West; ZDC West; counts", 200, 0, 1300);
+
+    auto * mZDCTotal = new TH1F("mZDCtotal", "ZDC (East^{2} + West^{2})^{1/2}; ZDC (East^{2} + West^{2})^{1/2}; counts", 1000, 0, 1900);
     auto * mPairPhi = new TH1F("mPairPhi", "#pi_{#pm} #phi distribution;#phi (rad);# events", 100, -3.13, 3.13);
     auto * mPxvsPy = new TH2F("mPxvsPy", "#rho^{0} 2D momentum dist; P_{x} (GeV/c); P_{y} (GeV/c); Counts", 200, -0.1, 0.1, 200, -0.1, 0.1);
     auto * mPhivsMass = new TH2F("mPhivsMass", "#pi_{#pm} #phi distribution vs. parent mass; #phi (rad); Parent Mass (GeV); Counts", 100, -3.14, 3.14, 50, 0.3, 1.35);
@@ -102,15 +104,22 @@ void EESI() {
     auto * mPhivsRapidity = new TH2F("mPhivsRapidity", "#pi^{#pm} #phi distribution vs. Rapidity; #phi (rad); Rapidity (GeV); Counts", 100, -3.14, 3.14, 100, -2, 2);
     auto * mPhivsLowMass = new TH2F("mPhivsLowMass", "#pi_{#pm} #phi distribution vs. parent mass; #phi (rad); Parent Mass (GeV); Counts", 100, -3.14, 3.14, 100, 0.3, 0.55);
     
-    auto * mPhivsZDC = new TH2F("mPhivsZDC", "#pi^{#pm} #phi distribution vs. ZDC readout; #phi (rad); (ZDC East^{2} + ZDC West^{2})^{1/2}; Counts", 100, -3.14, 3.14, 50, 0, 1200);
+    auto * mPhivsZDC = new TH2F("mPhivsZDC", "#pi^{#pm} #phi distribution vs. ZDC readout; #phi (rad); (ZDC East^{2} + ZDC West^{2})^{1/2}; Counts", 100, -3.14, 3.14, 500, 0, 1900);
     auto * mPhivsEastZDC = new TH2F("mPhivsEastZDC", "#pi^{#pm} #phi distribution vs. ZDC East readout; #phi (rad); ZDC East counts; Counts", 100, -3.14, 3.14, 50, 0, 700);
     auto * mPhivsWestZDC = new TH2F("mPhivsWestZDC", "#pi^{#pm} #phi distribution vs. ZDC West readout; #phi (rad); ZDC West counts; Counts", 100, -3.14, 3.14, 50, 0, 700);
     auto * mPhi1n1n = new TH1F("mPhi1n1n", "#phi distribution of 1n1n ZDC peak; #phi (rad); counts", 20, -3.14, 3.14);
     auto * mPhi2n1n = new TH1F("mPhi2n1n", "#phi distribution of 2n1n ZDC peaks; #phi (rad); counts", 20, -3.14, 3.14);
     auto * mPhi2n2n = new TH1F("mPhi2n2n", "#phi distribution of 2n2n ZDC peak; #phi (rad); counts", 20, -3.14, 3.14);
 
+    auto * mCos2phivsEastZDC = new TH2F("mCos2phivsEastZDC", "cos2#phi distribution vs East ZDC; 2cos2#phi; East ZDC readout; counts", 100, -2, 2, 50, 0, 1300);
+    auto * mCos2phivsWestZDC = new TH2F("mCos2phivsWestZDC", "cos2#phi distribution vs West ZDC; 2cos2#phi; West ZDC readout; counts", 100, -2, 2, 50, 0, 1300);
+    auto * mCos2phivsTotalZDC = new TH2F("mCos2phivsTotalZDC", "cos2#phi distribution vs ZDC (East^{2} + West^{2})^{1/2}; 2cos2#phi; ZDC (East^{2} + West^{2})^{1/2}; counts", 100, -2, 2, 50, 0, 1700);
+
     auto * mCos2phivsPT = new TH2F("mCos2phivsPT", "cos2#phi distribution vs P_{T}", 100, -2, 2, 100, 0, 0.25);
     auto * mCos4phivsPT = new TH2F("mCos4phivsPT", "cos4#phi distribution vs P_{T}", 100, -2, 2, 100, 0, 0.25);
+
+    auto * mLowZDCcos2phivsPT = new TH2F("mLowZDCcos2phivsPT", "cos2#phi distribution vs P_{T}", 100, -2, 2, 100, 0, 0.25);
+    auto * mHighZDCcos2phivsPT = new TH2F("mHighZDCcos2phivsPT", "cos2#phi distribution vs P_{T}", 100, -2, 2, 100, 0, 0.25);
 
     auto * mCos2phivsMass = new TH2F("mCos2phivsMass", "cos2#phi distribution vs Mass", 100, -2, 2, 100, 0.3, 1.35);
     auto * mCos4phivsMass = new TH2F("mCos4phivsMass", "cos4#phi distribution vs Mass", 100, -2, 2, 100, 0.3, 1.35);
@@ -146,6 +155,8 @@ void EESI() {
 		mMass->Fill( lv.M() );
                 mEta->Fill( lv.Eta() );
                 mLVPhi->Fill( lv.Phi() );
+                mZDCEast->Fill( EastZDC );
+                mZDCWest->Fill( WestZDC );
                 mZDCTotal->Fill( TotalZDC );
             if ( lv.M() > 0.65 && lv.M() <0.9){
                 if ( absPperp < 0.06){
@@ -155,11 +166,17 @@ void EESI() {
                     mPhivsZDC->Fill ( PairPhi, TotalZDC );
                     mPhivsEastZDC->Fill ( PairPhi, EastZDC );
                     mPhivsWestZDC->Fill ( PairPhi, WestZDC );
+
+                    mCos2phivsEastZDC->Fill ( 2*cos(2*PairPhi), EastZDC );
+                    mCos2phivsWestZDC->Fill ( 2*cos(2*PairPhi), WestZDC );
+                    mCos2phivsTotalZDC->Fill ( 2*cos(2*PairPhi), TotalZDC );
                 }
                 if ( WestZDC > 30 && WestZDC < 70 && EastZDC > 30 && EastZDC < 70 ){mPhi1n1n->Fill(PairPhi);}
                 if ( WestZDC > 30 && WestZDC < 70 && EastZDC > 100 && EastZDC < 135 ){mPhi2n1n->Fill(PairPhi);}
                 if ( WestZDC > 100 && WestZDC < 135 && EastZDC > 30 && EastZDC < 70 ){mPhi2n1n->Fill(PairPhi);}
                 if ( WestZDC > 100 && WestZDC < 135 && EastZDC > 100 && EastZDC < 130 ){mPhi2n2n->Fill(PairPhi);}
+                if ( TotalZDC < 300 ) { mLowZDCcos2phivsPT->Fill( 2*cos(2*PairPhi), absPperp); }
+                if ( TotalZDC > 600 ) { mHighZDCcos2phivsPT->Fill( 2*cos(2*PairPhi), absPperp); }
                 mPxvsPy->Fill( absPperp*cos(PairPhi), absPperp*sin(PairPhi));
                 mPhivsPT->Fill ( PairPhi, absPperp);
                 mCos2phivsPT->Fill( 2*cos(2 *(PairPhi)), absPperp );
@@ -191,102 +208,123 @@ auto *mRapiditycos4phimoments = new TGraphErrors(mPhivsRapidity->GetNbinsY(), hi
 auto *mv2PTcos2phimoments = mCos2phivsPT->ProfileY("mv2PTcos2phimoments", 1, -1);
 auto *mv2PTcos4phimoments = mCos4phivsPT->ProfileY("mv2PTcos4phimoments", 1, -1);
 
+auto *mEastZDCcos2phimoments = mCos2phivsEastZDC->ProfileY("mEastZDCcos2phimoments", 1, -1);
+auto *mWestZDCcos2phimoments = mCos2phivsWestZDC->ProfileY("mWestZDCcos2phimoments", 1, -1);
+auto *mTotalZDCcos2phimoments = mCos2phivsTotalZDC->ProfileY("mTotalZDCcos2phimoments", 1, -1);
+auto *mLowZDCPTcos2phimoments = mLowZDCcos2phivsPT->ProfileY("mLowZDCPTcos2phimoments", 1, -1);
+auto *mHighZDCPTcos2phimoments = mHighZDCcos2phivsPT->ProfileY("mHighZDCPTcos2phimoments", 1, -1);
+
 TGraph *mRapiditymomentsQuad = (TGraph*)mRapiditymomentsplot->Clone("mRapiditymomentsQuad");
 mRapiditymomentsplot->Fit(mLinearFit,"", "", -0.5, 0.5);
 mRapiditymomentsQuad->Fit(mQuadraticFit,"", "", -1.6, 1.6);
+
+mTotalZDCcos2phimoments->Fit("pol0", "","", 600, 1600);
 
 fo -> cd();
 
 makeCanvas();
 mMass->SetLineColor(kBlack);
 mMass->Draw();
-gPad->Print( "plots/plot_mMass.pdf" );
+gPad->Print( "plots/data/Mass/plot_mMass.pdf" );
 
 makeCanvas();
 mPperp->SetLineColor(kBlack);
 mPperp->Draw();
-gPad->Print( "plots/plot_mPperp.pdf" );
+gPad->Print( "plots/data/PT/plot_mPperp.pdf" );
+
+makeCanvas();
+mZDCEast->SetLineColor(kBlack);
+mZDCEast->Draw();
+gPad->Print( "plots/data/ZDC/plot_mZDCEast.pdf" );
+gPad->Print( "plots/data/ZDC/plot_mZDCEast.png" );
+
+makeCanvas();
+mZDCWest->SetLineColor(kBlack);
+mZDCWest->Draw();
+gPad->Print( "plots/data/ZDC/plot_mZDCWest.pdf" );
+gPad->Print( "plots/data/ZDC/plot_mZDCWest.png" );
 
 makeCanvas();
 mZDCTotal->SetLineColor(kBlack);
 mZDCTotal->Draw();
-gPad->Print( "plots/plot_mZDCTotal.pdf" );
+gPad->Print( "plots/data/ZDC/plot_mZDCTotal.pdf" );
+gPad->Print( "plots/data/ZDC/plot_mZDCTotal.png" );
 
 makeCanvas();
 mPairPhi->SetLineColor(kBlack);
 //gStyle->SetOptFit();
 mPairPhi->Draw();
-gPad->Print( "plots/plot_mPairPhi.pdf" );
-gPad->Print( "plots/plot_mPairPhi.png" );
+gPad->Print( "plots/data/plot_mPairPhi.pdf" );
+gPad->Print( "plots/data/plot_mPairPhi.png" );
 
 makeCanvas();
 mPhiFit->SetLineColor(kBlack);
 mPhiFit->Draw();
-gPad->Print( "plots/plot_mPhiFit.pdf" );
+gPad->Print( "plots/data/plot_mPhiFit.pdf" );
 
 makeCanvas();
 gStyle->SetPalette(1);
 mPxvsPy->Draw("colz");
-gPad->Print( "plots/plot_mPxvsPy.pdf" );
+gPad->Print( "plots/data/PT/plot_mPxvsPy.pdf" );
 
 makeCanvas();
 gStyle->SetPalette(1);
 mPhivsMass->Draw("colz");
-gPad->Print( "plots/plot_mPhivsMass.pdf" );
-gPad->Print( "plots/plot_mPhivsMass.png" );
+gPad->Print( "plots/data/Mass/plot_mPhivsMass.pdf" );
+gPad->Print( "plots/data/Mass/plot_mPhivsMass.png" );
 
 makeCanvas();
 gStyle->SetPalette(1);
 mPhivsLowMass->Draw("colz");
-gPad->Print( "plots/plot_mPhivsLowMass.pdf" );
+gPad->Print( "plots/data/Mass/plot_mPhivsLowMass.pdf" );
 
 makeCanvas();
 gStyle->SetPalette(1);
 mPhivsPT->Draw("colz");
-gPad->Print( "plots/plot_mPhivsPT.pdf" );
-gPad->Print( "plots/plot_mPhivsPT.png" );
+gPad->Print( "plots/data/PT/plot_mPhivsPT.pdf" );
+gPad->Print( "plots/data/PT/plot_mPhivsPT.png" );
 
 makeCanvas();
 gStyle->SetPalette(1);
 mPhivsRapidity->Draw("colz");
-gPad->Print( "plots/plot_mPhivsRapidity.pdf" );
-gPad->Print( "plots/plot_mPhivsRapidity.png" );
+gPad->Print( "plots/data/Rapidity/plot_mPhivsRapidity.pdf" );
+gPad->Print( "plots/data/Rapidity/plot_mPhivsRapidity.png" );
 
 makeCanvas();
 gStyle->SetPalette(1);
 mPhivsEastZDC->Draw("colz");
-gPad->Print( "plots/plot_mPhivsEastZDC.pdf" );
-gPad->Print( "plots/plot_mPhivsEastZDC.png" );
+gPad->Print( "plots/data/ZDC/plot_mPhivsEastZDC.pdf" );
+gPad->Print( "plots/data/ZDC/plot_mPhivsEastZDC.png" );
 
 makeCanvas();
 gStyle->SetPalette(1);
 mPhivsWestZDC->Draw("colz");
-gPad->Print( "plots/plot_mPhivsWestZDC.pdf" );
-gPad->Print( "plots/plot_mPhivsWestZDC.png" );
+gPad->Print( "plots/data/ZDC/plot_mPhivsWestZDC.pdf" );
+gPad->Print( "plots/data/ZDC/plot_mPhivsWestZDC.png" );
 
 makeCanvas();
 gStyle->SetPalette(1);
 mPhivsZDC->Draw("colz");
-gPad->Print( "plots/plot_mPhivsZDC.pdf" );
-gPad->Print( "plots/plot_mPhivsZDC.png" );
+gPad->Print( "plots/data/ZDC/plot_mPhivsZDC.pdf" );
+gPad->Print( "plots/data/ZDC/plot_mPhivsZDC.png" );
 
 makeCanvas();
 mPhi1n1n->SetLineColor(kBlack);
 mPhi1n1n->Draw("e1 P*");
-gPad->Print( "plots/plot_mPhi1n1n.pdf" );
-gPad->Print( "plots/plot_mPhi1n1n.png" );
+gPad->Print( "plots/data/ZDC/plot_mPhi1n1n.pdf" );
+gPad->Print( "plots/data/ZDC/plot_mPhi1n1n.png" );
 
 makeCanvas();
 mPhi2n1n->SetLineColor(kBlack);
 mPhi2n1n->Draw("e1 P*");
-gPad->Print( "plots/plot_mPhi2n1n.pdf" );
-gPad->Print( "plots/plot_mPhi2n1n.png" );
+gPad->Print( "plots/data/ZDC/plot_mPhi2n1n.pdf" );
+gPad->Print( "plots/data/ZDC/plot_mPhi2n1n.png" );
 
 makeCanvas();
 mPhi2n2n->SetLineColor(kBlack);
 mPhi2n2n->Draw("e1 P*");
-gPad->Print( "plots/plot_mPhi2n2n.pdf" );
-gPad->Print( "plots/plot_mPhi2n2n.png" );
+gPad->Print( "plots/data/ZDC/plot_mPhi2n2n.pdf" );
+gPad->Print( "plots/data/ZDC/plot_mPhi2n2n.png" );
 
 //makeCanvas();
 //mPhi1n1n->SetLineColor(kBlack);
@@ -301,34 +339,34 @@ gPad->Print( "plots/plot_mPhi2n2n.png" );
 //legend->AddEntry(mPhi2n1n,"2n1n peaks");
 //legend->AddEntry(mPhi2n2n,"2n2n peak");
 //legend->Draw();
-//gPad->Print( "plots/plot_mPhiNeutronPeaks.pdf" );
-//gPad->Print( "plots/plot_mPhiNeutronPeaks.png" );
+//gPad->Print( "plots/data/ZDC/plot_mPhiNeutronPeaks.pdf" );
+//gPad->Print( "plots/data/ZDC/plot_mPhiNeutronPeaks.png" );
 
 makeCanvas();
 mPTmomentsplot->SetTitle("cos(2#phi) moments vs. P_{T}; P_{T} (GeV); 2<cos(2#phi)>");
 mPTmomentsplot->Draw("AC*");
-gPad->Print( "plots/plot_mPTmomentsplot.pdf" );
-gPad->Print( "plots/plot_mPTmomentsplot.png" );
+gPad->Print( "plots/data/PT/plot_mPTmomentsplot.pdf" );
+gPad->Print( "plots/data/PT/plot_mPTmomentsplot.png" );
 
 makeCanvas();
 mMassmomentsplot->SetTitle("cos(2#phi) moments vs. Mass; Mass (GeV); 2<cos(2#phi)>");
 mMassmomentsplot->SetMinimum(0);
 mMassmomentsplot->SetMaximum(1);
 mMassmomentsplot->Draw("AC*");
-gPad->Print( "plots/plot_mMassmomentsplot.pdf" );
-gPad->Print( "plots/plot_mMassmomentsplot.png" );
+gPad->Print( "plots/data/Mass/plot_mMassmomentsplot.pdf" );
+gPad->Print( "plots/data/Mass/plot_mMassmomentsplot.png" );
 
 makeCanvas();
 mRapiditymomentsplot->SetTitle("cos(2#phi) moments vs. Rapidity; Rapidity; 2<cos(2#phi)>");
 mRapiditymomentsplot->Draw("AC*");
-gPad->Print( "plots/plot_mRapiditymomentsplot.pdf" );
-gPad->Print( "plots/plot_mRapiditymomentsplot.png" );
+gPad->Print( "plots/data/Rapidity/plot_mRapiditymomentsplot.pdf" );
+gPad->Print( "plots/data/Rapidity/plot_mRapiditymomentsplot.png" );
 mRapiditymomentsplot->SetMinimum(0);
 mRapiditymomentsplot->SetMaximum(0.5);
 gStyle->SetOptFit(1111);
 mRapiditymomentsplot->Draw("AC*");
-gPad->Print( "plots/plot_mZoomedRapiditymomentsplot.pdf" );
-gPad->Print( "plots/plot_mZoomedRapiditymomentsplot.png" );
+gPad->Print( "plots/data/Rapidity/plot_mZoomedRapiditymomentsplot.pdf" );
+gPad->Print( "plots/data/Rapidity/plot_mZoomedRapiditymomentsplot.png" );
 
 makeCanvas();
 mRapiditymomentsQuad->SetTitle("cos(2#phi) moments vs. Rapidity; Rapidity; 2<cos(2#phi)>");
@@ -339,65 +377,115 @@ mRapiditymomentsQuad->SetMinimum(0);
 mRapiditymomentsQuad->SetMaximum(0.5);
 gStyle->SetOptFit(1111);
 mRapiditymomentsQuad->Draw("AC*");
-gPad->Print( "plots/plot_mZoomedRapiditymomentsQuad.pdf" );
-gPad->Print( "plots/plot_mZoomedRapiditymomentsQuad.png" );
+gPad->Print( "plots/data/Rapidity/plot_mZoomedRapiditymomentsQuad.pdf" );
+gPad->Print( "plots/data/Rapidity/plot_mZoomedRapiditymomentsQuad.png" );
 
 makeCanvas();
 mZDCmomentsplot->SetTitle("cos(2#phi) moments vs. ZDC; (ZDC East^{2} + ZDC West^{2})^{1/2}; 2<cos(2#phi)>");
 mZDCmomentsplot->Draw("AC*");
-gPad->Print( "plots/plot_mZDCmomentsplot.pdf" );
-gPad->Print( "plots/plot_mZDCmomentsplot.png" );
+gPad->Print( "plots/data/ZDC/plot_mZDCmomentsplot.pdf" );
+gPad->Print( "plots/data/ZDC/plot_mZDCmomentsplot.png" );
 
 makeCanvas();
 mPTcos4phimoments->SetTitle("cos(4#phi) moments vs. P_{T}; P_{T} (GeV); 2<cos(4#phi)>");
 mPTcos4phimoments->Draw("AC*");
-gPad->Print( "plots/plot_mPTcos4phimoments.pdf" );
+gPad->Print( "plots/data/PT/plot_mPTcos4phimoments.pdf" );
 
 makeCanvas();
 mMasscos4phimoments->SetTitle("cos(4#phi) moments vs. Mass; Mass (GeV); 2<cos(4#phi)>");
 mMasscos4phimoments->Draw("AC*");
-gPad->Print( "plots/plot_mMasscos4phimoments.pdf" );
+gPad->Print( "plots/data/Mass/plot_mMasscos4phimoments.pdf" );
 
 makeCanvas();
 mRapiditycos4phimoments->SetTitle("cos(4#phi) moments vs. Rapidity; Rapidity; 2<cos(4#phi)>");
 mRapiditycos4phimoments->Draw("AC*");
-gPad->Print( "plots/plot_mRapiditycos4phimoments.pdf" );
+gPad->Print( "plots/data/Rapidity/plot_mRapiditycos4phimoments.pdf" );
 
 makeCanvas();
 mLowMassmomentsplot->SetTitle("cos(2#phi) moments vs. Mass; Mass (GeV); 2<cos(2#phi)>");
 //mLowMassmomentsplot->SetMinimum(0);
 //mLowMassmomentsplot->SetMaximum(1);
 mLowMassmomentsplot->Draw("AC*");
-gPad->Print( "plots/plot_mLowMassmomentsplot.pdf" );
-gPad->Print( "plots/plot_mLowMassmomentsplot.png" );
+gPad->Print( "plots/data/Mass/plot_mLowMassmomentsplot.pdf" );
+gPad->Print( "plots/data/Mass/plot_mLowMassmomentsplot.png" );
 
 makeCanvas();
 mv2PTcos2phimoments->SetLineColor(kBlack);
 mv2PTcos2phimoments->Draw();
-gPad->Print( "plots/plot_mv2PTcos2phimoments.pdf" );
-gPad->Print( "plots/plot_mv2PTcos2phimoments.png" );
+gPad->Print( "plots/data/PT/plot_mv2PTcos2phimoments.pdf" );
+gPad->Print( "plots/data/PT/plot_mv2PTcos2phimoments.png" );
 
 makeCanvas();
 mv2PTcos4phimoments->SetLineColor(kBlack);
 mv2PTcos4phimoments->Draw();
-gPad->Print( "plots/plot_mv2PTcos4phimoments.pdf" );
-gPad->Print( "plots/plot_mv2PTcos4phimoments.png" );
+gPad->Print( "plots/data/PT/plot_mv2PTcos4phimoments.pdf" );
+gPad->Print( "plots/data/PT/plot_mv2PTcos4phimoments.png" );
 
 makeCanvas();
 mCos2phivsPT->Draw("colz");
-gPad->Print( "plots/plot_mCos2phivsPT.pdf" );
+gPad->Print( "plots/data/PT/plot_mCos2phivsPT.pdf" );
 
 makeCanvas();
 mCos4phivsPT->Draw("colz");
-gPad->Print( "plots/plot_mCos4phivsPT.pdf" );
+gPad->Print( "plots/data/PT/plot_mCos4phivsPT.pdf" );
 
 makeCanvas();
 mCos2phivsMass->Draw("colz");
-gPad->Print( "plots/plot_mCos2phivsMass.pdf" );
+gPad->Print( "plots/data/Mass/plot_mCos2phivsMass.pdf" );
 
 makeCanvas();
 mCos4phivsMass->Draw("colz");
-gPad->Print( "plots/plot_mCos4phivsMass.pdf" );
+gPad->Print( "plots/data/Mass/plot_mCos4phivsMass.pdf" );
+
+makeCanvas();
+mEastZDCcos2phimoments->SetLineColor(kBlack);
+mWestZDCcos2phimoments->SetLineColor(kMagenta);
+mEastZDCcos2phimoments->SetTitle("cos(2#phi) moments vs. ZDC readout; East readout; 2<cos2#phi>");
+mEastZDCcos2phimoments->Draw();
+mWestZDCcos2phimoments->Draw("SAME");
+auto legend2 = new TLegend(0.65,0.1,0.95,0.4);
+legend2->AddEntry(mEastZDCcos2phimoments,"East ZDC");
+legend2->AddEntry(mWestZDCcos2phimoments,"West ZDC");
+legend2->Draw();
+gPad->Print( "plots/data/ZDC/plot_mEWZDCcos2phimoments.pdf" );
+gPad->Print( "plots/data/ZDC/plot_mEWZDCcos2phimoments.png" );
+
+makeCanvas();
+mTotalZDCcos2phimoments->SetLineColor(kBlack);
+mTotalZDCcos2phimoments->SetTitle("cos(2#phi) moments vs. ZDC (East^{2} + West^{2})^{1/2}; ZDC (East^{2} + West^{2})^{1/2}; 2<cos2#phi>");
+mTotalZDCcos2phimoments->SetMinimum(0.15);
+mTotalZDCcos2phimoments->SetMaximum(0.4);
+mTotalZDCcos2phimoments->Draw();
+gPad->Print( "plots/data/ZDC/plot_mTotalZDCcos2phimoments.pdf" );
+gPad->Print( "plots/data/ZDC/plot_mTotalZDCcos2phimoments.png" );
+
+makeCanvas();
+mLowZDCPTcos2phimoments->SetLineColor(kBlack);
+mLowZDCPTcos2phimoments->SetTitle("cos(2#phi) moments vs. P_{T} at ZDC (East^{2} + West^{2})^{1/2} < 300; P_{T} (GeV/c); 2<cos2#phi>");
+mLowZDCPTcos2phimoments->Draw();
+gPad->Print( "plots/data/ZDC/plot_mLowZDCPTcos2phimoments.pdf" );
+gPad->Print( "plots/data/ZDC/plot_mLowZDCPTcos2phimoments.png" );
+
+makeCanvas();
+mHighZDCPTcos2phimoments->SetLineColor(kBlack);
+mHighZDCPTcos2phimoments->SetTitle("cos(2#phi) moments vs. P_{T} at ZDC (East^{2} + West^{2})^{1/2} > 600; P_{T} (GeV/c); 2<cos2#phi>");
+mHighZDCPTcos2phimoments->Draw();
+gPad->Print( "plots/data/ZDC/plot_mHighZDCPTcos2phimoments.pdf" );
+gPad->Print( "plots/data/ZDC/plot_mHighZDCPTcos2phimoments.png" );
+
+makeCanvas();
+mLowZDCPTcos2phimoments->SetLineColor(kBlack);
+mHighZDCPTcos2phimoments->SetLineColor(kMagenta);
+mLowZDCPTcos2phimoments->SetTitle("cos(2#phi) moments vs. P_{T}; P_{T} (GeV/c); 2<cos2#phi>");
+mLowZDCPTcos2phimoments->Draw();
+mHighZDCPTcos2phimoments->Draw("SAME");
+auto legend3 = new TLegend(0.65,0.1,0.95,0.4);
+legend3->AddEntry(mLowZDCPTcos2phimoments,"ZDC (East^{2} + West^{2})^{1/2} < 300");
+legend3->AddEntry(mHighZDCPTcos2phimoments,"ZDC (East^{2} + West^{2})^{1/2} > 600");
+legend3->Draw();
+gPad->Print( "plots/data/ZDC/plot_mDiffZDCPTcos2phimoments.pdf" );
+gPad->Print( "plots/data/ZDC/plot_mDiffZDCPTcos2phimoments.png" );
+
 
 fo->Write();
 }
