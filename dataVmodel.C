@@ -44,7 +44,8 @@ void dataVmodel() {
     auto * mToyCutPairPhi = (TH1F*)modelHists->Get("mCutPairPhi");
 
     auto * mToyPhivsPT = (TH2F*)modelHists->Get("mPhivsPT");
-    auto * mToyCos2PhivsPT = (TH2F*)modelHists->Get("mCos2phivsPT");
+    auto * mToyCos2PhivsPT = (TH2F*)modelHists->Get("mCos2cutflatvsPT");
+    //auto * mToyCos2PhivsPT = (TH2F*)modelHists->Get("mCos2decayphivsPT");
     auto * mToyCos4PhivsPT = (TH2F*)modelHists->Get("mCos4phivsPT");
 
     auto * mToyPhivsMass = (TH2F*)modelHists->Get("mPhivsMass");
@@ -102,7 +103,6 @@ void dataVmodel() {
     auto * mDataMinusToyCos2PhivsMass = (TH2F*)mDataCos2PhivsMass->Clone("mDataMinusToyCos2PhivsMass");
     mDataMinusToyCos2PhivsMass->Add(mToyCos2PhivsMass, -1);
 
-
 auto * mToyPTCos2PhiMoments = mToyCos2PhivsPT->ProfileY("mToyPTCos2PhiMoments", 1, -1);
 auto * mDataPTCos2PhiMoments = mDataCos2PhivsPT->ProfileY("mDataPTCos2PhiMoments", 1, -1);
 auto * mDatabyToyPTn2Moments = mDataCos2PhivsPT->ProfileY("mDatabyToyn2Moments", 1, -1);
@@ -118,43 +118,43 @@ makeCanvas();
 mToyMass->SetLineColor(kBlack);
 mToyMass->SetTitle("Toy model mass distribution; Mass (GeV); counts");
 mToyMass->Draw();
-gPad->Print( "plots/plot_mNormToyMass.pdf" );
-gPad->Print( "plots/plot_mNormToyMass.png" );
+gPad->Print( "plots/dataVmodel/Mass/plot_mNormToyMass.pdf" );
+gPad->Print( "plots/dataVmodel/Mass/plot_mNormToyMass.png" );
 
 makeCanvas();
 mDataMass->SetLineColor(kBlack);
 mDataMass->SetTitle("Data mass distribution; Mass (GeV); counts");
 mDataMass->Draw();
-gPad->Print( "plots/plot_mNormDataMass.pdf" );
-gPad->Print( "plots/plot_mNormDataMass.png" );
+gPad->Print( "plots/dataVmodel/Mass/plot_mNormDataMass.pdf" );
+gPad->Print( "plots/dataVmodel/Mass/plot_mNormDataMass.png" );
 
 makeCanvas();
 mDataMinusToyMass->SetLineColor(kBlack);
 mDataMinusToyMass->SetTitle("Data-toy model mass distribution; Mass (GeV); counts");
 mDataMinusToyMass->Draw();
-gPad->Print( "plots/plot_mDataMinusToyMass.pdf" );
-gPad->Print( "plots/plot_mDataminusToyMass.png" );
+gPad->Print( "plots/dataVmodel/Mass/plot_mDataMinusToyMass.pdf" );
+gPad->Print( "plots/dataVmodel/Mass/plot_mDataminusToyMass.png" );
 
 makeCanvas();
 mToyPairPT->SetLineColor(kBlack);
 mToyPairPT->SetTitle("Toy model mass distribution; Mass (GeV); counts");
 mToyPairPT->Draw();
-gPad->Print( "plots/plot_mNormToyPairPT.pdf" );
-gPad->Print( "plots/plot_mNormToyPairPT.png" );
+gPad->Print( "plots/dataVmodel/PT/plot_mNormToyPairPT.pdf" );
+gPad->Print( "plots/dataVmodel/PT/plot_mNormToyPairPT.png" );
 
 makeCanvas();
 mDataPairPT->SetLineColor(kBlack);
 mDataPairPT->SetTitle("Data pair P_{T} distribution; P_{T} (GeV/c); counts");
 mDataPairPT->Draw();
-gPad->Print( "plots/plot_mNormDataPairPT.pdf" );
-gPad->Print( "plots/plot_mNormDataPairPT.png" );
+gPad->Print( "plots/dataVmodel/PT/plot_mNormDataPairPT.pdf" );
+gPad->Print( "plots/dataVmodel/PT/plot_mNormDataPairPT.png" );
 
 makeCanvas();
 mDataMinusToyPairPT->SetLineColor(kBlack);
 mDataMinusToyPairPT->SetTitle("Data-toy model pair P_{T} distribution; P_{T} (GeV/c); counts");
 mDataMinusToyPairPT->Draw();
-gPad->Print( "plots/plot_mDataMinusToyPairPT.pdf" );
-gPad->Print( "plots/plot_mDataminusToyPairPT.png" );
+gPad->Print( "plots/dataVmodel/PT/plot_mDataMinusToyPairPT.pdf" );
+gPad->Print( "plots/dataVmodel/PT/plot_mDataminusToyPairPT.png" );
 
 makeCanvas();
 mToyPairPhi->SetLineColor(kBlack);
@@ -172,15 +172,15 @@ legend->AddEntry(mToyPairPhiwMu,"With #pi->#mu decay, no noise, no cut");
 legend->AddEntry(mToyNoisyPairPhi,"With #pi->#mu decay, with noise, no cut");
 legend->AddEntry(mToyCutPairPhi,"With #pi->#mu decay, with noise, with cut");
 legend->Draw();
-gPad->Print( "plots/plot_mNormToyPhi.pdf" );
-gPad->Print( "plots/plot_mNormToyPhi.png" );
+gPad->Print( "plots/dataVmodel/plot_mNormToyPhi.pdf" );
+gPad->Print( "plots/dataVmodel/plot_mNormToyPhi.png" );
 
 makeCanvas();
 mDataPairPhi->SetLineColor(kBlack);
 mDataPairPhi->SetTitle("Data #phi distribution; #phi (rad); counts");
 mDataPairPhi->Draw();
-gPad->Print( "plots/plot_mNormDataPhi.pdf" );
-gPad->Print( "plots/plot_mNormDataPhi.png" );
+gPad->Print( "plots/dataVmodel/plot_mNormDataPhi.pdf" );
+gPad->Print( "plots/dataVmodel/plot_mNormDataPhi.png" );
 
 makeCanvas();
 mDataMinusToyPhi->SetLineColor(kBlack);
@@ -198,71 +198,72 @@ legend2->AddEntry(mDataMinusToyPhiwMu,"With #pi->#mu decay, no noise, no cut");
 legend2->AddEntry(mDataMinusToyNoisyPhi,"With #pi->#mu decay, with noise, no cut");
 legend2->AddEntry(mDataMinusToyCutPhi,"With #pi->#mu decay, with noise, with cut");
 legend2->Draw();
-gPad->Print( "plots/plot_mDataMinusToyPhi.pdf" );
-gPad->Print( "plots/plot_mDataminusToyPhi.png" );
+gPad->Print( "plots/dataVmodel/plot_mDataMinusToyPhi.pdf" );
+gPad->Print( "plots/dataVmodel/plot_mDataminusToyPhi.png" );
 
 makeCanvas();
 gStyle->SetPalette(1);
 mDataPhivsPT->SetTitle("Data #phi vs. P_{T} (scaled to avg=1); #phi (rad); P_{T} (GeV/c); counts");
 mDataPhivsPT->Draw("colz");
-gPad->Print( "plots/plot_mNormDataPhivsPT.pdf" );
-gPad->Print( "plots/plot_mNormDataPhivsPT.png" );
+gPad->Print( "plots/dataVmodel/PT/plot_mNormDataPhivsPT.pdf" );
+gPad->Print( "plots/dataVmodel/PT/plot_mNormDataPhivsPT.png" );
 
 makeCanvas();
 gStyle->SetPalette(1);
 mToyPhivsPT->SetTitle("Toy model #phi vs. P_{T} (scaled to avg=1); #phi (rad); P_{T} (GeV/c); counts");
 mToyPhivsPT->Draw("colz");
-gPad->Print( "plots/plot_mNormToyPhivsPT.pdf" );
-gPad->Print( "plots/plot_mNormToyPhivsPT.png" );
+gPad->Print( "plots/dataVmodel/PT/plot_mNormToyPhivsPT.pdf" );
+gPad->Print( "plots/dataVmodel/PT/plot_mNormToyPhivsPT.png" );
 
 makeCanvas();
 gStyle->SetPalette(1);
 mDataMinusToyPhivsPT->SetTitle("Data-toy model #phi vs. P_{T} (scaled to avg=1); #phi (rad); P_{T} (GeV/c); counts");
 mDataMinusToyPhivsPT->Draw("colz");
-gPad->Print( "plots/plot_mDataMinusToyPhivsPT.pdf" );
-gPad->Print( "plots/plot_mDataMinusToyPhivsPT.png" );
+gPad->Print( "plots/dataVmodel/PT/plot_mDataMinusToyPhivsPT.pdf" );
+gPad->Print( "plots/dataVmodel/PT/plot_mDataMinusToyPhivsPT.png" );
 
 makeCanvas();
 gStyle->SetPalette(1);
 mDataCos2PhivsPT->SetTitle("Data cos(2#phi) vs. P_{T} (scaled to avg=1); cos(2#phi); P_{T} (GeV/c); counts");
 mDataCos2PhivsPT->Draw("colz");
-gPad->Print( "plots/plot_mNormDataCos2PhivsPT.pdf" );
-gPad->Print( "plots/plot_mNormDataCos2PhivsPT.png" );
+gPad->Print( "plots/dataVmodel/PT/plot_mNormDataCos2PhivsPT.pdf" );
+gPad->Print( "plots/dataVmodel/PT/plot_mNormDataCos2PhivsPT.png" );
 
 makeCanvas();
 gStyle->SetPalette(1);
 mToyCos2PhivsPT->SetTitle("Toy model cos(2#phi) vs. P_{T} (scaled to avg=1); cos(2#phi); P_{T} (GeV/c); counts");
 mToyCos2PhivsPT->Draw("colz");
-gPad->Print( "plots/plot_mNormToyCos2PhivsPT.pdf" );
-gPad->Print( "plots/plot_mNormToyCos2PhivsPT.png" );
+gPad->Print( "plots/dataVmodel/PT/plot_mNormToyCos2PhivsPT.pdf" );
+gPad->Print( "plots/dataVmodel/PT/plot_mNormToyCos2PhivsPT.png" );
 
 makeCanvas();
 gStyle->SetPalette(1);
 mDataMinusToyCos2PhivsPT->SetTitle("Data-toy model cos(2#phi) vs. P_{T}; cos(2#phi); P_{T} (GeV/c); counts");
 mDataMinusToyCos2PhivsPT->Draw("colz");
-gPad->Print( "plots/plot_mDataMinusToyCos2PhivsPT.pdf" );
-gPad->Print( "plots/plot_mDataMinusToyCos2PhivsPT.png" );
+gPad->Print( "plots/dataVmodel/PT/plot_mDataMinusToyCos2PhivsPT.pdf" );
+gPad->Print( "plots/dataVmodel/PT/plot_mDataMinusToyCos2PhivsPT.png" );
 
 makeCanvas();
 mToyPTCos2PhiMoments->SetLineColor(kGreen);
 mDataPTCos2PhiMoments->SetLineColor(kBlack);
 mToyPTCos2PhiMoments->SetTitle("Strength of cos(2#phi) signal vs. P_{T}; P_{T} (GeV/c); 2<cos(2#phi)>");
-mToyPTCos2PhiMoments->SetMaximum(0.56);
+mToyPTCos2PhiMoments->SetMaximum(0.5);
+mToyPTCos2PhiMoments->SetMinimum(-0.5);
 mToyPTCos2PhiMoments->Draw();
 mDataPTCos2PhiMoments->Draw("SAME");
 auto legend3 = new TLegend(0.65,0.1,0.95,0.4);
 legend3->AddEntry(mDataPTCos2PhiMoments,"Run 12 U+U data");
 legend3->AddEntry(mToyPTCos2PhiMoments,"Toy model");
 legend3->Draw();
-gPad->Print( "plots/plot_mDataVToyPTCos2PhiMoments.pdf" );
-gPad->Print( "plots/plot_mDataVToyPTCos2PhiMoments.png" );
+gPad->Print( "plots/dataVmodel/PT/plot_mDataVToyPTCos2PhiMoments.pdf" );
+gPad->Print( "plots/dataVmodel/PT/plot_mDataVToyPTCos2PhiMoments.png" );
 
 makeCanvas();
 mDatabyToyPTn2Moments->SetLineColor(kBlack);
 mDatabyToyPTn2Moments->SetTitle("Data/model cos2#phi signal strength; P_{T} (GeV/c); data 2<cos2#phi>/toy model 2<cos2#phi>");
 mDatabyToyPTn2Moments->Draw();
-gPad->Print( "plots/plot_mDatabyToyPTn2Moments.pdf" );
-gPad->Print( "plots/plot_mDatabyToyPTn2Moments.png" );
+gPad->Print( "plots/dataVmodel/PT/plot_mDatabyToyPTn2Moments.pdf" );
+gPad->Print( "plots/dataVmodel/PT/plot_mDatabyToyPTn2Moments.png" );
 
 makeCanvas();
 mToyMassCos2PhiMoments->SetLineColor(kGreen);
@@ -276,7 +277,7 @@ auto legend4 = new TLegend(0.65,0.1,0.95,0.4);
 legend4->AddEntry(mDataMassCos2PhiMoments,"Run 12 U+U data");
 legend4->AddEntry(mToyMassCos2PhiMoments,"Toy model");
 legend4->Draw();
-gPad->Print( "plots/plot_mDataVToyMassCos2PhiMoments.pdf" );
-gPad->Print( "plots/plot_mDataVToyMassCos2PhiMoments.png" );
+gPad->Print( "plots/dataVmodel/Massplot_mDataVToyMassCos2PhiMoments.pdf" );
+gPad->Print( "plots/dataVmodel/Mass/plot_mDataVToyMassCos2PhiMoments.png" );
 
 }

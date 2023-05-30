@@ -34,6 +34,25 @@ double calc_Phi( TLorentzVector lv1, TLorentzVector lv2) {
     }
 }
 
+double lab_calc_Phi( TLorentzVector lv1, TLorentzVector lv2) {
+    TLorentzVector lvPlus = lv1 + lv2;
+    //lv1.Boost(-lvPlus.BoostVector());
+    //lv2.Boost(-lvPlus.BoostVector());
+    TLorentzVector lvMinus = lv1 - lv2;
+    double Px = lvPlus.Px();
+    double Py = lvPlus.Py();
+    double Qx = lvMinus.Px();
+    double Qy = lvMinus.Py();
+    double PcrossQ = (Px*Qy) - (Py*Qx);
+    double cosphi = (Px*Qx + Py*Qy) / (lvPlus.Pt()*lvMinus.Pt());
+    double PairPhi = acos(cosphi);
+    if ( PcrossQ > 0 ){
+        return PairPhi - 3.141592;
+    } else {
+        return 3.141592 - PairPhi;
+    }
+}
+
 
 double* histMoments( TH2F* hist , int n) {
     int nbinsy = hist->GetNbinsY();
@@ -98,6 +117,7 @@ void EESI() {
 
     auto * mZDCTotal = new TH1F("mZDCtotal", "ZDC (East^{2} + West^{2})^{1/2}; ZDC (East^{2} + West^{2})^{1/2}; counts", 1000, 0, 1900);
     auto * mPairPhi = new TH1F("mPairPhi", "#pi_{#pm} #phi distribution;#phi (rad);# events", 100, -3.13, 3.13);
+    auto * mLabPairPhi = new TH1F("mLabPairPhi", "#pi_{#pm} #phi distribution;#phi (rad);# events", 100, -3.13, 3.13);
     auto * mPxvsPy = new TH2F("mPxvsPy", "#rho^{0} 2D momentum dist; P_{x} (GeV/c); P_{y} (GeV/c); Counts", 200, -0.1, 0.1, 200, -0.1, 0.1);
     auto * mPhivsMass = new TH2F("mPhivsMass", "#pi_{#pm} #phi distribution vs. parent mass; #phi (rad); Parent Mass (GeV); Counts", 100, -3.14, 3.14, 50, 0.3, 1.35);
     auto * mPhivsPT = new TH2F("mPhivsPT", "#pi^{#pm} #phi distribution vs. parent P_{T}; #phi (rad); Parent P_{T} (GeV/c); Counts", 100, -3.14, 3.14, 100, 0, 0.25);
@@ -115,7 +135,8 @@ void EESI() {
     auto * mCos2phivsWestZDC = new TH2F("mCos2phivsWestZDC", "cos2#phi distribution vs West ZDC; 2cos2#phi; West ZDC readout; counts", 100, -2, 2, 50, 0, 1300);
     auto * mCos2phivsTotalZDC = new TH2F("mCos2phivsTotalZDC", "cos2#phi distribution vs ZDC (East^{2} + West^{2})^{1/2}; 2cos2#phi; ZDC (East^{2} + West^{2})^{1/2}; counts", 100, -2, 2, 50, 0, 1700);
 
-    auto * mCos2phivsPT = new TH2F("mCos2phivsPT", "cos2#phi distribution vs P_{T}", 100, -2, 2, 100, 0, 0.25);
+    auto * mCos2phivsPT = new TH2F("mCos2phivsPT", "cos2#phi distribution vs P_{T}", 100, -2, 2, 100, 0, 0.5);
+    auto * mLabCos2phivsPT = new TH2F("mLabCos2phivsPT", "cos2#phi distribution vs P_{T}", 100, -2, 2, 100, 0, 0.5);
     auto * mCos4phivsPT = new TH2F("mCos4phivsPT", "cos4#phi distribution vs P_{T}", 100, -2, 2, 100, 0, 0.25);
 
     auto * mLowZDCcos2phivsPT = new TH2F("mLowZDCcos2phivsPT", "cos2#phi distribution vs P_{T}", 100, -2, 2, 100, 0, 0.25);
@@ -162,6 +183,7 @@ void EESI() {
                 if ( absPperp < 0.06){
 
                     mPairPhi->Fill ( PairPhi );
+                    mLabPairPhi->Fill ( lab_calc_Phi(lv1, lv2) );
                     mPhivsRapidity->Fill ( PairPhi, mRapidity);
                     mPhivsZDC->Fill ( PairPhi, TotalZDC );
                     mPhivsEastZDC->Fill ( PairPhi, EastZDC );
@@ -180,6 +202,7 @@ void EESI() {
                 mPxvsPy->Fill( absPperp*cos(PairPhi), absPperp*sin(PairPhi));
                 mPhivsPT->Fill ( PairPhi, absPperp);
                 mCos2phivsPT->Fill( 2*cos(2 *(PairPhi)), absPperp );
+                mLabCos2phivsPT->Fill( 2*cos(2 *(lab_calc_Phi(lv1, lv2))), absPperp );
                 mCos4phivsPT->Fill( 4*cos(4 *(PairPhi)), absPperp );
             }
             if ( lv.M() > 0.2 && lv.M() <1.5 && absPperp < 0.06) { 
@@ -206,6 +229,7 @@ auto *mRapiditycos4phimoments = new TGraphErrors(mPhivsRapidity->GetNbinsY(), hi
 //mPhi2n2n->Scale(2*3.1415/(mPhi2n2n->Integral("width")));
 
 auto *mv2PTcos2phimoments = mCos2phivsPT->ProfileY("mv2PTcos2phimoments", 1, -1);
+auto *mlabPTcos2phimoments = mLabCos2phivsPT->ProfileY("mlabPTcos2phimoments", 1, -1);
 auto *mv2PTcos4phimoments = mCos4phivsPT->ProfileY("mv2PTcos4phimoments", 1, -1);
 
 auto *mEastZDCcos2phimoments = mCos2phivsEastZDC->ProfileY("mEastZDCcos2phimoments", 1, -1);
@@ -486,6 +510,18 @@ legend3->Draw();
 gPad->Print( "plots/data/ZDC/plot_mDiffZDCPTcos2phimoments.pdf" );
 gPad->Print( "plots/data/ZDC/plot_mDiffZDCPTcos2phimoments.png" );
 
+makeCanvas();
+mv2PTcos2phimoments->SetLineColor(kBlack);
+mlabPTcos2phimoments->SetLineColor(kGreen);
+mv2PTcos2phimoments->SetTitle("Strength of cos2#phi modulation; P_{T} (GeV/c); 2<cos2#phi>");
+mv2PTcos2phimoments->Draw();
+mlabPTcos2phimoments->Draw("SAME");
+auto legend4 = new TLegend(0.65,0.1,0.95,0.4);
+legend4->AddEntry(mv2PTcos2phimoments,"Rest frame 2<cos2#phi>");
+legend4->AddEntry(mlabPTcos2phimoments,"Lab frame 2<cos2#phi>");
+legend4->Draw();
+gPad->Print( "plots/data/PT/plot_mLabVRestCos2phivsPT.pdf" );
+gPad->Print( "plots/data/PT/plot_mLabVRestCos2phivsPT.png" );
 
 fo->Write();
 }
