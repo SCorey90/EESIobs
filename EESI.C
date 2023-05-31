@@ -171,7 +171,7 @@ void EESI() {
         double absPperp = lv.Pt();
         double PairPhi = calc_Phi( lv1, lv2);
 
-        if ( chipipi <10 && dca1 <1 && dca2 <1 ){
+        if ( chipipi <10 && dca1 <1 && dca2 <1 && pair->mChargeSum==0 ){
 		mPperp->Fill( absPperp );
 		mMass->Fill( lv.M() );
                 mEta->Fill( lv.Eta() );

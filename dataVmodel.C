@@ -19,6 +19,7 @@ void dataVmodel() {
     //import histograms
     TFile * dataHists = TFile::Open("EESIplots.root");
     TFile * modelHists = TFile::Open("toymodelplots.root");
+    TFile * mixedeventHists = TFile::Open("MixedEventplots.root");
 
     dataHists->ls();
     auto * mDataMass = (TH1F*)dataHists->Get("mMass");
@@ -51,6 +52,16 @@ void dataVmodel() {
     auto * mToyPhivsMass = (TH2F*)modelHists->Get("mPhivsMass");
     auto * mToyCos2PhivsMass = (TH2F*)modelHists->Get("mCos2phivsMass");
     auto * mToyCos4PhivsMass = (TH2F*)modelHists->Get("mCos4phivsMass");
+
+    mixedeventHists->ls();
+    auto * mMixedMass = (TH1F*)mixedeventHists->Get("mMass");
+    auto * mMixedPairPT = (TH1F*)mixedeventHists->Get("mPperp");
+
+    auto * mMixedPairPhi = (TH1F*)mixedeventHists->Get("mPairPhi");
+    auto * mLikePairPhi = (TH1F*)mixedeventHists->Get("mLikePhi");
+
+    auto * mMixedCos2PhivsPT = (TH2F*)mixedeventHists->Get("mCos2PhivsPT");
+    auto * mLikeCos2PhivsPT = (TH2F*)mixedeventHists->Get("mLikeCos2PhivsPT");
 
     //new TFile
     TFile * fo = new TFile( "dataVmodelplots.root", "RECREATE" );
@@ -105,6 +116,8 @@ void dataVmodel() {
 
 auto * mToyPTCos2PhiMoments = mToyCos2PhivsPT->ProfileY("mToyPTCos2PhiMoments", 1, -1);
 auto * mDataPTCos2PhiMoments = mDataCos2PhivsPT->ProfileY("mDataPTCos2PhiMoments", 1, -1);
+auto * mMixedPTCos2PhiMoments = mMixedCos2PhivsPT->ProfileY("mMixedPTCos2PhiMoments", 1, -1);
+auto * mLikePTCos2PhiMoments = mLikeCos2PhivsPT->ProfileY("mLikePTCos2PhiMoments", 1, -1);
 auto * mDatabyToyPTn2Moments = mDataCos2PhivsPT->ProfileY("mDatabyToyn2Moments", 1, -1);
 mDatabyToyPTn2Moments->Divide(mToyPTCos2PhiMoments); 
 
@@ -279,5 +292,22 @@ legend4->AddEntry(mToyMassCos2PhiMoments,"Toy model");
 legend4->Draw();
 gPad->Print( "plots/dataVmodel/Massplot_mDataVToyMassCos2PhiMoments.pdf" );
 gPad->Print( "plots/dataVmodel/Mass/plot_mDataVToyMassCos2PhiMoments.png" );
+
+makeCanvas();
+mMixedPTCos2PhiMoments->SetLineColor(kGreen);
+mDataPTCos2PhiMoments->SetLineColor(kBlack);
+mLikePTCos2PhiMoments->SetLineColor(kMagenta);
+mMixedPTCos2PhiMoments->SetTitle("Strength of cos(2#phi) signal vs. P_{T}; P_{T} (GeV/c); 2<cos(2#phi)>");
+mMixedPTCos2PhiMoments->SetMaximum(0.5);
+mMixedPTCos2PhiMoments->Draw();
+mDataPTCos2PhiMoments->Draw("SAME");
+mLikePTCos2PhiMoments->Draw("SAME");
+auto legend5 = new TLegend(0.65,0.1,0.95,0.4);
+legend5->AddEntry(mDataPTCos2PhiMoments,"Run 12 U+U data");
+legend5->AddEntry(mMixedPTCos2PhiMoments,"Mixed event opposite sign pairs");
+legend5->AddEntry(mLikePTCos2PhiMoments,"Mixed event like sign pairs");
+legend5->Draw();
+gPad->Print( "plots/dataVmodel/PT/plot_mDataVMixedPTCos2PhiMoments.pdf" );
+gPad->Print( "plots/dataVmodel/PT/plot_mDataVMixedPTCos2PhiMoments.png" );
 
 }
