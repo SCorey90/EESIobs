@@ -22,6 +22,10 @@ void dataVmodel() {
     TFile * mixedeventHists = TFile::Open("MixedEventplots.root");
 
     dataHists->ls();
+    auto * mDataPiPT = (TH1F*)dataHists->Get("mPiPT");
+    auto * mDataPiEta = (TH1F*)dataHists->Get("mPiEta");
+    auto * mDataPiAngle = (TH1F*)dataHists->Get("mPiAngle");
+
     auto * mDataMass = (TH1F*)dataHists->Get("mMass");
     auto * mDataPairPT = (TH1F*)dataHists->Get("mPperp");
 
@@ -54,6 +58,10 @@ void dataVmodel() {
     auto * mToyCos4PhivsMass = (TH2F*)modelHists->Get("mCos4phivsMass");
 
     mixedeventHists->ls();
+    auto * mDataLikePiPT = (TH1F*)mixedeventHists->Get("mPiDataLikePT");
+    auto * mDataLikePiEta = (TH1F*)mixedeventHists->Get("mPiDataLikeEta");
+    auto * mDataLikePiAngle = (TH1F*)mixedeventHists->Get("mPiDataLikeAngle");
+
     auto * mMixedMass = (TH1F*)mixedeventHists->Get("mMass");
     auto * mMixedPairPT = (TH1F*)mixedeventHists->Get("mPperp");
 
@@ -67,6 +75,14 @@ void dataVmodel() {
     TFile * fo = new TFile( "dataVmodelplots.root", "RECREATE" );
 
     //analysis
+    mDataPiPT->Scale(1.5/mDataPiPT->Integral("width"));
+    mDataPiEta->Scale(5/mDataPiEta->Integral("width"));
+    mDataPiAngle->Scale(6.18/mDataPiAngle->Integral("width"));
+
+    mDataLikePiPT->Scale(1.5/mDataLikePiPT->Integral("width"));
+    mDataLikePiEta->Scale(5/mDataLikePiEta->Integral("width"));
+    mDataLikePiAngle->Scale(6.18/mDataLikePiAngle->Integral("width"));
+
     mToyMass->Scale(1/mToyMass->Integral());
     mDataMass->Scale(1/mDataMass->Integral());
     auto * mDataMinusToyMass = (TH1F*)mDataMass->Clone("mDataMinusToyMass");
@@ -309,5 +325,41 @@ legend5->AddEntry(mLikePTCos2PhiMoments,"Mixed event like sign pairs");
 legend5->Draw();
 gPad->Print( "plots/dataVmodel/PT/plot_mDataVMixedPTCos2PhiMoments.pdf" );
 gPad->Print( "plots/dataVmodel/PT/plot_mDataVMixedPTCos2PhiMoments.png" );
+
+makeCanvas();
+mDataPiPT->SetLineColor(kBlack);
+mDataLikePiPT->SetLineColor(kMagenta);
+mDataPiPT->Draw();
+mDataLikePiPT->Draw("SAME");
+auto legend6 = new TLegend(0.65, 0.1, 0.95, 0.4);
+legend6->AddEntry(mDataPiPT, "#pi from unlike sign pair");
+legend6->AddEntry(mDataLikePiPT, "#pi from like sign pair");
+legend6->Draw();
+gPad->Print( "plots/data/PT/plot_mLikevsUnlikePiPT.png" );
+gPad->Print( "plots/data/PT/plot_mLikevsUnlikePiPT.pdf" );
+
+makeCanvas();
+mDataPiEta->SetLineColor(kBlack);
+mDataLikePiEta->SetLineColor(kMagenta);
+mDataLikePiEta->Draw();
+mDataPiEta->Draw("SAME");
+auto legend7 = new TLegend(0.65, 0.1, 0.95, 0.4);
+legend7->AddEntry(mDataPiEta, "#pi from unlike sign pair");
+legend7->AddEntry(mDataLikePiEta, "#pi from like sign pair");
+legend7->Draw();
+gPad->Print( "plots/data/Rapidity/plot_mLikevsUnlikePiEta.png" );
+gPad->Print( "plots/data/Rapidity/plot_mLikevsUnlikePiEta.pdf" );
+
+makeCanvas();
+mDataPiAngle->SetLineColor(kBlack);
+mDataLikePiAngle->SetLineColor(kMagenta);
+mDataLikePiAngle->Draw();
+mDataPiAngle->Draw("SAME");
+auto legend8 = new TLegend(0.65, 0.1, 0.95, 0.4);
+legend8->AddEntry(mDataPiAngle, "#pi from unlike sign pair");
+legend8->AddEntry(mDataLikePiAngle, "#pi from like sign pair");
+legend8->Draw();
+gPad->Print( "plots/data/Angle/plot_mLikevsUnlikePiAngle.png" );
+gPad->Print( "plots/data/Angle/plot_mLikevsUnlikePiAngle.pdf" );
 
 }

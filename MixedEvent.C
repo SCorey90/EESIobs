@@ -53,6 +53,11 @@ void MixedEvent() {
     TFile * fo = new TFile( "MixedEventplots.root", "RECREATE" );
     
     //define histograms
+    auto * mPiDataLikePT = new TH1F("mPiDataLikePT", "#pi Transverse Momentum; Transverse Momentum (GeV); counts", 500, 0, 1.5);
+    auto * mPiDataLikeEta = new TH1F("mPiDataLikeEta", "#pi Rapidity; Rapidity; counts", 250, -2.5, 2.5);
+    auto * mPiDataLikeAngle = new TH1F("mPiDataLikeAngle", "#pi Azimuthal angle; #phi (rad); counts", 100, -3.14, 3.14);
+    auto * mPiDataLikeMass = new TH1F("mPiDataLikeMass", "Like Sign #pi Mass; Mass (GeV); counts", 500, 0, 1.5);
+
     auto * mDataLikePhi = new TH1F("mDataLikePhi", "Same sign data #phi distribution; #phi (rad); counts", 200, -3.13, 3.13);
     auto * mDataLikeCos2PhivsPT = new TH2F("mDataLikeCos2PhivsPT", "Cos2#phi signal vs. parent P_{T}; 2cos2#phi;  P_{T} (GeV/c); counts", 100, -2, 2, 100, 0, 0.5);
 
@@ -88,10 +93,14 @@ void MixedEvent() {
             
         if ( chipipi <10 && dca1 <1 && dca2 <1 ){
             if (abs(pair->mChargeSum) == 2 ) {
+                mPiDataLikePT->Fill(lv1.Pt());
+                mPiDataLikeEta->Fill(lv1.Eta());
+                mPiDataLikeAngle->Fill(lv1.Phi());
+                mPiDataLikeMass->Fill(lv1.M());
                 mDataLikePhi->Fill(calc_Phi(lv1, lv2));
                 mDataLikeCos2PhivsPT->Fill( 2*cos(2*calc_Phi(lv1,lv2)), (lv1+lv2).Pt());
             }
-            if (posBuffer.size() == 5 && negBuffer.size() == 5 && abs(pair->mChargeSum) == 0) {
+            if (posBuffer.size() == 5 && negBuffer.size() == 5 && abs(pair->mChargeSum) == 2) {
                 //opposite sign pairs
                 for (int i = 0; i < 5; i++ ){
                     posPtcls.push_back(lv1);
@@ -150,6 +159,22 @@ auto * mLikeCos2PhivsPTmoments = mLikeCos2PhivsPT->ProfileY("mLikeCos2PhivsPTmom
 auto * mDataLikeCos2PhivsPTmoments = mDataLikeCos2PhivsPT->ProfileY("mDataLikeCos2PhivsPTmoments", 1, -1);
 
 //Draw histograms
+makeCanvas();
+mPiDataLikePT->SetLineColor(kBlack);
+mPiDataLikePT->Draw();
+
+makeCanvas();
+mPiDataLikeEta->SetLineColor(kBlack);
+mPiDataLikeEta->Draw();
+
+makeCanvas();
+mPiDataLikeAngle->SetLineColor(kBlack);
+mPiDataLikeAngle->Draw();
+
+makeCanvas();
+mPiDataLikeMass->SetLineColor(kBlack);
+mPiDataLikeMass->Draw();
+
 makeCanvas();
 mPperp->SetLineColor(kBlack);
 mPperp->Draw();

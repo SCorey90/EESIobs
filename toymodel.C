@@ -80,8 +80,8 @@ TLorentzVector *asym_decay( TLorentzVector lv1, double mass1, double mass2, doub
 
 double calc_Phi( TLorentzVector lv1, TLorentzVector lv2) {
     TLorentzVector lvPlus = lv1 + lv2;
-    //lv1.Boost(-lvPlus.BoostVector());
-    //lv2.Boost(-lvPlus.BoostVector());
+    lv1.Boost(-lvPlus.BoostVector());
+    lv2.Boost(-lvPlus.BoostVector());
     TLorentzVector lvMinus = lv1 - lv2;
     double Px = lvPlus.Px();
     double Py = lvPlus.Py();
@@ -472,7 +472,7 @@ mToyPTCos2cutflatphiMoments->Draw("SAME");
 auto legend5 = new TLegend(0.65,0.1,0.95,0.4);
 legend5->SetHeader("Legend","C"); // option "C" allows to center the header
 legend5->AddEntry(mToyPTCos2flatphiMoments,"No effects (completely flat #phi hist)");
-legend5->AddEntry(mToyPTCos2decayphiMoments,"#pi->#mu+#nu only");
+legend5->AddEntry(mToyPTCos2decayphiMoments,"#pi->#mu+#nu with P_{T} smear and detector acceptance");
 legend5->AddEntry(mToyPTCos2cutflatphiMoments,"Detector acceptance");
 legend5->AddEntry(mToyPTCos2phiMoments,"P_{T} smear, detector acceptance");
 legend5->Draw();

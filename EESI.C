@@ -36,8 +36,8 @@ double calc_Phi( TLorentzVector lv1, TLorentzVector lv2) {
 
 double lab_calc_Phi( TLorentzVector lv1, TLorentzVector lv2) {
     TLorentzVector lvPlus = lv1 + lv2;
-    //lv1.Boost(-lvPlus.BoostVector());
-    //lv2.Boost(-lvPlus.BoostVector());
+    lv1.Boost(-lvPlus.BoostVector());
+    lv2.Boost(-lvPlus.BoostVector());
     TLorentzVector lvMinus = lv1 - lv2;
     double Px = lvPlus.Px();
     double Py = lvPlus.Py();
@@ -108,6 +108,11 @@ void EESI() {
 
     TFile * fo = new TFile( "EESIplots.root", "RECREATE" );
 
+    auto * mPiPT = new TH1F("mPiPT", "#pi P_{T}; P_{T} (GeV/c); counts", 500, 0, 1.5);
+    auto * mPiEta = new TH1F("mPiEta", "#pi Rapidity; P_{T} (GeV/c); counts", 250, -2.5, 2.5);
+    auto * mPiAngle = new TH1F("mPiAngle", "#pi Azimuthal Angle; #phi (GeV/c); counts", 100, -3.14, 3.14);
+    auto * mPiMass = new TH1F("mPiMass", "#pi Mass; Mass (GeV); counts", 500, 0, 1.5);
+
     auto * mMass = new TH1F("mMass", "Parent (#rho^{0})  Mass; Mass (GeV); Counts", 500, 0, 2);
     auto * mPperp = new TH1F("mPperp", "Parent (#rho^{0}) Transverse Momentum; Transverse Momentum (GeV); counts", 500, 0, 1.5);
     auto * mEta = new TH1F("mEta", "Parent (#rho^{0}) Eta; Eta; counts", 500, -6, 6);
@@ -172,10 +177,14 @@ void EESI() {
         double PairPhi = calc_Phi( lv1, lv2);
 
         if ( chipipi <10 && dca1 <1 && dca2 <1 && pair->mChargeSum==0 ){
-		mPperp->Fill( absPperp );
+		mPperp->Fill( lv.Pt()); //absPperp );
 		mMass->Fill( lv.M() );
                 mEta->Fill( lv.Eta() );
                 mLVPhi->Fill( lv.Phi() );
+                mPiPT->Fill( lv1.Pt() );
+                mPiEta->Fill( lv1.Eta() );
+                mPiAngle->Fill( lv1.Phi() );
+                mPiMass->Fill( lv1.M() );
                 mZDCEast->Fill( EastZDC );
                 mZDCWest->Fill( WestZDC );
                 mZDCTotal->Fill( TotalZDC );
@@ -255,6 +264,14 @@ makeCanvas();
 mPperp->SetLineColor(kBlack);
 mPperp->Draw();
 gPad->Print( "plots/data/PT/plot_mPperp.pdf" );
+
+makeCanvas();
+mEta->SetLineColor(kBlack);
+mLVPhi->Draw();
+
+makeCanvas();
+mMass->SetLineColor(kBlack);
+mMass->Draw();
 
 makeCanvas();
 mZDCEast->SetLineColor(kBlack);
