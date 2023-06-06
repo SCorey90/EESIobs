@@ -103,7 +103,7 @@ void UnlikevsLikeModel() {
 
     TFile *fo = new TFile( "UnlikevsLikeModelplots.root", "RECREATE" );
 
-    int n_events = 1000000;
+    int n_events = 10000000;
     double m_pi = 0.139;
     double PI = 3.1415926535;
 
@@ -111,12 +111,14 @@ void UnlikevsLikeModel() {
     auto * mflatMass = new TH1F("mflatMass", "Random Daughters (uniform)->Parent Mass; Mass (GeV); counts", 500, 0, 5);
     auto * mflatPhi = new TH1F("mflatPhi", "Random Daughters (uniform)->Parent #phi; #phi (rad); counts", 500, -PI, PI);
 
+    auto * mflatCos2phivsPT = new TH2F("mflatCos2phivsPT", "Random Daughters (uniform)->Parent cos2#phi vs P_{T}; 2cos2#phi; P_{T}; counts", 500, -2, 2, 500, 0, 2);
+
     auto * mlikePThistPT = new TH1F("mlikePThistPT", "Random Daughters (like sign P_{T} hist)->Parent P_{T}; P_{T} (GeV/c); counts", 500, 0, 4);
     auto * mlikePThistMass = new TH1F("mlikePThistMass", "Random Daughters (like sign P_{T} hist)->Parent Mass; Mass (GeV); counts", 500, 0, 5);
     auto * mlikePThistPhi = new TH1F("mlikePThistPhi", "Random Daughters (like sign P_{T} hist)->Parent #phi; #phi (rad); counts", 500, -PI, PI);
 
-    auto * munlikePThistPT = new TH1F("munlikePThistPT", "Random Daughters (unlike sign P_{T} hist)->Parent P_{T}; P_{T} (GeV/c); counts", 500, 0, 4);
-    auto * munlikePThistMass = new TH1F("munlikePThistMass", "Random Daughters (unlike sign P_{T} hist)->Parent Mass; Mass (GeV); counts", 500, 0, 5);
+    auto * munlikePThistPT = new TH1F("munlikePThistPT", "Random Daughters (unlike sign P_{T} hist)->Parent P_{T}; P_{T} (GeV/c); counts", 500, 0, 2);
+    auto * munlikePThistMass = new TH1F("munlikePThistMass", "Random Daughters (unlike sign P_{T} hist)->Parent Mass; Mass (GeV); counts", 500, 0, 2);
     auto * munlikePThistPhi = new TH1F("munlikePThistPhi", "Random Daughters (unlike sign P_{T} hist)->Parent #phi; #phi (rad); counts", 500, -PI, PI);
 
     auto * munlikePThistCos2phivsPT = new TH2F("munlikePThistCos2phivsPT", "Random Daughters (unlike sign P_{T} hist)->Parent cos2#phi vs P_{T}; 2cos2#phi; P_{T}; counts", 500, -2, 2, 500, 0, 2);
@@ -141,10 +143,15 @@ void UnlikevsLikeModel() {
         unlikePThistLV1.SetPtEtaPhiM( ptr_unlikePThistLV1->Pt(), ptr_unlikePThistLV1->Eta(), ptr_unlikePThistLV1->Phi(), m_pi );
         unlikePThistLV2.SetPtEtaPhiM( ptr_unlikePThistLV2->Pt(), ptr_unlikePThistLV2->Eta(), ptr_unlikePThistLV2->Phi(), m_pi );
         unlikePThistLVSum = unlikePThistLV1 + unlikePThistLV2;
+        double unlikePThistPT = unlikePThistLVSum.Pt();
+        double unlikePThistPhi = calc_Phi(unlikePThistLV1, unlikePThistLV2);
+        double unlikePThistCos2phi = cos( 2 * unlikePThistPhi );
 
         mflatPT->Fill( flatLVSum.Pt() );
         mflatMass->Fill( flatLVSum.M() );
         mflatPhi->Fill(calc_Phi(flatLV1, flatLV2));
+
+        mflatCos2phivsPT->Fill( 2*cos(2*calc_Phi( flatLV1, flatLV2 ) ), flatLVSum.Pt() );
 
         mlikePThistPT->Fill( likePThistLVSum.Pt() );
         mlikePThistMass->Fill( likePThistLVSum.M() );
@@ -154,11 +161,12 @@ void UnlikevsLikeModel() {
         munlikePThistMass->Fill( unlikePThistLVSum.M() );
         munlikePThistPhi->Fill(calc_Phi(unlikePThistLV1, unlikePThistLV2));
 
-        munlikePThistCos2phivsPT->Fill( 2*cos(2*calc_Phi(unlikePThistLV1, unlikePThistLV2)), unlikePThistLVSum.Pt());
+        munlikePThistCos2phivsPT->Fill( 2*unlikePThistCos2phi, unlikePThistPT);
 
     }
 
 auto * munlikePThistCos2phiMomentsvsPT = munlikePThistCos2phivsPT->ProfileY("munlikePThistCos2phiMomentsvsPT", -1, 1);
+auto * mflatCos2phiMomentsvsPT = mflatCos2phivsPT->ProfileY("mflatCos2phiMomentsvsPT", -1, 1);
 
 fo->cd();
 
@@ -215,6 +223,24 @@ munlikePThistPhi->SetLineColor(kBlack);
 munlikePThistPhi->Draw();
 gPad->Print("plots/UnlikevsLikeModel/plot_munlikePThistPhi.png");
 gPad->Print("plots/UnlikevsLikeModel/plot_munlikePThistPhi.pdf");
+
+makeCanvas();
+gStyle->SetPalette(1);
+mflatCos2phivsPT->Draw("colz");
+gPad->Print( "plots/UnlikevsLikeModel/PT/plot_mflatCos2PhivsPT.png" );
+gPad->Print( "plots/UnlikevsLikeModel/PT/plot_mflatCos2PhivsPT.pdf" );
+
+makeCanvas();
+mflatCos2phiMomentsvsPT->SetLineColor(kBlack);
+mflatCos2phiMomentsvsPT->Draw();
+gPad->Print("plots/UnlikevsLikeModel/PT/plot_mflatCos2phiMomentsvsPT.png");
+gPad->Print("plots/UnlikevsLikeModel/PT/plot_mflatCos2phiMomentsvsPT.pdf");
+
+makeCanvas();
+gStyle->SetPalette(1);
+munlikePThistCos2phivsPT->Draw("colz");
+gPad->Print( "plots/UnlikevsLikeModel/PT/plot_munlikePThistCos2PhivsPT.png" );
+gPad->Print( "plots/UnlikevsLikeModel/PT/plot_munlikePThistCos2PhivsPT.pdf" );
 
 makeCanvas();
 munlikePThistCos2phiMomentsvsPT->SetLineColor(kBlack);
