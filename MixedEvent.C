@@ -19,11 +19,11 @@ void makeCanvas()  {
 std::random_device global_rng;
 TRandom3 rng(global_rng());
 
-vector<TLorentzVector> update_buffer( vector<TLorentzVector> buffer, TLorentzVector current_ptcl ) {
-    if ( buffer.size() < 30 ) { buffer.push_back(current_ptcl); }
-    if ( buffer.size() >= 30 ) {
-        buffer.resize(30);
-        int rand_int = rng.Integer(30);
+vector<TLorentzVector> update_buffer( vector<TLorentzVector> buffer, TLorentzVector current_ptcl, int buffer_size ) {
+    if ( buffer.size() < buffer_size ) { buffer.push_back(current_ptcl); }
+    if ( buffer.size() >= buffer_size ) {
+        buffer.resize(buffer_size);
+        int rand_int = rng.Integer(buffer_size);
         buffer[rand_int] = current_ptcl;
     }
     return buffer;
@@ -92,6 +92,8 @@ void MixedEvent() {
         double dca1 = pair->d1_mDCA;
         double dca2 = pair->d2_mDCA;
 
+        int buffer_size = 20;
+
         TLorentzVector lv1, lv2;
         lv1.SetPtEtaPhiM( pair->d1_mPt, pair->d1_mEta, pair->d1_mPhi, 0.135 );
         lv2.SetPtEtaPhiM( pair->d2_mPt, pair->d2_mEta, pair->d2_mPhi, 0.135 );
@@ -107,25 +109,29 @@ void MixedEvent() {
                 mDataLikePhi->Fill(calc_Phi(lv1, lv2));
                 mDataLikeCos2PhivsPT->Fill( 2*cos(2*calc_Phi(lv1,lv2)), (lv1+lv2).Pt());
             }
-            if (posBuffer.size() == 30 && negBuffer.size() == 30 && abs(pair->mChargeSum) != 0) {
+            if (posBuffer.size() == buffer_size && negBuffer.size() == buffer_size && abs(pair->mChargeSum) == 0) {
                 TLorentzVector parentLV = lv1 + lv2;
                 //opposite sign pairs
-                for (int i = 0; i < 5; i++ ){
+                for (int i = 0; i < buffer_size; i++ ){
                     TLorentzVector Sum1 = lv1 + negBuffer[i];
                     lv1.Boost(-Sum1.BoostVector());
                     negBuffer[i].Boost(-Sum1.BoostVector());
-                    if ( (parentLV.Pt() - Sum1.Pt()) <= 0  ) {
+                    //if ( parentLV.Pt() > Sum1.Pt()  ) {
+                    //if ( (parentLV.Pt() - Sum1.Pt()) <= 0.01  ) {
+                    if ( abs(parentLV.Pt()-Sum1.Pt()) < 0.05*parentLV.Pt()  ) {
                         lv1.Boost(Sum1.BoostVector());
                         negBuffer[i].Boost(Sum1.BoostVector()); 
                         posPtcls.push_back(lv1);
                         negPtcls.push_back(negBuffer[i]);
                     }
                 }
-                for (int i = 0; i < 5; i++ ){
+                for (int i = 0; i < buffer_size; i++ ){
                     TLorentzVector Sum2 = lv2 + posBuffer[i];
                     lv2.Boost(-Sum2.BoostVector());
                     posBuffer[i].Boost(-Sum2.BoostVector());
-                    if ( (parentLV.Pt() - Sum2.Pt()) <= 0 ) {
+                    //if ( parentLV.Pt() > Sum2.Pt() ) {
+                    //if ( (parentLV.Pt() - Sum2.Pt()) <= 0  ) {
+                    if ( abs(parentLV.Pt()-Sum2.Pt()) < 0.05*parentLV.Pt()  ) {
                         lv2.Boost(Sum2.BoostVector());
                         posBuffer[i].Boost(Sum2.BoostVector());
                         negPtcls.push_back(lv2);
@@ -146,8 +152,8 @@ void MixedEvent() {
                     //}
                 }
             }
-            posBuffer = update_buffer( posBuffer, lv1 );
-            negBuffer = update_buffer( negBuffer, lv2 );
+            posBuffer = update_buffer( posBuffer, lv1, buffer_size );
+            negBuffer = update_buffer( negBuffer, lv2, buffer_size );
         }
     }
     for ( int i = 0; i < posPtcls.size(); i++ ) {
