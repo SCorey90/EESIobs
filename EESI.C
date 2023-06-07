@@ -115,7 +115,7 @@ void EESI() {
     auto * mUnlikePiPTvsRhoPT = new TH2F("mUnlikePiPTvsRhoPT", "Unlike sign pairs #pi vs. #rho^{0} P_{T}; #pi P_T; #rho P_{T}, counts", 500, 0, 1.5, 500, 0, 1.5);
 
     auto * mMass = new TH1F("mMass", "Parent (#rho^{0})  Mass; Mass (GeV); Counts", 500, 0, 2);
-    auto * mPperp = new TH1F("mPperp", "Parent (#rho^{0}) Transverse Momentum; Transverse Momentum (GeV); counts", 100, 0, 1.5);
+    auto * mPperp = new TH1F("mPperp", "Parent (#rho^{0}) Transverse Momentum; Transverse Momentum (GeV); counts", 500, 0, 1.5);
     auto * mEta = new TH1F("mEta", "Parent (#rho^{0}) Eta; Eta; counts", 500, -6, 6);
     auto * mLVPhi = new TH1F("mLVPhi", "Parent (#rho^{0}) LV.Phi(); #phi (rad); counts", 500, -3.15, 3.15);
     auto * mZDCEast = new TH1F("mZDCEast", "ZDC East; ZDC East; counts", 200, 0, 1300);

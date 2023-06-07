@@ -62,7 +62,7 @@ void MixedEvent() {
     auto * mPiDataLikeMass = new TH1F("mPiDataLikeMass", "Like Sign #pi Mass; Mass (GeV); counts", 500, 0, 1.5);
     auto * mDataLikePiPTvsRhoPT = new TH2F("mDataLikePiPTvsRhoPT", "Like sign pairs #pi vs. #rho^{0} P_{T}; #pi P_T; #rho P_{T}, counts", 500, 0, 1.5, 500, 0, 1.5);
 
-    auto * mDataLikePT = new TH1F("mDataLikePT", "Same sign data P_{T} distribution; P_{T} (GeV/c); counts", 100, 0, 1.5);
+    auto * mDataLikePT = new TH1F("mDataLikePT", "Same sign data P_{T} distribution; P_{T} (GeV/c); counts", 500, 0, 1.5);
     auto * mDataLikePhi = new TH1F("mDataLikePhi", "Same sign data #phi distribution; #phi (rad); counts", 200, -3.13, 3.13);
     auto * mDataLikeCos2PhivsPT = new TH2F("mDataLikeCos2PhivsPT", "Cos2#phi signal vs. parent P_{T}; 2cos2#phi;  P_{T} (GeV/c); counts", 100, -2, 2, 100, 0, 0.5);
 
@@ -92,7 +92,7 @@ void MixedEvent() {
         double dca1 = pair->d1_mDCA;
         double dca2 = pair->d2_mDCA;
 
-        int buffer_size = 20;
+        int buffer_size = 10;
 
         TLorentzVector lv1, lv2;
         lv1.SetPtEtaPhiM( pair->d1_mPt, pair->d1_mEta, pair->d1_mPhi, 0.135 );
@@ -109,16 +109,16 @@ void MixedEvent() {
                 mDataLikePhi->Fill(calc_Phi(lv1, lv2));
                 mDataLikeCos2PhivsPT->Fill( 2*cos(2*calc_Phi(lv1,lv2)), (lv1+lv2).Pt());
             }
-            if (posBuffer.size() == buffer_size && negBuffer.size() == buffer_size && abs(pair->mChargeSum) == 0) {
+            if (posBuffer.size() == buffer_size && negBuffer.size() == buffer_size && abs(pair->mChargeSum) == 2) {
                 TLorentzVector parentLV = lv1 + lv2;
                 //opposite sign pairs
                 for (int i = 0; i < buffer_size; i++ ){
                     TLorentzVector Sum1 = lv1 + negBuffer[i];
                     lv1.Boost(-Sum1.BoostVector());
                     negBuffer[i].Boost(-Sum1.BoostVector());
-                    //if ( parentLV.Pt() > Sum1.Pt()  ) {
-                    //if ( (parentLV.Pt() - Sum1.Pt()) <= 0.01  ) {
-                    if ( abs(parentLV.Pt()-Sum1.Pt()) < 0.05*parentLV.Pt()  ) {
+                    if ( parentLV.Pt() > Sum1.Pt()  ) {
+                    //if ( parentLV.Pt() <= Sum1.Pt()  ) {
+                    //if ( abs(parentLV.Pt()-Sum1.Pt()) < 0.05*parentLV.Pt()  ) {
                         lv1.Boost(Sum1.BoostVector());
                         negBuffer[i].Boost(Sum1.BoostVector()); 
                         posPtcls.push_back(lv1);
@@ -129,9 +129,9 @@ void MixedEvent() {
                     TLorentzVector Sum2 = lv2 + posBuffer[i];
                     lv2.Boost(-Sum2.BoostVector());
                     posBuffer[i].Boost(-Sum2.BoostVector());
-                    //if ( parentLV.Pt() > Sum2.Pt() ) {
-                    //if ( (parentLV.Pt() - Sum2.Pt()) <= 0  ) {
-                    if ( abs(parentLV.Pt()-Sum2.Pt()) < 0.05*parentLV.Pt()  ) {
+                    if ( parentLV.Pt() > Sum2.Pt() ) {
+                    //if ( parentLV.Pt() <= Sum2.Pt()  ) {
+                    //if ( abs(parentLV.Pt()-Sum2.Pt()) < 0.05*parentLV.Pt()  ) {
                         lv2.Boost(Sum2.BoostVector());
                         posBuffer[i].Boost(Sum2.BoostVector());
                         negPtcls.push_back(lv2);
@@ -139,14 +139,14 @@ void MixedEvent() {
                     }
                 }
                 //like sign pairs
-                for (int i = 0; i < 5; i++ ){
+                for (int i = 0; i < buffer_size; i++ ){
                     //if ( abs( lv1.Pt() - posBuffer[i].Pt() ) < 0.05*lv1.Pt() ) {
                         likesign1.push_back(lv1);
                         likesign2.push_back(posBuffer[i]);
                     //}
                 }
-                for (int i = 0; i < 5; i++ ){
-                    //if ( abs( lv2.Pt() - negBuffer[i].Pt() ) < 0.05*lv1.Pt() ) {
+                for (int i = 0; i < buffer_size; i++ ){
+                    //if ( abs( lv2.Pt() - negBuffer[i].Pt() ) < 0.05*lv2.Pt() ) {
                         likesign2.push_back(lv2);
                         likesign1.push_back(negBuffer[i]);
                     //}
