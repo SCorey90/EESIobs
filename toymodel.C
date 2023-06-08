@@ -176,12 +176,12 @@ void toymodel() {
         pi_or_mu2.SetPtEtaPhiM( decay_lv2->Pt(), decay_lv2->Eta(), decay_lv2->Phi(), decay_lv2->M() );
 
         //add gaussian noise to pi P_T
-        double noise1 = rng.Gaus( 0, 0.01*pi1.Pt() );
-        double noise2 = rng.Gaus( 0, 0.01*pi2.Pt() );
+        double noise1 = rng.Gaus( 0, 0.04*pi1.Pt() );
+        double noise2 = rng.Gaus( 0, 0.04*pi2.Pt() );
         gauspi1.SetPtEtaPhiM( pi1.Pt() + noise1, pi1.Eta(), pi1.Phi(), pi1.M() );
         gauspi2.SetPtEtaPhiM( pi2.Pt() + noise2, pi2.Eta(), pi2.Phi(), pi2.M() );
-        pi_or_mu1.SetPtEtaPhiM( pi_or_mu1.Pt() + rng.Gaus( 0, 0.01*pi_or_mu1.Pt() ), pi_or_mu1.Eta(), pi_or_mu1.Phi(), pi_or_mu1.M() );
-        pi_or_mu2.SetPtEtaPhiM( pi_or_mu2.Pt() + rng.Gaus( 0, 0.01*pi_or_mu2.Pt() ), pi_or_mu2.Eta(), pi_or_mu2.Phi(), pi_or_mu2.M() );
+        pi_or_mu1.SetPtEtaPhiM( pi_or_mu1.Pt() + rng.Gaus( 0, 0.04*pi_or_mu1.Pt() ), pi_or_mu1.Eta(), pi_or_mu1.Phi(), pi_or_mu1.M() );
+        pi_or_mu2.SetPtEtaPhiM( pi_or_mu2.Pt() + rng.Gaus( 0, 0.04*pi_or_mu2.Pt() ), pi_or_mu2.Eta(), pi_or_mu2.Phi(), pi_or_mu2.M() );
         lvRecon = gauspi1 + gauspi2;
         lvExag = exagpi1 + exagpi2;
         

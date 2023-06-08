@@ -73,6 +73,8 @@ void dataVmodel() {
     auto * mMixedCos2PhivsPT = (TH2F*)mixedeventHists->Get("mCos2PhivsPT");
     auto * mLikeCos2PhivsPT = (TH2F*)mixedeventHists->Get("mLikeCos2PhivsPT");
     auto * mDataLikeCos2PhivsPT = (TH2F*)mixedeventHists->Get("mDataLikeCos2PhivsPT");
+
+    auto * mMixedCos2PhivsMass = (TH2F*)mixedeventHists->Get("mCos2PhivsMass");
     
     //new TFile
     TFile * fo = new TFile( "dataVmodelplots.root", "RECREATE" );
@@ -144,6 +146,8 @@ mDatabyToyPTn2Moments->Divide(mToyPTCos2PhiMoments);
 
 auto * mToyMassCos2PhiMoments = mToyCos2PhivsMass->ProfileY("mToyMassCos2PhiMoments", 1, -1);
 auto * mDataMassCos2PhiMoments = mDataCos2PhivsMass->ProfileY("mDataMassCos2PhiMoments", 1, -1);
+auto * mMixedMassCos2PhiMoments = mMixedCos2PhivsMass->ProfileY("mMixedMassCos2PhiMoments", 1, -1);
+
 
 //make plots
 fo->cd();
@@ -392,5 +396,20 @@ legend10->AddEntry(mDataLikePT,"Data like sign pairs");
 legend10->Draw();
 gPad->Print( "plots/data/PT/plot_mLikevsUnlikePT.pdf" );
 gPad->Print( "plots/data/PT/plot_mLikevsUnlikePT.png" );
+
+makeCanvas();
+mMixedPTCos2PhiMoments->SetLineColor(kGreen);
+mDataPTCos2PhiMoments->SetLineColor(kBlack);
+//mLikePTCos2PhiMoments->SetLineColor(kMagenta);
+mMixedMassCos2PhiMoments->SetTitle("PM_{T}(#rho^{0}) < 0.6 GeV/c); P_{T} (GeV/c); 2<cos(2#phi)>");
+mMixedMassCos2PhiMoments->SetMaximum(0.5);
+mMixedMassCos2PhiMoments->Draw();
+mDataMassCos2PhiMoments->Draw("SAME");
+auto legend11 = new TLegend(0.65,0.1,0.95,0.4);
+legend11->AddEntry(mDataMassCos2PhiMoments,"Run 12 U+U data");
+legend11->AddEntry(mMixedMassCos2PhiMoments,"Mixed event like sign source");
+legend11->Draw();
+gPad->Print( "plots/dataVmodel/Mass/plot_mDataVMixedMassCos2PhiMoments.pdf" );
+gPad->Print( "plots/dataVmodel/Mass/plot_mDataVMixedMassCos2PhiMoments.png" );
 
 }

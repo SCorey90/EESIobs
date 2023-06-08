@@ -65,12 +65,16 @@ void MixedEvent() {
     auto * mDataLikePT = new TH1F("mDataLikePT", "Same sign data P_{T} distribution; P_{T} (GeV/c); counts", 500, 0, 1.5);
     auto * mDataLikePhi = new TH1F("mDataLikePhi", "Same sign data #phi distribution; #phi (rad); counts", 200, -3.13, 3.13);
     auto * mDataLikeCos2PhivsPT = new TH2F("mDataLikeCos2PhivsPT", "Cos2#phi signal vs. parent P_{T}; 2cos2#phi;  P_{T} (GeV/c); counts", 100, -2, 2, 100, 0, 0.5);
+    
+    auto * mDataLikeCos2PhivsMass = new TH2F("mDataLikeCos2PhivsMass", "Cos2#phi signal vs. parent Mass; 2cos2#phi;  Mass (GeV/); counts", 100, -2, 2, 100, 0.25, 2);
 
     auto * mPperp = new TH1F("mPperp", "Parent (#rho^{0}) Transverse Momentum; Transverse Momentum (GeV); counts", 500, 0, 1.5);
     auto * mMass = new TH1F("mMass", "Parent (#rho^{0})  Mass; Mass (GeV); Counts", 500, 0, 2);
+    auto * mRapidity = new TH1F("mRapidity", "Parent (#rho^{0})  Rapidity; Rapidity; Counts", 500, -6, 6);
 
     auto * mPairPhi = new TH1F("mPairPhi", "#pi^{+}#pi^{-} mixed event #phi distribution; #phi (rad); counts", 200, -3.13, 3.13);
     auto * mCos2PhivsPT = new TH2F("mCos2PhivsPT", "Cos2#phi signal vs. parent P_{T}; 2cos2#phi;  P_{T} (GeV/c); counts", 100, -2, 2, 100, 0, 0.5);
+    auto * mCos2PhivsMass = new TH2F("mCos2PhivsMass", "Cos2#phi signal vs. parent Mass; 2cos2#phi;  Mass (GeV); counts", 100, -2, 2, 100, 0.25, 2);
     auto * mLikePhi = new TH1F("mLikePhi", "#pi^{+}#pi^{-} like sign #phi distribution; #phi (rad); counts", 200, -3.13, 3.13);
     auto * mLikeCos2PhivsPT = new TH2F("mLikeCos2PhivsPT", "Cos2#phi signal vs. parent P_{T} (like sign); 2cos2#phi;  P_{T} (GeV/c); counts", 100, -2, 2, 100, 0, 0.5);
 
@@ -106,8 +110,13 @@ void MixedEvent() {
                 mPiDataLikeAngle->Fill(lv1.Phi());
                 mPiDataLikeMass->Fill(lv1.M());
                 mDataLikePiPTvsRhoPT->Fill( lv1.Pt(), (lv1 + lv2).Pt() );
-                mDataLikePhi->Fill(calc_Phi(lv1, lv2));
-                mDataLikeCos2PhivsPT->Fill( 2*cos(2*calc_Phi(lv1,lv2)), (lv1+lv2).Pt());
+                if ( (lv1+lv2).M() < 0.5 && (lv1+lv2).M() > 0.4) {
+                    mDataLikePhi->Fill(calc_Phi(lv1, lv2));
+                    mDataLikeCos2PhivsPT->Fill( 2*cos(2*calc_Phi(lv1,lv2)), (lv1+lv2).Pt());
+                }
+                if ( (lv1+lv2).Pt() < 0.6 ) {
+                    mDataLikeCos2PhivsMass->Fill( 2*cos(2*calc_Phi(lv1,lv2)), (lv1+lv2).M());
+                }
             }
             if (posBuffer.size() == buffer_size && negBuffer.size() == buffer_size && abs(pair->mChargeSum) == 2) {
                 TLorentzVector parentLV = lv1 + lv2;
@@ -116,27 +125,27 @@ void MixedEvent() {
                     TLorentzVector Sum1 = lv1 + negBuffer[i];
                     lv1.Boost(-Sum1.BoostVector());
                     negBuffer[i].Boost(-Sum1.BoostVector());
-                    if ( parentLV.Pt() > Sum1.Pt()  ) {
+                    //if ( parentLV.Pt() > Sum1.Pt()  ) {
                     //if ( parentLV.Pt() <= Sum1.Pt()  ) {
                     //if ( abs(parentLV.Pt()-Sum1.Pt()) < 0.05*parentLV.Pt()  ) {
                         lv1.Boost(Sum1.BoostVector());
                         negBuffer[i].Boost(Sum1.BoostVector()); 
                         posPtcls.push_back(lv1);
                         negPtcls.push_back(negBuffer[i]);
-                    }
+                    //}
                 }
                 for (int i = 0; i < buffer_size; i++ ){
                     TLorentzVector Sum2 = lv2 + posBuffer[i];
                     lv2.Boost(-Sum2.BoostVector());
                     posBuffer[i].Boost(-Sum2.BoostVector());
-                    if ( parentLV.Pt() > Sum2.Pt() ) {
+                    //if ( parentLV.Pt() > Sum2.Pt() ) {
                     //if ( parentLV.Pt() <= Sum2.Pt()  ) {
                     //if ( abs(parentLV.Pt()-Sum2.Pt()) < 0.05*parentLV.Pt()  ) {
                         lv2.Boost(Sum2.BoostVector());
                         posBuffer[i].Boost(Sum2.BoostVector());
                         negPtcls.push_back(lv2);
                         posPtcls.push_back(posBuffer[i]);
-                    }
+                    //}
                 }
                 //like sign pairs
                 for (int i = 0; i < buffer_size; i++ ){
@@ -176,13 +185,17 @@ void MixedEvent() {
         //basic histograms
         mPperp->Fill( pairPT );
         mMass->Fill( pairMass );
+        mRapidity->Fill( (posLV + negLV).Rapidity() );
 
         //phi histograms
-        if ( pairMass > 0.65 && pairMass < 0.75 ) {
+        if ( pairMass > 0.4 && pairMass < 0.5 ) {
             mPairPhi->Fill( pairPhi );
             mCos2PhivsPT->Fill( (2 * cos2phi), pairPT );
             mLikePhi->Fill( likePhi );
             mLikeCos2PhivsPT->Fill( (2 * likecos2phi), likePT );
+        }
+        if ( pairPT < 0.6 ) {
+            mCos2PhivsMass->Fill( (2 * cos2phi), pairMass );
         }
     }
 
@@ -190,6 +203,9 @@ void MixedEvent() {
 auto * mCos2PhivsPTmoments = mCos2PhivsPT->ProfileY("mCos2PhivsPTmoments", 1, -1);
 auto * mLikeCos2PhivsPTmoments = mLikeCos2PhivsPT->ProfileY("mLikeCos2PhivsPTmoments", 1, -1);
 auto * mDataLikeCos2PhivsPTmoments = mDataLikeCos2PhivsPT->ProfileY("mDataLikeCos2PhivsPTmoments", 1, -1);
+
+auto * mCos2PhivsMassmoments = mCos2PhivsMass->ProfileY("mCos2PhivsMassmoments", 1, -1);
+auto * mDataLikeCos2PhivsMassmoments = mDataLikeCos2PhivsMass->ProfileY("mDataLikeCos2PhivsMassmoments", 1, -1);
 
 //Draw histograms
 makeCanvas();
@@ -261,7 +277,7 @@ gPad->Print( "plots/mixedevent/PT/plot_mCos2PhivsPTmoments.pdf" );
 makeCanvas();
 mCos2PhivsPTmoments->SetLineColor(kBlack);
 mDataLikeCos2PhivsPTmoments->SetLineColor(kGreen);
-mCos2PhivsPTmoments->SetTitle( "Mixed parent P_{T} within 5% of original parent P_{T} (0.65 < M_{#rho^{0}} < 0.75 GeV); P_{T} (GeV/c); 2<cos2#phi>" );
+mCos2PhivsPTmoments->SetTitle( "0.4 < M_{#rho^{0}} < 0.5 GeV; P_{T} (GeV/c); 2<cos2#phi>" );
 mCos2PhivsPTmoments->Draw();
 mDataLikeCos2PhivsPTmoments->Draw("Same");
 auto legend2 = new TLegend(0.65,0.1,0.95,0.4);
@@ -271,6 +287,20 @@ legend2->AddEntry(mDataLikeCos2PhivsPTmoments,"Like sign pairs from data");
 legend2->Draw();
 gPad->Print( "plots/mixedevent/PT/plot_mOppositevsLikeCos2PhivsPTmoments.png" );
 gPad->Print( "plots/mixedevent/PT/plot_mOppositevsLikeCos2PhivsPTmoments.pdf" );
+
+makeCanvas();
+mCos2PhivsMassmoments->SetLineColor(kBlack);
+mDataLikeCos2PhivsMassmoments->SetLineColor(kGreen);
+mCos2PhivsMassmoments->SetTitle( "P_{T}(#rho^{0}) < 0.6 GeV/c; Pair Mass (GeV); 2<cos2#phi>" );
+mCos2PhivsMassmoments->Draw();
+mDataLikeCos2PhivsMassmoments->Draw("Same");
+auto legend3 = new TLegend(0.65,0.1,0.95,0.4);
+legend3->SetHeader("Legend","C"); // option "C" allows to center the header
+legend3->AddEntry(mCos2PhivsMassmoments,"Mixed event like sign source");
+legend3->AddEntry(mDataLikeCos2PhivsMassmoments,"Like sign pairs from data");
+legend3->Draw();
+gPad->Print( "plots/mixedevent/Mass/plot_mDataLikevsMixedCos2PhivsMassmoments.png" );
+gPad->Print( "plots/mixedevent/Mass/plot_mDataLikevsMixedCos2PhivsMassmoments.pdf" );
 
 fo->Write();
 }

@@ -148,7 +148,7 @@ void EESI() {
     auto * mLowZDCcos2phivsPT = new TH2F("mLowZDCcos2phivsPT", "cos2#phi distribution vs P_{T}", 100, -2, 2, 100, 0, 0.25);
     auto * mHighZDCcos2phivsPT = new TH2F("mHighZDCcos2phivsPT", "cos2#phi distribution vs P_{T}", 100, -2, 2, 100, 0, 0.25);
 
-    auto * mCos2phivsMass = new TH2F("mCos2phivsMass", "cos2#phi distribution vs Mass", 100, -2, 2, 100, 0.3, 1.35);
+    auto * mCos2phivsMass = new TH2F("mCos2phivsMass", "cos2#phi distribution vs Mass", 100, -2, 2, 100, 0.25, 1);
     auto * mCos4phivsMass = new TH2F("mCos4phivsMass", "cos4#phi distribution vs Mass", 100, -2, 2, 100, 0.3, 1.35);
 
     auto * mPhiFit = new TF1("mPhiFit", "[0] + [1]*cos(x) + [2]*cos(2*x) + [3]*cos(3*x) + [4]*cos(4*x)", -3.14, 3.14);
