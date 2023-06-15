@@ -142,6 +142,8 @@ void EESI() {
     auto * mCos2phivsTotalZDC = new TH2F("mCos2phivsTotalZDC", "cos2#phi distribution vs ZDC (East^{2} + West^{2})^{1/2}; 2cos2#phi; ZDC (East^{2} + West^{2})^{1/2}; counts", 100, -2, 2, 50, 0, 1700);
 
     auto * mCos2phivsPT = new TH2F("mCos2phivsPT", "cos2#phi distribution vs P_{T}", 100, -2, 2, 100, 0, 0.5);
+    auto * mCos1phivsPT = new TH2F("mCos1phivsPT", "cos1#phi distribution vs P_{T}", 100, -2, 2, 100, 0, 0.5);
+    auto * mCos3phivsPT = new TH2F("mCos2phivsPT", "cos3#phi distribution vs P_{T}", 100, -2, 2, 100, 0, 0.5);
     auto * mLabCos2phivsPT = new TH2F("mLabCos2phivsPT", "cos2#phi distribution vs P_{T}", 100, -2, 2, 100, 0, 0.5);
     auto * mCos4phivsPT = new TH2F("mCos4phivsPT", "cos4#phi distribution vs P_{T}", 100, -2, 2, 100, 0, 0.25);
 
@@ -150,6 +152,8 @@ void EESI() {
 
     auto * mCos2phivsMass = new TH2F("mCos2phivsMass", "cos2#phi distribution vs Mass", 100, -2, 2, 100, 0.25, 1);
     auto * mCos4phivsMass = new TH2F("mCos4phivsMass", "cos4#phi distribution vs Mass", 100, -2, 2, 100, 0.3, 1.35);
+
+    auto * mCos2phivsPTvsMass = new TH3F("mCos2phivsPTvsMass", ";pair P_{T} (GeV/c); pair Mass (GeV); 2<cos2#phi>; counts", 25, 0.25, 0.7, 25, 0, 0.5, 100, -2, 2);
 
     auto * mPhiFit = new TF1("mPhiFit", "[0] + [1]*cos(x) + [2]*cos(2*x) + [3]*cos(3*x) + [4]*cos(4*x)", -3.14, 3.14);
     auto * mLinearFit = new TF1("mLinearFit", "[0] + [1]*x", -5, 5);
@@ -190,7 +194,8 @@ void EESI() {
                 mZDCWest->Fill( WestZDC );
                 mZDCTotal->Fill( TotalZDC );
                 mUnlikePiPTvsRhoPT->Fill( lv1.Pt(), lv.Pt() );
-            if ( lv.M() > 0.65 && lv.M() <0.9){
+                mCos2phivsPTvsMass->Fill( lv.M(), lv.Pt(), 2*cos( PairPhi ));
+            if ( lv.M() > 0.6 && lv.M() <0.9){
                 if ( absPperp < 0.06){
 
                     mPairPhi->Fill ( PairPhi );
@@ -212,9 +217,11 @@ void EESI() {
                 if ( TotalZDC > 600 ) { mHighZDCcos2phivsPT->Fill( 2*cos(2*PairPhi), absPperp); }
                 mPxvsPy->Fill( absPperp*cos(PairPhi), absPperp*sin(PairPhi));
                 mPhivsPT->Fill ( PairPhi, absPperp);
-                mCos2phivsPT->Fill( 2*cos(2 *(PairPhi)), absPperp );
+                mCos1phivsPT->Fill( 2*cos(PairPhi), absPperp );
+                mCos2phivsPT->Fill( 2*cos(2 *PairPhi), absPperp );
                 mLabCos2phivsPT->Fill( 2*cos(2 *(lab_calc_Phi(lv1, lv2))), absPperp );
-                mCos4phivsPT->Fill( 4*cos(4 *(PairPhi)), absPperp );
+                mCos3phivsPT->Fill( 2*cos(3 * PairPhi), absPperp);
+                mCos4phivsPT->Fill( 2*cos(4 * PairPhi), absPperp );
             }
             if ( lv.M() > 0.2 && lv.M() <1.5 && absPperp < 0.06) { 
                 mPhivsMass->Fill ( PairPhi, lv.M());
@@ -239,8 +246,10 @@ auto *mRapiditycos4phimoments = new TGraphErrors(mPhivsRapidity->GetNbinsY(), hi
 //mPhi2n1n->Scale(2*3.1415/(mPhi2n1n->Integral("width")));
 //mPhi2n2n->Scale(2*3.1415/(mPhi2n2n->Integral("width")));
 
+auto * mPTcos1phimoments = mCos1phivsPT->ProfileY("mPTcos1phimoments", 1, -1);
 auto *mv2PTcos2phimoments = mCos2phivsPT->ProfileY("mv2PTcos2phimoments", 1, -1);
 auto *mlabPTcos2phimoments = mLabCos2phivsPT->ProfileY("mlabPTcos2phimoments", 1, -1);
+auto * mPTcos3phimoments = mCos1phivsPT->ProfileY("mPTcos3phimoments", 1, -1);
 auto *mv2PTcos4phimoments = mCos4phivsPT->ProfileY("mv2PTcos4phimoments", 1, -1);
 
 auto *mEastZDCcos2phimoments = mCos2phivsEastZDC->ProfileY("mEastZDCcos2phimoments", 1, -1);
@@ -248,6 +257,8 @@ auto *mWestZDCcos2phimoments = mCos2phivsWestZDC->ProfileY("mWestZDCcos2phimomen
 auto *mTotalZDCcos2phimoments = mCos2phivsTotalZDC->ProfileY("mTotalZDCcos2phimoments", 1, -1);
 auto *mLowZDCPTcos2phimoments = mLowZDCcos2phivsPT->ProfileY("mLowZDCPTcos2phimoments", 1, -1);
 auto *mHighZDCPTcos2phimoments = mHighZDCcos2phivsPT->ProfileY("mHighZDCPTcos2phimoments", 1, -1);
+
+auto *mPTvsMasscos2phimoments = mCos2phivsPTvsMass->Project3DProfile("xy");
 
 TGraph *mRapiditymomentsQuad = (TGraph*)mRapiditymomentsplot->Clone("mRapiditymomentsQuad");
 mRapiditymomentsplot->Fit(mLinearFit,"", "", -0.5, 0.5);
@@ -536,17 +547,34 @@ gPad->Print( "plots/data/ZDC/plot_mDiffZDCPTcos2phimoments.pdf" );
 gPad->Print( "plots/data/ZDC/plot_mDiffZDCPTcos2phimoments.png" );
 
 makeCanvas();
-mv2PTcos2phimoments->SetLineColor(kBlack);
-mlabPTcos2phimoments->SetLineColor(kGreen);
+//mv2PTcos2phimoments->SetLineColor(kBlack);
+mlabPTcos2phimoments->SetLineColor(kBlack);
 mv2PTcos2phimoments->SetTitle("Strength of cos2#phi modulation; P_{T} (GeV/c); 2<cos2#phi>");
 mv2PTcos2phimoments->Draw();
-mlabPTcos2phimoments->Draw("SAME");
-auto legend4 = new TLegend(0.65,0.1,0.95,0.4);
-legend4->AddEntry(mv2PTcos2phimoments,"Rest frame 2<cos2#phi>");
-legend4->AddEntry(mlabPTcos2phimoments,"Lab frame 2<cos2#phi>");
-legend4->Draw();
+//mlabPTcos2phimoments->Draw("SAME");
+//auto legend4 = new TLegend(0.65,0.1,0.95,0.4);
+//legend4->AddEntry(mv2PTcos2phimoments,"Rest frame 2<cos2#phi>");
+//legend4->AddEntry(mlabPTcos2phimoments,"Lab frame 2<cos2#phi>");
+//legend4->Draw();
 gPad->Print( "plots/data/PT/plot_mLabVRestCos2phivsPT.pdf" );
 gPad->Print( "plots/data/PT/plot_mLabVRestCos2phivsPT.png" );
+
+makeCanvas();
+gStyle->SetPalette(1);
+mPTvsMasscos2phimoments->SetTitle("; pair P_{T} (GeV/c); pair Mass (GeV); 2<cos2#phi>");
+mPTvsMasscos2phimoments->Draw("colz");
+gPad->Print( "plots/data/plot_mPTvsMasscos2phimoments.pdf" );
+gPad->Print( "plots/data/plot_mPTvsMasscos2phimoments.png" );
+
+makeCanvas();
+mPTcos1phimoments->SetTitle("cos(1#phi) moments vs. P_{T}; P_{T} (GeV); 2<cos(1#phi)>");
+mPTcos1phimoments->Draw();
+gPad->Print( "plots/data/PT/plot_mPTcos1phimoments.pdf" );
+
+makeCanvas();
+mPTcos3phimoments->SetTitle("cos(3#phi) moments vs. P_{T}; P_{T} (GeV); 2<cos(3#phi)>");
+mPTcos3phimoments->Draw();
+gPad->Print( "plots/data/PT/plot_mPTcos3phimoments.pdf" );
 
 fo->Write();
 }

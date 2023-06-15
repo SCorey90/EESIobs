@@ -155,7 +155,9 @@ void toymodel() {
     auto * mMidPTPhi = new TH1F("mMidPTPhi", "#phi hist at p_{T}>900 MeV/c; #phi (rad); counts", 100, -3.5, 3.5);
     auto * mHighMidPTPhi = new TH1F("mMidPTPhi", "#phi hist at p_{T}>900 MeV/c; #phi (rad); counts", 100, -3.5, 3.5);
 
-    int n_events = 10000000;
+    auto * mFit = new TF1("mFit", "[0] + [1]*cos(x) + [2]*cos(2*x) + [3]*cos(3*x) + [4]*cos(4*x)", -3.14, 3.14);
+
+    int n_events = 5000;
     double m_pi = 0.139;
     double m_mu = 0.105;
     double m_nu_mu = 1.2 * pow(10, -10);
@@ -267,6 +269,8 @@ auto *mToyMassCos2cutflatphiMoments = mCos2cutflatphivsMass->ProfileY("mToyMassC
 
 auto *mToyMassCos2phiMoments = mCos2phivsMass->ProfileY("mToyMassCos2phiMoments", 1, -1);
 auto *mToyMassCos4phiMoments = mCos4phivsMass->ProfileY("mToyMassCos4phiMoments", 1, -1);
+
+mPairPhi->Fit(mFit);
 
 fo -> cd();
 
