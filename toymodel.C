@@ -157,7 +157,7 @@ void toymodel() {
 
     auto * mFit = new TF1("mFit", "[0] + [1]*cos(x) + [2]*cos(2*x) + [3]*cos(3*x) + [4]*cos(4*x)", -3.14, 3.14);
 
-    int n_events = 5000;
+    int n_events = 10000000;
     double m_pi = 0.139;
     double m_mu = 0.105;
     double m_nu_mu = 1.2 * pow(10, -10);
@@ -172,33 +172,33 @@ void toymodel() {
         pi2 = rho - pi1;
 
         //add possibility of pi->mu+nu
-        TLorentzVector *decay_lv1 = asym_decay( pi1, m_mu, m_nu_mu, 0.01 );
+        /*TLorentzVector *decay_lv1 = asym_decay( pi1, m_mu, m_nu_mu, 0.01 );
         TLorentzVector *decay_lv2 = asym_decay( pi2, m_mu, m_nu_mu, 0.01 );
         pi_or_mu1.SetPtEtaPhiM( decay_lv1->Pt(), decay_lv1->Eta(), decay_lv1->Phi(), decay_lv1->M() );
-        pi_or_mu2.SetPtEtaPhiM( decay_lv2->Pt(), decay_lv2->Eta(), decay_lv2->Phi(), decay_lv2->M() );
+        pi_or_mu2.SetPtEtaPhiM( decay_lv2->Pt(), decay_lv2->Eta(), decay_lv2->Phi(), decay_lv2->M() ); */
 
         //add gaussian noise to pi P_T
-        double noise1 = rng.Gaus( 0, 0.04*pi1.Pt() );
-        double noise2 = rng.Gaus( 0, 0.04*pi2.Pt() );
+        double noise1 = rng.Gaus( 0, 0.01*pi1.Pt() );
+        double noise2 = rng.Gaus( 0, 0.01*pi2.Pt() );
         gauspi1.SetPtEtaPhiM( pi1.Pt() + noise1, pi1.Eta(), pi1.Phi(), pi1.M() );
         gauspi2.SetPtEtaPhiM( pi2.Pt() + noise2, pi2.Eta(), pi2.Phi(), pi2.M() );
-        pi_or_mu1.SetPtEtaPhiM( pi_or_mu1.Pt() + rng.Gaus( 0, 0.04*pi_or_mu1.Pt() ), pi_or_mu1.Eta(), pi_or_mu1.Phi(), pi_or_mu1.M() );
-        pi_or_mu2.SetPtEtaPhiM( pi_or_mu2.Pt() + rng.Gaus( 0, 0.04*pi_or_mu2.Pt() ), pi_or_mu2.Eta(), pi_or_mu2.Phi(), pi_or_mu2.M() );
+        //pi_or_mu1.SetPtEtaPhiM( pi_or_mu1.Pt() + rng.Gaus( 0, 0.04*pi_or_mu1.Pt() ), pi_or_mu1.Eta(), pi_or_mu1.Phi(), pi_or_mu1.M() );
+        //pi_or_mu2.SetPtEtaPhiM( pi_or_mu2.Pt() + rng.Gaus( 0, 0.04*pi_or_mu2.Pt() ), pi_or_mu2.Eta(), pi_or_mu2.Phi(), pi_or_mu2.M() );
         lvRecon = gauspi1 + gauspi2;
         lvExag = exagpi1 + exagpi2;
         
         //fill histograms without pT cut 
         mGaus->Fill( pi1.Pt(), noise1 );
         mPairPT->Fill( (pi1 + pi2).Pt() );
-        mPairPTwMu->Fill( (pi_or_mu1 + pi_or_mu2).Pt() );
+        //mPairPTwMu->Fill( (pi_or_mu1 + pi_or_mu2).Pt() );
         mNoisyPairPT->Fill( lvRecon.Pt() );
         
         mPi1PT->Fill( pi1.Pt() );
-        mPi1PTwMu->Fill( pi_or_mu1.Pt() );
+        //mPi1PTwMu->Fill( pi_or_mu1.Pt() );
         mNoisyPi1PT->Fill( gauspi1.Pt() );
 
         mPairQT->Fill( (pi1 - pi2).Pt() );
-        mPairQTwMu->Fill( (pi_or_mu1-pi_or_mu2).Pt() );
+        //mPairQTwMu->Fill( (pi_or_mu1-pi_or_mu2).Pt() );
         mNoisyPairQT->Fill( (gauspi1 - gauspi2).Pt() );
 
         mPairPhi->Fill( calc_Phi(pi1, pi2) );
@@ -214,7 +214,7 @@ void toymodel() {
              mCos2cutflatphivsMass->Fill( 2*cos(2*calc_Phi(pi1, pi2)), (pi1+pi2).M());
         }
         
-        mPairPhiwMu->Fill( calc_Phi(pi_or_mu1, pi_or_mu2) );
+        //mPairPhiwMu->Fill( calc_Phi(pi_or_mu1, pi_or_mu2) );
         mNoisyPairPhi->Fill( calc_Phi(gauspi1, gauspi2) );
 
         mRhoM->Fill(rho.M());
@@ -248,7 +248,7 @@ void toymodel() {
             if ( reconPT < 0.06 ) { mLowPTPhi->Fill(pairPhi); }
             if ( reconPT > 0.9 ) { mMidPTPhi->Fill(pairPhi); }
         }
-        if ( pi_or_mu1.Pt() > 0.1 && pi_or_mu2.Pt() > 0.1 ) { mCos2decayphivsPT->Fill( 2*cos(2*calc_Phi(pi_or_mu1, pi_or_mu2)) , (pi_or_mu1+pi_or_mu2).Pt()); }
+        //if ( pi_or_mu1.Pt() > 0.1 && pi_or_mu2.Pt() > 0.1 ) { mCos2decayphivsPT->Fill( 2*cos(2*calc_Phi(pi_or_mu1, pi_or_mu2)) , (pi_or_mu1+pi_or_mu2).Pt()); }
     }
 
 TH1F* mMassRCbyMC = (TH1F*)mReconstructedM->Clone("mMassMCbyRC");
@@ -256,7 +256,7 @@ TH1F* mPTRCbyMC = (TH1F*)mPairPT->Clone("mPTMCbyRC");
 
 auto *mToyPTCos2flatphiMoments = mCos2flatphivsPT->ProfileY("mToyPTCos2flatphiMoments", 1, -1);
 
-auto *mToyPTCos2decayphiMoments = mCos2decayphivsPT->ProfileY("mToyPTCos2decayphiMoments", 1, -1);
+//auto *mToyPTCos2decayphiMoments = mCos2decayphivsPT->ProfileY("mToyPTCos2decayphiMoments", 1, -1);
 
 auto *mToyPTCos2cutflatphiMoments = mCos2cutflatphivsPT->ProfileY("mToyPTCos2cutflatphiMoments", 1, -1);
 
@@ -294,18 +294,18 @@ gPad->Print( "plots/model/PT/plot_mToyRhoPT.png" );
 
 makeCanvas();
 mPairPT->SetLineColor(kBlack);
-mPairPTwMu->SetLineColor(kRed);
+//mPairPTwMu->SetLineColor(kRed);
 mNoisyPairPT->SetLineColor(kBlue);
 mCutPairPT->SetLineColor(kOrange);
 mNoisyPairPT->Draw();
 mPairPT->Draw("SAME");
-mPairPTwMu->Draw("SAME");
+//mPairPTwMu->Draw("SAME");
 mCutPairPT->Draw("SAME");
 mNoisyPairPT->SetMinimum(0);;
 auto legend = new TLegend(0.65,0.1,0.95,0.4);
 legend->SetHeader("Legend","C"); // option "C" allows to center the header
 legend->AddEntry(mPairPT,"No #pi->#mu decay, no noise, no cut");
-legend->AddEntry(mPairPTwMu,"With #pi->#mu decay, no noise, no cut");
+//legend->AddEntry(mPairPTwMu,"With #pi->#mu decay, no noise, no cut");
 legend->AddEntry(mNoisyPairPT,"With #pi->#mu decay, with noise, no cut");
 legend->AddEntry(mCutPairPT,"With #pi->#mu decay, with noise, with cut");
 legend->Draw();
@@ -314,41 +314,41 @@ gPad->Print( "plots/model/PT/plot_mToyPairPT.png" );
 
 makeCanvas();
 mPi1PT->SetLineColor(kBlack);
-mPi1PTwMu->SetLineColor(kRed);
+//mPi1PTwMu->SetLineColor(kRed);
 mNoisyPi1PT->SetLineColor(kBlue);
 mCutPi1PT->SetLineColor(kOrange);
 mPi1PT->Draw();
 mNoisyPi1PT->Draw("SAME");
-mPi1PTwMu->Draw("SAME");
+//mPi1PTwMu->Draw("SAME");
 mCutPi1PT->Draw("SAME");
 mPi1PT->SetMinimum(0);
 mPi1PT->SetMaximum(70000);
 auto legend3 = new TLegend(0.65,0.1,0.95,0.4);
 legend3->SetHeader("Legend","C"); // option "C" allows to center the header
-legend3->AddEntry(mPi1PT,"No #pi->#mu decay, no noise, no cut");
-legend3->AddEntry(mPi1PTwMu,"With #pi->#mu decay, no noise, no cut");
-legend3->AddEntry(mNoisyPi1PT,"With #pi->#mu decay, with noise, no cut");
-legend3->AddEntry(mCutPi1PT,"With #pi->#mu decay, with noise, with cut");
+legend3->AddEntry(mPi1PT,"no noise, no cut");
+//legend3->AddEntry(mPi1PTwMu,"With #pi->#mu decay, no noise, no cut");
+legend3->AddEntry(mNoisyPi1PT,"with noise, no cut");
+legend3->AddEntry(mCutPi1PT,"with noise, with cut");
 legend3->Draw();
 gPad->Print( "plots/model/PT/plot_mToyPi1PT.pdf" );
 gPad->Print( "plots/model/PT/plot_mToyPi1PT.png" );
 
 makeCanvas();
 mPairQT->SetLineColor(kBlack);
-mPairQTwMu->SetLineColor(kRed);
+//mPairQTwMu->SetLineColor(kRed);
 mNoisyPairQT->SetLineColor(kBlue);
 mCutPairQT->SetLineColor(kOrange);
 mPairQT->Draw();
 mNoisyPairQT->Draw("SAME");
-mPairQTwMu->Draw("SAME");
+//mPairQTwMu->Draw("SAME");
 mCutPairQT->Draw("SAME");
 mPairQT->SetMinimum(0);
 auto legend4 = new TLegend(0.65,0.1,0.95,0.4);
 legend4->SetHeader("Legend","C"); // option "C" allows to center the header
-legend4->AddEntry(mPairQT,"No #pi->#mu decay, no noise, no cut");
-legend4->AddEntry(mPairQTwMu,"With #pi->#mu decay, no noise, no cut");
-legend4->AddEntry(mNoisyPairQT,"With #pi->#mu decay, with noise, no cut");
-legend4->AddEntry(mCutPairQT,"With #pi->#mu decay, with noise, with cut");
+legend4->AddEntry(mPairQT,"no noise, no cut");
+//legend4->AddEntry(mPairQTwMu,"With #pi->#mu decay, no noise, no cut");
+legend4->AddEntry(mNoisyPairQT,"with noise, no cut");
+legend4->AddEntry(mCutPairQT,"with noise, with cut");
 legend4->Draw();
 gPad->Print( "plots/model/PT/plot_mToyPairQT.pdf" );
 gPad->Print( "plots/model/PT/plot_mToyPairQT.png" );
@@ -372,21 +372,21 @@ gPad->Print( "plots/model/PT/plot_mPTRCbyMC.png" );
 
 makeCanvas();
 mPairPhi->SetLineColor(kBlack);
-mPairPhiwMu->SetLineColor(kRed);
+//mPairPhiwMu->SetLineColor(kRed);
 mNoisyPairPhi->SetLineColor(kBlue);
 mCutPairPhi->SetLineColor(kOrange);
 gStyle->SetOptFit();
 mNoisyPairPhi->SetMinimum(10000);
 mNoisyPairPhi->Draw();
 mPairPhi->Draw("Same");
-mPairPhiwMu->Draw("Same");
+//mPairPhiwMu->Draw("Same");
 mCutPairPhi->Draw("Same");
 auto legend2 = new TLegend(0.65,0.1,0.95,0.4);
 legend2->SetHeader("Legend","C"); // option "C" allows to center the header
-legend2->AddEntry(mPairPhi,"No #pi->#mu decay, no noise, no cut");
-legend2->AddEntry(mPairPhiwMu,"With #pi->#mu decay, no noise, no cut");
-legend2->AddEntry(mNoisyPairPhi,"With #pi->#mu decay, with noise, no cut");
-legend2->AddEntry(mCutPairPhi,"With #pi->#mu decay, with noise, with cut");
+legend2->AddEntry(mPairPhi,"no noise, no cut");
+//legend2->AddEntry(mPairPhiwMu,"With #pi->#mu decay, no noise, no cut");
+legend2->AddEntry(mNoisyPairPhi,"with noise, no cut");
+legend2->AddEntry(mCutPairPhi,"with noise, with cut");
 legend2->Draw();
 gPad->Print( "plots/model/plot_mToyPairPhi.pdf" );
 gPad->Print( "plots/model/plot_mToyPairPhi.png" );
@@ -463,7 +463,7 @@ gPad->Print( "plots/model/PT/plot_mToyCos4phivsPT.png" );
 
 makeCanvas();
 mToyPTCos2flatphiMoments->SetLineColor(kBlack);
-mToyPTCos2decayphiMoments->SetLineColor(kMagenta);
+//mToyPTCos2decayphiMoments->SetLineColor(kMagenta);
 mToyPTCos2cutflatphiMoments->SetLineColor(kOrange);
 mToyPTCos2phiMoments->SetLineColor(kBlue);
 mToyPTCos2phiMoments->SetTitle("Strength of cos(2#phi) signal vs. P_{T}; P_{T} (GeV); 2<cos(2#phi)>");
@@ -471,12 +471,12 @@ mToyPTCos2phiMoments->SetMinimum(-1);
 mToyPTCos2phiMoments->SetMaximum(0.25);
 mToyPTCos2phiMoments->Draw();
 mToyPTCos2flatphiMoments->Draw("SAME");
-mToyPTCos2decayphiMoments->Draw("SAME");
+//mToyPTCos2decayphiMoments->Draw("SAME");
 mToyPTCos2cutflatphiMoments->Draw("SAME");
 auto legend5 = new TLegend(0.65,0.1,0.95,0.4);
 legend5->SetHeader("Legend","C"); // option "C" allows to center the header
 legend5->AddEntry(mToyPTCos2flatphiMoments,"No effects (completely flat #phi hist)");
-legend5->AddEntry(mToyPTCos2decayphiMoments,"#pi->#mu+#nu with P_{T} smear and detector acceptance");
+//legend5->AddEntry(mToyPTCos2decayphiMoments,"#pi->#mu+#nu with P_{T} smear and detector acceptance");
 legend5->AddEntry(mToyPTCos2cutflatphiMoments,"Detector acceptance");
 legend5->AddEntry(mToyPTCos2phiMoments,"P_{T} smear, detector acceptance");
 legend5->Draw();

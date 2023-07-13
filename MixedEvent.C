@@ -48,6 +48,19 @@ double calc_Phi( TLorentzVector lv1, TLorentzVector lv2) {
     }
 }
 
+double ddTOF ( double mass, double p1, double tof1, double l1,  double p2, double tof2, double l2 ) {
+
+    double c = 3.0e1; //in cm/ns
+    double me2 = pow(mass,2);
+    double dTOF = tof2 - tof1 ;
+    double tof1exp = (l1 / c) * sqrt( 1 + ( (mass*mass)/(p1*p1) ) );
+    double tof2exp = (l2 / c) * sqrt( 1 + ( (mass*mass)/(p2*p2) ) );
+    double dTOFexp = tof2exp - tof1exp ;
+    double ddTOF = dTOF - dTOFexp ;
+
+    return ddTOF;
+}
+
 void MixedEvent() {
 
     double PI = 3.1415926535;
@@ -64,11 +77,11 @@ void MixedEvent() {
 
     auto * mDataLikePT = new TH1F("mDataLikePT", "Same sign data P_{T} distribution; P_{T} (GeV/c); counts", 500, 0, 1.5);
     auto * mDataLikePhi = new TH1F("mDataLikePhi", "Same sign data #phi distribution; #phi (rad); counts", 200, -3.13, 3.13);
-    auto * mDataLikeCos2PhivsPT = new TH2F("mDataLikeCos2PhivsPT", "Cos2#phi signal vs. parent P_{T}; 2cos2#phi;  P_{T} (GeV/c); counts", 100, -2, 2, 250, 0, 0.5);
+    auto * mDataLikeCos2PhivsPT = new TH2F("mDataLikeCos2PhivsPT", "Cos2#phi signal vs. parent P_{T}; 2cos2#phi;  P_{T} (GeV/c); counts", 100, -2, 2, 50, 0, 0.2);
     
-    auto * mDataLikeCos2PhivsMass = new TH2F("mDataLikeCos2PhivsMass", "Cos2#phi signal vs. parent Mass; 2cos2#phi;  Mass (GeV); counts", 100, -2, 2, 250, 0.25, 2);
+    auto * mDataLikeCos2PhivsMass = new TH2F("mDataLikeCos2PhivsMass", "Cos2#phi signal vs. parent Mass; 2cos2#phi;  Mass (GeV); counts", 100, -2, 2, 50, 0.25, 2);
 
-    auto * mDataLikeCos2PhivsRapidity = new TH2F("mDataLikeCos2PhivsRapidity", "Cos2#phi signal vs. parent Rapidity; 2cos2#phi;  Rapidity; counts", 100, -2, 2, 250, -2, 2);
+    auto * mDataLikeCos2PhivsRapidity = new TH2F("mDataLikeCos2PhivsRapidity", "Cos2#phi signal vs. parent Rapidity; 2cos2#phi;  Rapidity; counts", 100, -2, 2, 50, -2, 2);
 
     auto * mPperp = new TH1F("mPperp", "Parent (#rho^{0}) Transverse Momentum; Transverse Momentum (GeV); counts", 500, 0, 1.5);
     auto * mMass = new TH1F("mMass", "Parent (#rho^{0})  Mass; Mass (GeV); Counts", 500, 0, 2);
@@ -76,14 +89,16 @@ void MixedEvent() {
 
     auto * mPairPhi = new TH1F("mPairPhi", "#pi^{+}#pi^{-} mixed event #phi distribution; #phi (rad); counts", 200, -3.13, 3.13);
     auto * mCos1PhivsPT = new TH2F("mCos1PhivsPT", "Cos1#phi signal vs. parent P_{T}; 2cos1#phi;  P_{T} (GeV/c); counts", 100, -2, 2, 250, 0, 0.5);
-    auto * mCos2PhivsPT = new TH2F("mCos2PhivsPT", "Cos2#phi signal vs. parent P_{T}; 2cos2#phi;  P_{T} (GeV/c); counts", 100, -2, 2, 250, 0, 0.5);
+    auto * mCos2PhivsPT = new TH2F("mCos2PhivsPT", "Cos2#phi signal vs. parent P_{T}; 2cos2#phi;  P_{T} (GeV/c); counts", 100, -2, 2, 50, 0, 0.2);
     auto * mCos3PhivsPT = new TH2F("mCos3PhivsPT", "Cos3#phi signal vs. parent P_{T}; 2cos3#phi;  P_{T} (GeV/c); counts", 100, -2, 2, 250, 0, 0.5);
-    auto * mCos4PhivsPT = new TH2F("mCos4PhivsPT", "Cos4#phi signal vs. parent P_{T}; 2cos4#phi;  P_{T} (GeV/c); counts", 100, -2, 2, 250, 0, 0.5);
-    auto * mCos2PhivsMass = new TH2F("mCos2PhivsMass", "Cos2#phi signal vs. parent Mass; 2cos2#phi;  Mass (GeV); counts", 100, -2, 2, 250, 0.25, 2);
-    auto * mCos2PhivsRapidity = new TH2F("mCos2PhivsRapidity", "Cos2#phi signal vs. parent Rapidity; 2cos2#phi;  Rapidity; counts", 100, -2, 2, 250, -2, 2);
+    auto * mCos4PhivsPT = new TH2F("mCos4PhivsPT", "Cos4#phi signal vs. parent P_{T}; 2cos4#phi;  P_{T} (GeV/c); counts", 100, -2, 2, 50, 0, 0.5);
+    auto * mCos2PhivsMass = new TH2F("mCos2PhivsMass", "Cos2#phi signal vs. parent Mass; 2cos2#phi;  Mass (GeV); counts", 100, -2, 2, 50, 0.25, 2);
+    auto * mCos2PhivsRapidity = new TH2F("mCos2PhivsRapidity", "Cos2#phi signal vs. parent Rapidity; 2cos2#phi;  Rapidity; counts", 100, -2, 2, 50, -2, 2);
     auto * mLikePhi = new TH1F("mLikePhi", "#pi^{+}#pi^{-} like sign #phi distribution; #phi (rad); counts", 200, -3.13, 3.13);
     auto * mLikeCos2PhivsPT = new TH2F("mLikeCos2PhivsPT", "Cos2#phi signal vs. parent P_{T} (like sign); 2cos2#phi;  P_{T} (GeV/c); counts", 100, -2, 2, 100, 0, 0.5);
 
+    auto * mDataCos4PhivsPT = new TH2F("mDataCos4PhivsPT", "Cos4#phi signal vs. parent P_{T}; 2cos4#phi; P_{T} (GeV/c); counts", 100, -2, 2, 40, 0, 0.5);
+    
     TFile *myFile = TFile::Open("/Users/samcorey/code/data/pair_dst_Run12UU.root");
     TTreeReader myReader("PairDst", myFile);
     TTreeReaderValue<FemtoPair> pair(myReader, "Pairs");
@@ -101,60 +116,59 @@ void MixedEvent() {
         double chipipi = pow( pair->d1_mNSigmaPion, 2) + pow( pair->d2_mNSigmaPion, 2);
         double dca1 = pair->d1_mDCA;
         double dca2 = pair->d2_mDCA;
+        double eZDC = pair->mZDCEast;
+        double wZDC = pair->mZDCWest;
+        double vertex = pair->mVertexZ;
 
-        int buffer_size = 10;
+        int buffer_size = 20;
 
         TLorentzVector lv1, lv2;
         lv1.SetPtEtaPhiM( pair->d1_mPt, pair->d1_mEta, pair->d1_mPhi, 0.135 );
         lv2.SetPtEtaPhiM( pair->d2_mPt, pair->d2_mEta, pair->d2_mPhi, 0.135 );
             
-        if ( chipipi <10 && dca1 <1 && dca2 <1 ){
-            if (abs(pair->mChargeSum) == 0 ) {
+        if ( (chipipi <10 && dca1 <1 && dca2 <1 ) ){
+            //double ddTOFval = ddTOF( 0.135, lv1.P(), pair->d1_mTof, pair->d1_mLength, lv2.P(), pair->d2_mTof, pair->d2_mLength );
+            if (abs(pair->mChargeSum) == 0 /* && pair->d1_mMatchFlag !=0 && pair->d2_mMatchFlag !=0 && abs(ddTOFval) < 0.3 */ ) {
                 mDataLikePT->Fill((lv1+lv2).Pt());
                 mPiDataLikePT->Fill(lv1.Pt());
                 mPiDataLikeEta->Fill(lv1.Eta());
                 mPiDataLikeAngle->Fill(lv1.Phi());
                 mPiDataLikeMass->Fill(lv1.M());
                 mDataLikePiPTvsRhoPT->Fill( lv1.Pt(), (lv1 + lv2).Pt() );
-                if ( (lv1+lv2).M() < 0.5 && (lv1+lv2).M() > 0.4) {
+                if ( (lv1+lv2).M() > 0.65 && (lv1+lv2).M() < 0.9) {
                     mDataLikePhi->Fill(calc_Phi(lv1, lv2));
                     mDataLikeCos2PhivsPT->Fill( 2*cos(2*calc_Phi(lv1,lv2)), (lv1+lv2).Pt());
+                    mDataCos4PhivsPT->Fill( 2*cos(4*calc_Phi(lv1,lv2)), (lv1+lv2).Pt());
                 }
-                if ( (lv1+lv2).Pt() < 0.6 ) {
+                if ( (lv1+lv2).Pt() < 0.06 ) {
                     mDataLikeCos2PhivsMass->Fill( 2*cos(2*calc_Phi(lv1,lv2)), (lv1+lv2).M());
                 }
-                if ( (lv1+lv2).Pt() < 0.6 && (lv1+lv2).M() < 0.5 && (lv1+lv2).M() > 0.4  ) {
+                if ( (lv1+lv2).Pt() < 0.06 && (lv1+lv2).M() < 0.5 && (lv1+lv2).M() > 0.4  ) {
                     mDataLikeCos2PhivsRapidity->Fill( 2*cos(2*calc_Phi(lv1,lv2)), (lv1+lv2).Rapidity());
                 }
             }
-            if (posBuffer.size() == buffer_size && negBuffer.size() == buffer_size && abs(pair->mChargeSum) == 0 /*&& (lv1+lv2).Pt() > 0.125*/ ) {
+            if (posBuffer.size() == buffer_size && negBuffer.size() == buffer_size && abs(pair->mChargeSum) == 0 ) {
                 TLorentzVector parentLV = lv1 + lv2;
                 //opposite sign pairs
                 for (int i = 0; i < buffer_size; i++ ){
                     TLorentzVector Sum1 = lv1 + negBuffer[i];
-                    lv1.Boost(-Sum1.BoostVector());
-                    negBuffer[i].Boost(-Sum1.BoostVector());
                     //if ( parentLV.Pt() > Sum1.Pt()  ) {
                     //if ( parentLV.Pt() <= Sum1.Pt()  ) {
-                    //if ( abs(parentLV.Pt()-Sum1.Pt()) < 0.05*parentLV.Pt()  ) {
-                        lv1.Boost(Sum1.BoostVector());
-                        negBuffer[i].Boost(Sum1.BoostVector()); 
+                    //if ( abs(parentLV.Pt()-Sum1.Pt()) < 0.05*parentLV.Pt()  ) { 
+                    if ( parentLV.M() > 0.4 && parentLV.M() < 0.5  ) {
                         posPtcls.push_back(lv1);
                         negPtcls.push_back(negBuffer[i]);
-                    //}
+                    }
                 }
                 for (int i = 0; i < buffer_size; i++ ){
                     TLorentzVector Sum2 = lv2 + posBuffer[i];
-                    lv2.Boost(-Sum2.BoostVector());
-                    posBuffer[i].Boost(-Sum2.BoostVector());
                     //if ( parentLV.Pt() > Sum2.Pt() ) {
                     //if ( parentLV.Pt() <= Sum2.Pt()  ) {
                     //if ( abs(parentLV.Pt()-Sum2.Pt()) < 0.05*parentLV.Pt()  ) {
-                        lv2.Boost(Sum2.BoostVector());
-                        posBuffer[i].Boost(Sum2.BoostVector());
+                    if ( parentLV.M() > 0.4 && parentLV.M() < 0.5  ) {
                         negPtcls.push_back(lv2);
                         posPtcls.push_back(posBuffer[i]);
-                    //}
+                    }
                 }
                 //like sign pairs
                 for (int i = 0; i < buffer_size; i++ ){
@@ -198,19 +212,19 @@ void MixedEvent() {
         mRapidity->Fill( (posLV + negLV).Rapidity() );
 
         //phi histograms
-        if ( pairMass > 0.4 && pairMass < 0.5 ) {
+        if ( pairMass > 0.65 && pairMass < 0.9 ) {
             mPairPhi->Fill( pairPhi );
             mCos1PhivsPT->Fill( 2 * cos( pairPhi ), pairPT );
-            mCos2PhivsPT->Fill( (2 * cos2phi), pairPT );
+            mCos2PhivsPT->Fill( 2 * cos( 2*pairPhi ), pairPT );
             mCos3PhivsPT->Fill( 2 * cos( 3*pairPhi ), pairPT );
             mCos4PhivsPT->Fill( 2 * cos( 4*pairPhi ), pairPT );
             mLikePhi->Fill( likePhi );
             mLikeCos2PhivsPT->Fill( (2 * likecos2phi), likePT );
         }
-        if ( pairPT < 0.6 ) {
+        if ( pairPT < 0.06 ) {
             mCos2PhivsMass->Fill( (2 * cos2phi), pairMass );
         }
-        if ( pairPT < 0.6 && pairMass > 0.4 && pairMass < 0.5 ) {
+        if ( pairPT < 0.06 && pairMass > 0.4 && pairMass < 0.5 ) {
             mCos2PhivsRapidity->Fill( (2*cos2phi), pairRapidity );
         }
     }
@@ -229,59 +243,69 @@ auto * mDataLikeCos2PhivsMassmoments = mDataLikeCos2PhivsMass->ProfileY("mDataLi
 auto * mCos2PhivsRapiditymoments = mCos2PhivsRapidity->ProfileY("mCos2PhivsRapiditymoments", 1, -1);
 auto * mDataLikeCos2PhivsRapiditymoments = mDataLikeCos2PhivsRapidity->ProfileY("mDataLikeCos2PhivsRapiditymoments", 1, -1);
 
-//Trying corrections
-mCos2PhivsPT->Scale(2*PI*0.5/mPairPhi->Integral("width"));
-mDataLikeCos2PhivsPT->Scale(2*PI*0.5/mDataLikePhi->Integral("width"));
-mDataLikeCos2PhivsPT->Add(mDataLikeCos2PhivsPT, mCos2PhivsPT, 1, -1);
+auto * mDataCos4PhivsPTmoments = mDataCos4PhivsPT->ProfileY("mDataCos4PhivsPTmoments", 1, -1);
 
-auto * mCorrectedCos2PhivsPTmoments = new TH1F("mCorrectedCos2PhivsPTmoments", "Corrected  (0.4 < M_{#rho^{0}} < 0.5 GeV); P_{T} (GeV/c); 2<cos2#phi>", 250, 0, 0.5);
+//Trying corrections
+
+auto * mCorrectedCos2PhivsPTmoments = new TH1F("mCorrectedCos2PhivsPTmoments", "Corrected  (0.4 < M_{#rho^{0}} < 0.5 GeV); P_{T} (GeV/c); 2<cos2#phi>", 50, 0, 0.2);
 for (int i = 0; i < (mCorrectedCos2PhivsPTmoments->GetNbinsX()) - 1; i++) { 
-    double gamma_2 = mDataLikeCos2PhivsPTmoments->GetBinContent( i+1 );
-    double omega_2 = mCos2PhivsPTmoments->GetBinContent( i+1 );
-    double delta_gamma_2 =  mDataLikeCos2PhivsPTmoments->GetBinError( i+1 );
-    double delta_omega_2 =  mCos2PhivsPTmoments->GetBinError( i+1 );
+    double gamma_2 = mDataLikeCos2PhivsPTmoments->GetBinContent( i+1 )/2;
+    double omega_2 = mCos2PhivsPTmoments->GetBinContent( i+1 )/2;
+    double delta_gamma_2 =  mDataLikeCos2PhivsPTmoments->GetBinError( i+1 )/2;
+    double delta_omega_2 =  mCos2PhivsPTmoments->GetBinError( i+1 )/2;
     double dadw = (2*(gamma_2 * gamma_2) - 4) / pow( (omega_2*gamma_2 - 2), 2);
     double dadg = (-2*(omega_2 * omega_2) + 4) / pow( (omega_2*gamma_2 - 2), 2);
 
-    double alpha_2 = ( 2 * (omega_2 - gamma_2) ) / ( (omega_2 * alpha_2) -2 );
+    double alpha_2 = ( 2 * (omega_2 - gamma_2) ) / ( (omega_2 * gamma_2) -2 );
     double delta_alpha_2 = sqrt( (dadw*dadw*delta_omega_2*delta_omega_2) + (dadg*dadg*delta_gamma_2*delta_gamma_2) );
 
-    mCorrectedCos2PhivsPTmoments->SetBinContent( i+1, alpha_2 );
+    mCorrectedCos2PhivsPTmoments->SetBinContent( i+1, 2*alpha_2 );
     mCorrectedCos2PhivsPTmoments->SetBinError( i+1, delta_alpha_2);
 }
 
-auto * mCorrectedCos2PhivsMassmoments = new TH1F("mCorrectedCos2PhivsMassmoments", " Corrected (P_{T}(#rho^{0}) < 0.6 GeV/c); Pair Mass (GeV); 2<cos2#phi>", 250, 0.25, 2);
+auto * mCorrectedCos2PhivsMassmoments = new TH1F("mCorrectedCos2PhivsMassmoments", " Corrected (P_{T}(#rho^{0}) < 0.06 GeV/c); Pair Mass (GeV); 2<cos2#phi>", 50, 0.25, 2);
 for (int i = 0; i < (mCorrectedCos2PhivsMassmoments->GetNbinsX()) - 1; i++) {
-    double gamma_2 = mDataLikeCos2PhivsMassmoments->GetBinContent( i+1 );
-    double omega_2 = mCos2PhivsMassmoments->GetBinContent( i+1 );
-    double delta_gamma_2 =  mDataLikeCos2PhivsMassmoments->GetBinError( i+1 );
-    double delta_omega_2 =  mCos2PhivsMassmoments->GetBinError( i+1 );
+    double gamma_2 = mDataLikeCos2PhivsMassmoments->GetBinContent( i+1 )/2;
+    double omega_2 = mCos2PhivsMassmoments->GetBinContent( i+1 )/2;
+    double delta_gamma_2 =  mDataLikeCos2PhivsMassmoments->GetBinError( i+1 )/2;
+    double delta_omega_2 =  mCos2PhivsMassmoments->GetBinError( i+1 )/2;
     double dadw = (2*(gamma_2 * gamma_2) - 4) / pow( (omega_2*gamma_2 - 2), 2);
     double dadg = (-2*(omega_2 * omega_2) + 4) / pow( (omega_2*gamma_2 - 2), 2);
 
-    double alpha_2 = ( 2 * (omega_2 - gamma_2) ) / ( (omega_2 * alpha_2) -2 );
+    double alpha_2 = ( 2 * (omega_2 - gamma_2) ) / ( (omega_2 * gamma_2) -2 );
     double delta_alpha_2 = sqrt( (dadw*dadw*delta_omega_2*delta_omega_2) + (dadg*dadg*delta_gamma_2*delta_gamma_2) );
 
-    mCorrectedCos2PhivsMassmoments->SetBinContent( i+1, alpha_2 );
+    mCorrectedCos2PhivsMassmoments->SetBinContent( i+1, 2*alpha_2 );
     mCorrectedCos2PhivsMassmoments->SetBinError( i+1, delta_alpha_2);
 }
 
-auto * mCorrectedCos2PhivsRapiditymoments = new TH1F("mCorrectedCos2PhivsRapiditymoments", "Corrected  (P_{T}(#rho^{0}) < 0.6 GeV/c, 0.4 < M_{#rho^{0}} < 0.5 GeV); Pair Rapidity; 2<cos2#phi>", 250, -2, 2);
+auto * mCorrectedCos2PhivsRapiditymoments = new TH1F("mCorrectedCos2PhivsRapiditymoments", "Corrected  (P_{T}(#rho^{0}) < 0.06 GeV/c, 0.4 < M_{#rho^{0}} < 0.5 GeV); Pair Rapidity; 2<cos2#phi>", 50, -2, 2);
 for (int i = 0; i < (mCorrectedCos2PhivsRapiditymoments->GetNbinsX()) - 1; i++) {
-    double gamma_2 = mDataLikeCos2PhivsRapiditymoments->GetBinContent( i+1 );
-    double omega_2 = mCos2PhivsRapiditymoments->GetBinContent( i+1 );
+    double gamma_2 = mDataLikeCos2PhivsRapiditymoments->GetBinContent( i+1 )/2;
+    double omega_2 = mCos2PhivsRapiditymoments->GetBinContent( i+1 )/2;
     double delta_gamma_2 =  mDataLikeCos2PhivsRapiditymoments->GetBinError( i+1 );
     double delta_omega_2 =  mCos2PhivsRapiditymoments->GetBinError( i+1 );
     double dadw = (2*(gamma_2 * gamma_2) - 4) / pow( (omega_2*gamma_2 - 2), 2);
     double dadg = (4 - 2*(omega_2 * omega_2)) / pow( (omega_2*gamma_2 - 2), 2);
 
-    double alpha_2 = ( 2 * (omega_2 - gamma_2) ) / ( (omega_2 * alpha_2) -2 );
+    double alpha_2 = ( 2 * (omega_2 - gamma_2) ) / ( (omega_2 * gamma_2) -2 );
     double delta_alpha_2 = sqrt( (dadw*dadw*delta_omega_2*delta_omega_2) + (dadg*dadg*delta_gamma_2*delta_gamma_2) );
 
-    mCorrectedCos2PhivsRapiditymoments->SetBinContent( i+1, alpha_2 );
+    mCorrectedCos2PhivsRapiditymoments->SetBinContent( i+1, 2*alpha_2 );
     mCorrectedCos2PhivsRapiditymoments->SetBinError( i+1, delta_alpha_2);
 }
 
+auto * mCorrectedCos4PhivsPTmoments = new TH1F("mCorrectedCos4PhivsPTmoments", "Corrected  (0.4 < M_{#rho^{0}} < 0.5 GeV); P_{T} (GeV/c); 2<cos4#phi>", 40, 0, 0.5);
+for (int i = 0; i < (mCorrectedCos4PhivsPTmoments->GetNbinsX()) - 1; i++) { 
+    double gamma_4 = mDataCos4PhivsPTmoments->GetBinContent( i+1 ) / 2;
+    double omega_4 = mCos4PhivsPTmoments->GetBinContent( i+1 ) / 2;
+    double omega_2 = mCos2PhivsPTmoments->GetBinContent( i+1 ) / 2;
+    double alpha_2 = mCorrectedCos2PhivsPTmoments->GetBinContent( i+1 );
+
+    double alpha_4 = ( (-2*gamma_4) + (alpha_2 * omega_2) - (gamma_4 * alpha_2 * omega_2) + (2*omega_4))/(gamma_4*omega_4 - 2);
+
+    mCorrectedCos4PhivsPTmoments->SetBinContent( i+1, alpha_4 );
+}
 
 //Draw histograms
 makeCanvas();
@@ -367,9 +391,9 @@ gPad->Print( "plots/mixedevent/PT/plot_mCos4PhivsPTmoments.pdf" );
 
 makeCanvas();
 mCos2PhivsPTmoments->SetLineColor(kBlack);
-mDataLikeCos2PhivsPTmoments->SetLineColor(kYellow);
-mCorrectedCos2PhivsPTmoments->SetLineColor(kBlue);
-mCos2PhivsPTmoments->SetTitle( "0.4 < M_{#rho^{0}} < 0.5 GeV; P_{T} (GeV/c); 2<cos2#phi>" );
+mDataLikeCos2PhivsPTmoments->SetLineColor(kGreen-2);
+mCorrectedCos2PhivsPTmoments->SetLineColor(kMagenta);
+mCos2PhivsPTmoments->SetTitle( "0.65 < M_{#rho^{0}} < 0.9 GeV; P_{T} (GeV/c); 2<cos2#phi>" );
 mCos2PhivsPTmoments->SetMaximum(1);
 mCos2PhivsPTmoments->Draw();
 mDataLikeCos2PhivsPTmoments->Draw("SAME");
@@ -387,7 +411,7 @@ makeCanvas();
 mCos2PhivsMassmoments->SetLineColor(kBlack);
 mDataLikeCos2PhivsMassmoments->SetLineColor(kGreen);
 mCorrectedCos2PhivsMassmoments->SetLineColor(kBlue);
-mCos2PhivsMassmoments->SetTitle( "P_{T}(#rho^{0}) < 0.6 GeV/c; Pair Mass (GeV); 2<cos2#phi>" );
+mCos2PhivsMassmoments->SetTitle( "P_{T}(#rho^{0}) < 0.06 GeV/c; Pair Mass (GeV); 2<cos2#phi>" );
 mCos2PhivsMassmoments->SetMaximum(1);
 mCos2PhivsMassmoments->Draw();
 mDataLikeCos2PhivsMassmoments->Draw("Same");
@@ -405,7 +429,7 @@ makeCanvas();
 mCos2PhivsRapiditymoments->SetLineColor(kBlack);
 mDataLikeCos2PhivsRapiditymoments->SetLineColor(kGreen);
 mCorrectedCos2PhivsRapiditymoments->SetLineColor(kBlue);
-mCos2PhivsRapiditymoments->SetTitle( "P_{T}(#rho^{0}) < 0.6 GeV/c, 0.4 < M_{#rho^{0}} < 0.5 GeV; Pair Rapidity; 2<cos2#phi>" );
+mCos2PhivsRapiditymoments->SetTitle( "P_{T}(#rho^{0}) < 0.06 GeV/c, 0.4 < M_{#rho^{0}} < 0.5 GeV; Pair Rapidity; 2<cos2#phi>" );
 mCos2PhivsRapiditymoments->SetMaximum(1);
 mCos2PhivsRapiditymoments->Draw();
 mDataLikeCos2PhivsRapiditymoments->Draw("Same");
@@ -419,29 +443,43 @@ legend4->Draw();
 gPad->Print( "plots/mixedevent/Mass/plot_mDataLikevsMixedCos2PhivsRapiditymoments.png" );
 gPad->Print( "plots/mixedevent/Mass/plot_mDataLikevsMixedCos2PhivsRapiditymoments.pdf" );
 
-/*makeCanvas();
+makeCanvas();
 mCorrectedCos2PhivsPTmoments->SetLineColor(kBlack);
 mCorrectedCos2PhivsPTmoments->SetMaximum(1);
-mCorrectedCos2PhivsPTmoments->SetMinimum(-1.5);
-mCorrectedCos2PhivsPTmoments->Draw("E1");
+mCorrectedCos2PhivsPTmoments->SetMinimum(-0.2);
+mCorrectedCos2PhivsPTmoments->Draw();
 gPad->Print( "plots/mixedevent/PT/plot_mCorrectedCos2PhivsPTmoments.png" );
 gPad->Print( "plots/mixedevent/PT/plot_mCorrectedCos2PhivsPTmoments.pdf" );
 
 makeCanvas();
 mCorrectedCos2PhivsMassmoments->SetLineColor(kBlack);
-mCorrectedCos2PhivsMassmoments->SetMaximum(1);
-mCorrectedCos2PhivsMassmoments->SetMinimum(-1.5);
+mCorrectedCos2PhivsMassmoments->SetMaximum(0.4);
+mCorrectedCos2PhivsMassmoments->SetMinimum(-0.4);
 mCorrectedCos2PhivsMassmoments->Draw("E1");
+TLine *l = new TLine(0.770,-0.4,0.770,0.4);
+l->SetLineColor(kBlue);
+l->Draw();
+auto legend5 = new TLegend(0.65,0.1,0.95,0.4);
+legend5->SetHeader("Legend","C"); // option "C" allows to center the header
+legend5->AddEntry(l,"#rho^0 mass peak (770 MeV)");
+legend5->Draw();
 gPad->Print( "plots/mixedevent/mass/plot_mCorrectedCos2PhivsMassmoments.png" );
 gPad->Print( "plots/mixedevent/mass/plot_mCorrectedCos2PhivsMassmoments.pdf" );
 
 makeCanvas();
 mCorrectedCos2PhivsRapiditymoments->SetLineColor(kBlack);
 mCorrectedCos2PhivsRapiditymoments->SetMaximum(1);
-mCorrectedCos2PhivsRapiditymoments->SetMinimum(-1.5);
+mCorrectedCos2PhivsRapiditymoments->SetMinimum(0);
 mCorrectedCos2PhivsRapiditymoments->Draw("E1");
 gPad->Print( "plots/mixedevent/Rapidity/plot_mCorrectedCos2PhivsRapiditymoments.png" );
 gPad->Print( "plots/mixedevent/Rapidity/plot_mCorrectedCos2PhivsRapiditymoments.pdf" );
-*/
+
+makeCanvas();
+mCorrectedCos4PhivsPTmoments->SetLineColor(kBlack);
+mCorrectedCos4PhivsPTmoments->SetTitle( "Cos4#phi signal strength vs P_{T} (mixed event correction); P_{T} (GeV/c); 2<cos4#phi>" );
+mCorrectedCos4PhivsPTmoments->Draw();
+gPad->Print( "plots/mixedevent/PT/plot_mCorrectedCos4PhivsPTmoments.png" );
+gPad->Print( "plots/mixedevent/PT/plot_mCorrectedCos4PhivsPTmoments.pdf" );
+
 fo->Write();
 }
