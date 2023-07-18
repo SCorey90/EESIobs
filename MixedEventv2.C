@@ -22,7 +22,6 @@ TRandom3 rng(global_rng());
 vector<TLorentzVector> update_buffer( vector<TLorentzVector> buffer, TLorentzVector current_ptcl, int buffer_size, int index ) {
     if ( buffer.size() < buffer_size ) { buffer.push_back(current_ptcl); }
     if ( buffer.size() >= buffer_size ) {
-        buffer.resize(buffer_size);
         buffer[index] = current_ptcl;
     }
     return buffer;
@@ -68,10 +67,21 @@ void MixedEventv2() {
     TFile * fo = new TFile( "MixedEventplotsv2.root", "RECREATE" );
 
     //data histograms
-    auto * mDataCos2phivsPT = new TH2F("mDataCos2phivsPT", "Data Cos2#phi signal vs. parent P_{T}; 2cos2#phi;  P_{T} (GeV/c); counts", 100, -2, 2, 100, 0, 0.5);
+    //auto * mDataCos2phivsPT = new TH2F("mDataCos2phivsPT", "Data Cos2#phi signal vs. parent P_{T}; 2cos2#phi;  P_{T} (GeV/c); counts", 100, -2, 2, 100, 0, 0.5);
+
+    auto * mDataCos1phivsPTvsMass = new TH3F("mDataCos1phivsPTvsMass", "Data Cos1#phi signal vs. parent P_{T}; 2cos1#phi;  P_{T} (GeV/c); Mass (GeV); counts", 100, -2, 2, 100, 0, 0.5, 100, 0.25, 2 );
+    auto * mDataCos2phivsPTvsMass = new TH3F("mDataCos2phivsPTvsMass", "Data Cos2#phi signal vs. parent P_{T}; 2cos2#phi;  P_{T} (GeV/c); Mass (GeV); counts", 100, -2, 2, 100, 0, 0.5, 100, 0.25, 2 );
+    auto * mDataCos3phivsPTvsMass = new TH3F("mDataCos3phivsPTvsMass", "Data Cos3#phi signal vs. parent P_{T}; 2cos3#phi;  P_{T} (GeV/c); Mass (GeV); counts", 100, -2, 2, 100, 0, 0.5, 100, 0.25, 2 );
+    auto * mDataCos4phivsPTvsMass = new TH3F("mDataCos4phivsPTvsMass", "Data Cos4#phi signal vs. parent P_{T}; 2cos4#phi;  P_{T} (GeV/c); Mass (GeV); counts", 100, -2, 2, 100, 0, 0.5, 100, 0.25, 2 );
+
 
     //mixed histograms
-    auto * mMixedCos2phivsPT = new TH2F("mMixedCos2phivsPT", "Mixed Cos2#phi signal vs. parent P_{T}; 2cos2#phi;  P_{T} (GeV/c); counts", 100, -2, 2, 100, 0, 0.5);
+    //auto * mMixedCos2phivsPT = new TH2F("mMixedCos2phivsPT", "Mixed Cos2#phi signal vs. parent P_{T}; 2cos2#phi;  P_{T} (GeV/c); counts", 100, -2, 2, 100, 0, 0.5);
+
+    auto * mMixedCos1phivsPTvsMass = new TH3F("mMixedCos1phivsPTvsMass", "Mixed Cos1#phi signal vs. parent P_{T}; 2cos1#phi;  P_{T} (GeV/c); Mass (GeV); counts", 100, -2, 2, 100, 0, 0.5, 100, 0.25, 2 );
+    auto * mMixedCos2phivsPTvsMass = new TH3F("mMixedCos2phivsPTvsMass", "Mixed Cos2#phi signal vs. parent P_{T}; 2cos2#phi;  P_{T} (GeV/c); Mass (GeV); counts", 100, -2, 2, 100, 0, 0.5, 100, 0.25, 2 );
+    auto * mMixedCos3phivsPTvsMass = new TH3F("mMixedCos3phivsPTvsMass", "Mixed Cos3#phi signal vs. parent P_{T}; 2cos3#phi;  P_{T} (GeV/c); Mass (GeV); counts", 100, -2, 2, 100, 0, 0.5, 100, 0.25, 2 );
+    auto * mMixedCos4phivsPTvsMass = new TH3F("mMixedCos4phivsPTvsMass", "Mixed Cos4#phi signal vs. parent P_{T}; 2cos4#phi;  P_{T} (GeV/c); Mass (GeV); counts", 100, -2, 2, 100, 0, 0.5, 100, 0.25, 2 );
 
     //data analysis and filling buffers
     TFile *myFile = TFile::Open("/Users/samcorey/code/data/pair_dst_Run12UU.root");
@@ -92,7 +102,7 @@ void MixedEventv2() {
         double wZDC = pair->mZDCWest;
         double vertex = pair->mVertexZ;
 
-        int buffer_size = 10;
+        int buffer_size = 200;
 
         TLorentzVector lv1, lv2;
         lv1.SetPtEtaPhiM( pair->d1_mPt, pair->d1_mEta, pair->d1_mPhi, 0.135 );
@@ -100,24 +110,43 @@ void MixedEventv2() {
 
         double ddTOFval = ddTOF( 0.135, lv1.P(), pair->d1_mTof, pair->d1_mLength, lv2.P(), pair->d2_mTof, pair->d2_mLength );
 
-        if ( chipipi <10 && dca1 <1 && dca2 <1 && abs(pair->mChargeSum)==0 && pair->d1_mMatchFlag !=0 && pair->d2_mMatchFlag !=0 && abs(ddTOFval) < 0.3  ){
+        if ( chipipi <10 && dca1 <1 && dca2 <1 && pair->d1_mMatchFlag !=0 && pair->d2_mMatchFlag !=0 && abs(ddTOFval) < 0.3  ){
             
             //fill histograms
-
-            double dataPairPhi = calc_Phi(lv1, lv2);
-            if ( (lv1+lv2).M() > 0.65 && (lv1+lv2).M() < 0.9 ) {
-                mDataCos2phivsPT->Fill( 2*cos(2*dataPairPhi), (lv1+lv2).Pt() );
+            if ( abs(pair->mChargeSum)==0 && abs((lv1+lv2).Rapidity()) < 1) {
+                TLorentzVector lv = lv1 + lv2 ;
+                double dataPairPhi = calc_Phi(lv1, lv2);
+                mDataCos1phivsPTvsMass->Fill( 2*cos(1*dataPairPhi), lv.Pt(), lv.M() );
+                mDataCos2phivsPTvsMass->Fill( 2*cos(2*dataPairPhi), lv.Pt(), lv.M() );
+                mDataCos3phivsPTvsMass->Fill( 2*cos(3*dataPairPhi), lv.Pt(), lv.M() );
+                mDataCos4phivsPTvsMass->Fill( 2*cos(4*dataPairPhi), lv.Pt(), lv.M() );
             }
 
             //add to mixed particle list
-            if ( posBuffer.size() == buffer_size && negBuffer.size() == buffer_size ) {
-                for ( int i = 0; i < buffer_size; i++ ) {
-                    posPtcls.push_back(lv1);
-                    negPtcls.push_back(negBuffer[i]);
+            if ( abs(pair->mChargeSum)==2 ) {
+                for ( TLorentzVector mixed_lv1 : posBuffer ) {
+                    TLorentzVector mixed_lv = mixed_lv1 + lv2 ;
+                    double mixedPairPhi = calc_Phi(mixed_lv1, lv2);
+                    if ( abs(mixed_lv.Rapidity()) < 1 ) {
+                        //if (mixed_lv.M() > 0.65 && mixed_lv.M() < 0.66 ) { mMixedCos2phivsPT->Fill( 2*cos(2*mixedPairPhi), mixed_lv.Pt() ); }
+
+                        mMixedCos1phivsPTvsMass->Fill( 2*cos(1*mixedPairPhi), mixed_lv.Pt(), mixed_lv.M() );
+                        mMixedCos2phivsPTvsMass->Fill( 2*cos(2*mixedPairPhi), mixed_lv.Pt(), mixed_lv.M() );
+                        mMixedCos3phivsPTvsMass->Fill( 2*cos(3*mixedPairPhi), mixed_lv.Pt(), mixed_lv.M() );
+                        mMixedCos4phivsPTvsMass->Fill( 2*cos(4*mixedPairPhi), mixed_lv.Pt(), mixed_lv.M() );
+                    }    
                 }
-                for ( int i = 0; i < buffer_size; i++ ) {
-                    posPtcls.push_back(posBuffer[i]);
-                    negPtcls.push_back(lv2);
+                for ( TLorentzVector mixed_lv2 : negBuffer ) {
+                    TLorentzVector mixed_lv = lv1 + mixed_lv2 ;
+                    double mixedPairPhi = calc_Phi(lv1, mixed_lv2);
+                    if ( abs(mixed_lv.Rapidity()) < 1 ) {
+                        //if (mixed_lv.M() > 0.65 && mixed_lv.M() < 0.66 ) { mMixedCos2phivsPT->Fill( 2*cos(2*mixedPairPhi), mixed_lv.Pt() ); }
+ 
+                        mMixedCos1phivsPTvsMass->Fill( 2*cos(1*mixedPairPhi), mixed_lv.Pt(), mixed_lv.M() );
+                        mMixedCos2phivsPTvsMass->Fill( 2*cos(2*mixedPairPhi), mixed_lv.Pt(), mixed_lv.M() );
+                        mMixedCos3phivsPTvsMass->Fill( 2*cos(3*mixedPairPhi), mixed_lv.Pt(), mixed_lv.M() );
+                        mMixedCos4phivsPTvsMass->Fill( 2*cos(4*mixedPairPhi), mixed_lv.Pt(), mixed_lv.M() );
+                    }
                 }
             }
 
@@ -127,71 +156,16 @@ void MixedEventv2() {
             negBuffer = update_buffer( negBuffer, lv2, buffer_size, buff_index );
         }
     }
-    cout << posBuffer.size();
-    //analyze mixed pairs
-    for ( int i = 0; i < posPtcls.size(); i++ ) {
-        TLorentzVector mixed_parent = posPtcls[i] + negPtcls[i] ;
-        double mixedPairPhi = calc_Phi( posPtcls[i], negPtcls[i] );
-
-        //fill histograms
-        if ( mixed_parent.M() > 0.65 && mixed_parent.M() < 0.9 ) {
-            mMixedCos2phivsPT->Fill( 2*cos(2*mixedPairPhi), mixed_parent.Pt() );
-        }
-    }
-
-//profile histograms
-
-TProfile * mDataCos2phivsPTmoments = mDataCos2phivsPT->ProfileY("mDataCos2phivsPTmoments", 1, -1);
-
-TProfile * mMixedCos2phivsPTmoments = mMixedCos2phivsPT->ProfileY("mMixedCos2phivsPTmoments", 1, -1);
-
-//data corrections
-
-auto * mCorrectedCos2phivsPTmoments = new TH1F("mCorrectedCos2phivsPTmoments", "Corrected  (0.65 < M_{#rho^{0}} < 0.9 GeV); P_{T} (GeV/c); 2<cos2#phi>", 100, 0, 0.5);
-for (int i = 0; i < (mCorrectedCos2phivsPTmoments->GetNbinsX()) - 1; i++) {
-    double gamma_2 = mDataCos2phivsPTmoments->GetBinContent( i+1 )/2;
-    double omega_2 = mMixedCos2phivsPTmoments->GetBinContent( i+1 )/2;
-    double delta_gamma_2 =  mDataCos2phivsPTmoments->GetBinError( i+1 )/2;
-    double delta_omega_2 =  mMixedCos2phivsPTmoments->GetBinError( i+1 )/2;
-    double dadw = (2*(gamma_2 * gamma_2) - 4) / pow( (omega_2*gamma_2 - 2), 2);
-    double dadg = (-2*(omega_2 * omega_2) + 4) / pow( (omega_2*gamma_2 - 2), 2);
-
-    double alpha_2 = ( 2 * (omega_2 - gamma_2) ) / ( (omega_2 * gamma_2) -2 );
-    double delta_alpha_2 = sqrt( (dadw*dadw*delta_omega_2*delta_omega_2) + (dadg*dadg*delta_gamma_2*delta_gamma_2) );
-
-    mCorrectedCos2phivsPTmoments->SetBinContent( i+1, 2*alpha_2 );
-    mCorrectedCos2phivsPTmoments->SetBinError( i+1, delta_alpha_2);
-}
-
-//draw histograms
+/*
+auto * mDataTest = mDataCos2phivsPT->ProfileY("mDataTest", 1, -1);
+auto * mMixedTest = mMixedCos2phivsPT->ProfileY("mMixedTest", 1, -1);
 
 makeCanvas();
-mDataCos2phivsPTmoments->SetLineColor(kBlack);
-mDataCos2phivsPTmoments->SetTitle( "Cos2#phi signal strength vs P_{T} (data); P_{T} (GeV/c); 2<cos2#phi>" );
-mDataCos2phivsPTmoments->Draw();
-
-makeCanvas();
-mMixedCos2phivsPTmoments->SetLineColor(kBlack);
-mMixedCos2phivsPTmoments->SetTitle( "Cos2#phi signal strength vs P_{T} (mixed event); P_{T} (GeV/c); 2<cos2#phi>" );
-mMixedCos2phivsPTmoments->Draw();
-
-makeCanvas();
-mMixedCos2phivsPTmoments->SetLineColor(kBlack);
-mDataCos2phivsPTmoments->SetLineColor(kGreen-2);
-mCorrectedCos2phivsPTmoments->SetLineColor(kMagenta);
-mMixedCos2phivsPTmoments->SetTitle( "0.65 < M_{#rho^{0}} < 0.9 GeV; P_{T} (GeV/c); 2<cos2#phi>" );
-mMixedCos2phivsPTmoments->SetMaximum(1);
-mMixedCos2phivsPTmoments->Draw();
-mDataCos2phivsPTmoments->Draw("SAME");
-mCorrectedCos2phivsPTmoments->Draw("SAME");
-auto legend = new TLegend(0.65,0.1,0.95,0.4);
-legend->SetHeader("Legend","C"); // option "C" allows to center the header
-legend->AddEntry(mMixedCos2phivsPTmoments,"Mixed event unlike sign source");
-legend->AddEntry(mDataCos2phivsPTmoments,"Unike sign pairs from data");
-legend->AddEntry(mCorrectedCos2phivsPTmoments,"Baseline subtracted signal");
-legend->Draw();
-gPad->Print( "plots/mixedevent/PT/plot_mMixedCorrCos2PhivsPTmoments.png" );
-gPad->Print( "plots/mixedevent/PT/plot_mMixedCorrCos2PhivsPTmoments.pdf" );
+mDataTest->SetLineColor(kBlack);
+mMixedTest->SetLineColor(kBlue);
+mDataTest->Draw();
+mMixedTest->Draw("SAME");
+*/
 
 fo->Write();
 

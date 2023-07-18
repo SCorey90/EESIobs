@@ -20,6 +20,8 @@ void dataVmodel() {
     TFile * dataHists = TFile::Open("EESIplots.root");
     TFile * modelHists = TFile::Open("toymodelplots.root");
     TFile * mixedeventHists = TFile::Open("MixedEventplots.root");
+    TFile * goldHists = TFile::Open("goldEESIplots.root");
+
 
     dataHists->ls();
     auto * mDataPiPT = (TH1F*)dataHists->Get("mPiPT");
@@ -38,6 +40,11 @@ void dataVmodel() {
     auto * mDataPhivsMass = (TH2F*)dataHists->Get("mPhivsMass");
     auto * mDataCos2PhivsMass = (TH2F*)dataHists->Get("mCos2phivsMass");
     auto * mDataCos4PhivsMass = (TH2F*)dataHists->Get("mCos4phivsMass");
+
+    auto * mUCorrectedCos2phivsPTmoments = (TH1F*)dataHists->Get("mCorrectedPTcos2phimoments");
+
+    goldHists->ls();
+    auto * mAuCorrectedCos2phivsPTmoments = (TH1F*)goldHists->Get("mCorrectedPTcos2phimoments");
 
     modelHists->ls();
     auto * mToyMass = (TH1F*)modelHists->Get("mReconstructedM");
@@ -411,5 +418,17 @@ legend11->AddEntry(mMixedMassCos2PhiMoments,"Mixed event like sign source");
 legend11->Draw();
 gPad->Print( "plots/dataVmodel/Mass/plot_mDataVMixedMassCos2PhiMoments.pdf" );
 gPad->Print( "plots/dataVmodel/Mass/plot_mDataVMixedMassCos2PhiMoments.png" );
+
+makeCanvas();
+mUCorrectedCos2phivsPTmoments->SetLineColor(kGreen-2);
+mAuCorrectedCos2phivsPTmoments->SetLineColor(kBlack);
+mAuCorrectedCos2phivsPTmoments->SetTitle("AuAu vs. UU 2<cos2#phi> vs. Pair P_{T} (0.65 < M_{#pi#pi} < 0.9 GeV); Pair P_{T}; 2<cos2#phi>");
+mUCorrectedCos2phivsPTmoments->Draw();
+mAuCorrectedCos2phivsPTmoments->Draw();
+auto legend12 = new TLegend(0.65,0.1,0.95,0.4);
+legend12->AddEntry(mUCorrectedCos2phivsPTmoments,"U+U Like-sign corrected");
+legend12->AddEntry(mAuCorrectedCos2phivsPTmoments,"Au+Au Like-sign corrected");
+legend12->Draw();
+gPad->Print( "plots/dataVmodel/PT/plot_mLikeCorrAuvsU.pdf");
 
 }

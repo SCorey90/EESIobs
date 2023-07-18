@@ -49,6 +49,7 @@ double calc_Phi( TLorentzVector lv1, TLorentzVector lv2) {
     } else {
         return 3.141592 - PairPhi;
     }
+    return PairPhi;
 }
 
 double lab_calc_Phi( TLorentzVector lv1, TLorentzVector lv2) {
@@ -92,7 +93,7 @@ void EESI() {
     auto * mZDCEastvsWest = new TH2F("mZDCEastvsWest", "ZDC East vs. West; ZDC East; ZDC West counts", 200, 0, 1300, 200, 0, 1300);
     auto * mZDCTotal = new TH1F("mZDCtotal", "ZDC (East^{2} + West^{2})^{1/2}; ZDC (East^{2} + West^{2})^{1/2}; counts", 1000, 0, 1900);
     
-    auto * mPairPhi = new TH1F("mPairPhi", "0.65 < M_{#pi#pi} < 0.9 GeV, P_{T} < 0.06 MeV ;#phi (rad);norm. counts", 100, -3.13, 3.13);
+    auto * mPairPhi = new TH1F("mPairPhi", "0.65 < M_{#pi#pi} < 0.9 GeV, P_{T} < 0.06 MeV/c (U+U) ;#phi (rad);norm. counts", 100, -3.13, 3.13);
     auto * mLabPairPhi = new TH1F("mLabPairPhi", "#pi_{#pm} #phi distribution;#phi (rad);# events", 100, -3.13, 3.13);
     auto * mPxvsPy = new TH2F("mPxvsPy", "#rho^{0} 2D momentum dist; P_{x} (GeV/c); P_{y} (GeV/c); Counts", 200, -0.1, 0.1, 200, -0.1, 0.1);
     auto * mPhivsMass = new TH2F("mPhivsMass", "#pi_{#pm} #phi distribution vs. parent mass; #phi (rad); Parent Mass (GeV); Counts", 100, -3.14, 3.14, 50, 0.3, 1.35);
@@ -134,6 +135,8 @@ void EESI() {
     auto * mCos4phivsRapidity = new TH2F("mCos4phivsRapidity", "cos4#phi distribution vs Rapidity", 100, -2, 2, 100, -2, 2);
 
     auto * mLikeCos2phivsRapidity = new TH2F("mLikeCos2phivsRapidity", "cos2#phi distribution vs Rapidity (like sign)", 100, -2, 2, 5, -2, 2);
+
+    auto * mCorrectedPTcos2phimoments = new TH1F("mCorrectedPTcos2phimoments", "Corrected  (0.65 < M_{#pi#pi} < 0.9 GeV); P_{T} (GeV/c); 2<cos2#phi>", 25, 0, 0.25);
 
     auto * mCos2phivsPTvsMass = new TH3F("mCos2phivsPTvsMass", ";pair P_{T} (GeV/c); pair Mass (GeV); 2<cos2#phi>; counts", 25, 0.25, 0.7, 25, 0, 0.5, 100, -2, 2);
 
@@ -213,7 +216,7 @@ void EESI() {
             mUnlikePiPTvsRhoPT->Fill( lv1.Pt(), lv.Pt() );
             mCos2phivsPTvsMass->Fill( lv.M(), lv.Pt(), 2*cos( PairPhi ));
 
-            if ( lv.M() > 0.6 && lv.M() <0.9 ){
+            if ( lv.M() > 0.65 && lv.M() <0.9 ){
 
                 if ( absPperp < 0.06){
 
@@ -300,7 +303,7 @@ mRapiditycos2phimoments->Fit("pol0","", "", -0.8, 0.8);
 
 mTotalZDCcos2phimoments->Fit("pol0", "","", 600, 1600);
 
-auto * mCorrectedPTcos2phimoments = new TH1F("mCorrectedPTcos2phimoments", "Corrected  (0.65 < M_{#pi#pi} < 0.9 GeV); P_{T} (GeV/c); 2<cos2#phi>", 25, 0, 0.25);
+//auto * mCorrectedPTcos2phimoments = new TH1F("mCorrectedPTcos2phimoments", "Corrected  (0.65 < M_{#pi#pi} < 0.9 GeV); P_{T} (GeV/c); 2<cos2#phi>", 25, 0, 0.25);
 for (int i = 0; i < (mCorrectedPTcos2phimoments->GetNbinsX()) - 1; i++) {
     double gamma_2 = mPTcos2phimoments->GetBinContent( i+1 )/2;
     double omega_2 = mLikePTcos2phimoments->GetBinContent( mLikePTcos2phimoments->FindBin( mPTcos2phimoments->GetBinCenter( i+1 ) ) )/2;
@@ -633,7 +636,7 @@ gPad->Print( "plots/data/ZDC/plot_mHighZDCPTcos2phimoments.png" );
 makeCanvas();
 mLowZDCPTcos2phimoments->SetLineColor(kBlack);
 mHighZDCPTcos2phimoments->SetLineColor(kMagenta);
-mLowZDCPTcos2phimoments->SetTitle("cos(2#phi) moments vs. Pair P_{T}; Pair P_{T} (GeV/c); 2<cos2#phi>");
+mLowZDCPTcos2phimoments->SetTitle("cos(2#phi) moments vs. Pair P_{T} (U+U); Pair P_{T} (GeV/c); 2<cos2#phi>");
 mLowZDCPTcos2phimoments->Draw();
 mHighZDCPTcos2phimoments->Draw("SAME");
 auto legend3 = new TLegend(0.65,0.1,0.95,0.4);
@@ -665,22 +668,22 @@ gPad->Print( "plots/data/plot_mPTvsMasscos2phimoments.pdf" );
 gPad->Print( "plots/data/plot_mPTvsMasscos2phimoments.png" );
 
 makeCanvas();
-mPTcos1phimoments->SetTitle("cos(1#phi) moments vs. Pair P_{T} (U+U); Pair P_{T} (GeV); 2<cos(1#phi)>");
+mPTcos1phimoments->SetTitle("cos(1#phi) moments vs. Pair P_{T} (U+U); Pair P_{T} (GeV/c); 2<cos(1#phi)>");
 mPTcos1phimoments->Draw();
 gPad->Print( "plots/data/PT/plot_mPTcos1phimoments.pdf" );
 
 makeCanvas();
-mPTcos2phimoments->SetTitle("cos(2#phi) moments vs. Pair P_{T} (U+U); Pair P_{T} (GeV); 2<cos(2#phi)>");
+mPTcos2phimoments->SetTitle("cos(2#phi) moments vs. Pair P_{T} (U+U); Pair P_{T} (GeV/c); 2<cos(2#phi)>");
 mPTcos2phimoments->Draw();
 gPad->Print( "plots/data/PT/plot_mPTcos2phimoments.pdf" );
 
 makeCanvas();
-mPTcos3phimoments->SetTitle("cos(3#phi) moments vs. Pair P_{T} (U+U); Pair P_{T} (GeV); 2<cos(3#phi)>");
+mPTcos3phimoments->SetTitle("cos(3#phi) moments vs. Pair P_{T} (U+U); Pair P_{T} (GeV/c); 2<cos(3#phi)>");
 mPTcos3phimoments->Draw();
 gPad->Print( "plots/data/PT/plot_mPTcos3phimoments.pdf" );
 
 makeCanvas();
-mPTcos4phimoments->SetTitle("cos(4#phi) moments vs. Pair P_{T} (U+U); Pair P_{T} (GeV); 2<cos(4#phi)>");
+mPTcos4phimoments->SetTitle("cos(4#phi) moments vs. Pair P_{T} (U+U); Pair P_{T} (GeV/c); 2<cos(4#phi)>");
 mPTcos4phimoments->Draw();
 gPad->Print( "plots/data/PT/plot_mPTcos4phimoments.pdf" );
 
