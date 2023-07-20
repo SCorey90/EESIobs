@@ -77,6 +77,9 @@ void EESI() {
     auto * mChiChi = new TH2F("mChiChi", " ; #Chi_{#pi#pi} ; #Chi_{ee} ; counts", 100, 0, 10, 100, 0, 200);
     auto * mddTOF = new TH1F("mddTOF", " #Delta#DeltaTOF ; #Delta#DeltaTOF; counts", 500, -1, 1 );
 
+    auto * mDCA1 = new TH1F("mDCA1", "DCA1", 500, 0, 10);
+    auto * mDCA1v2 = new TH2F("mDCA1v2", "DCA1v2", 500, 0, 3, 500, 0, 3);
+
     auto * mPiPT = new TH1F("mPiPT", "#pi P_{T}; P_{T} (GeV/c); counts", 500, 0, 1.5);
     auto * mPiEta = new TH1F("mPiEta", "#pi Rapidity; P_{T} (GeV/c); counts", 250, -2.5, 2.5);
     auto * mPiAngle = new TH1F("mPiAngle", "#pi Azimuthal Angle; #phi (GeV/c); counts", 100, -3.14, 3.14);
@@ -159,7 +162,12 @@ void EESI() {
         double WestZDC = pair->mZDCWest;
         double TotalZDC = sqrt((EastZDC*EastZDC + WestZDC*WestZDC));
         Float_t mRapidity = pair->mRapidity;
-       
+
+        if ( chipipi <10 ){
+            mDCA1->Fill(dca1);
+            mDCA1v2->Fill(dca1, dca2);
+        }       
+
         double ddTOFval = ddTOF( 0.135, lv1.P(), pair->d1_mTof, pair->d1_mLength, lv2.P(), pair->d2_mTof, pair->d2_mLength );
  
         Float_t mMassVal = pair->mMass;
@@ -368,6 +376,16 @@ gPad->SetLogy();
 mddTOF->Draw();
 gPad->Print( "plots/data/plot_mddTOF.pdf" );
 gPad->Print( "plots/data/plot_mddTOF.png" );
+
+makeCanvas();
+mDCA1->SetLineColor(kBlack);
+mDCA1->Draw();
+gPad->Print( "plots/data/plot_mDCA1.pdf" );
+
+makeCanvas();
+gStyle->SetPalette(1);
+mDCA1v2->Draw("colz");
+gPad->Print( "plots/data/plot_mDCA1v2.pdf" );
 
 makeCanvas();
 gStyle->SetPalette(1);
@@ -688,15 +706,15 @@ mPTcos4phimoments->Draw();
 gPad->Print( "plots/data/PT/plot_mPTcos4phimoments.pdf" );
 
 makeCanvas();
-mMasscos2phimoments->SetTitle("cos(2#phi) moments vs. Mass; Mass (GeV); 2<cos(2#phi)>");
+mMasscos2phimoments->SetTitle("cos(2#phi) moments vs. Mass (U+U); Mass (GeV); 2<cos(2#phi)>");
 mMasscos2phimoments->SetMinimum(0);
-mMasscos2phimoments->SetMaximum(0.7);
+mMasscos2phimoments->SetMaximum(1.2);
 mMasscos2phimoments->Draw();
 gPad->Print( "plots/data/Mass/plot_mMasscos2phimoments.pdf" );
 gPad->Print( "plots/data/Mass/plot_mMasscos2phimoments.png" );
 
 makeCanvas();
-mRapiditycos2phimoments->SetTitle("cos(2#phi) moments vs. Rapidity; Rapidity; 2<cos(2#phi)>");
+mRapiditycos2phimoments->SetTitle("cos(2#phi) moments vs. Rapidity (U+U); Rapidity; 2<cos(2#phi)>");
 mRapiditycos2phimoments->SetMinimum(-0.5);
 mRapiditycos2phimoments->SetMaximum(0.5);
 gStyle->SetOptFit();
