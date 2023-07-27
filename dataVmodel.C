@@ -41,10 +41,10 @@ void dataVmodel() {
     auto * mDataCos2PhivsMass = (TH2F*)dataHists->Get("mCos2phivsMass");
     auto * mDataCos4PhivsMass = (TH2F*)dataHists->Get("mCos4phivsMass");
 
-    auto * mUCorrectedCos2phivsPTmoments = (TH1F*)dataHists->Get("mCorrectedPTcos2phimoments");
+    auto * mUDataCos2phivsPTmoments = (TProfile*)dataHists->Get("mPTcos2phimoments");
 
     goldHists->ls();
-    auto * mAuCorrectedCos2phivsPTmoments = (TH1F*)goldHists->Get("mCorrectedPTcos2phimoments");
+    auto * mAuDataCos2phivsPTmoments = (TProfile*)goldHists->Get("mPTcos2phimoments");
 
     modelHists->ls();
     auto * mToyMass = (TH1F*)modelHists->Get("mReconstructedM");
@@ -87,7 +87,7 @@ void dataVmodel() {
     TFile * fo = new TFile( "dataVmodelplots.root", "RECREATE" );
 
     //analysis
-    mDataPiPT->Scale(1.5/mDataPiPT->Integral("width"));
+/*    mDataPiPT->Scale(1.5/mDataPiPT->Integral("width"));
     mDataPiEta->Scale(5/mDataPiEta->Integral("width"));
     mDataPiAngle->Scale(6.18/mDataPiAngle->Integral("width"));
 
@@ -154,11 +154,11 @@ mDatabyToyPTn2Moments->Divide(mToyPTCos2PhiMoments);
 auto * mToyMassCos2PhiMoments = mToyCos2PhivsMass->ProfileY("mToyMassCos2PhiMoments", 1, -1);
 auto * mDataMassCos2PhiMoments = mDataCos2PhivsMass->ProfileY("mDataMassCos2PhiMoments", 1, -1);
 auto * mMixedMassCos2PhiMoments = mMixedCos2PhivsMass->ProfileY("mMixedMassCos2PhiMoments", 1, -1);
-
+*/
 
 //make plots
 fo->cd();
-
+/*
 makeCanvas();
 mToyMass->SetLineColor(kBlack);
 mToyMass->SetTitle("Toy model mass distribution; Mass (GeV); counts");
@@ -418,17 +418,18 @@ legend11->AddEntry(mMixedMassCos2PhiMoments,"Mixed event like sign source");
 legend11->Draw();
 gPad->Print( "plots/dataVmodel/Mass/plot_mDataVMixedMassCos2PhiMoments.pdf" );
 gPad->Print( "plots/dataVmodel/Mass/plot_mDataVMixedMassCos2PhiMoments.png" );
+*/
 
 makeCanvas();
-mUCorrectedCos2phivsPTmoments->SetLineColor(kGreen-2);
-mAuCorrectedCos2phivsPTmoments->SetLineColor(kBlack);
-mAuCorrectedCos2phivsPTmoments->SetTitle("AuAu vs. UU 2<cos2#phi> vs. Pair P_{T} (0.65 < M_{#pi#pi} < 0.9 GeV); Pair P_{T}; 2<cos2#phi>");
-mUCorrectedCos2phivsPTmoments->Draw();
-mAuCorrectedCos2phivsPTmoments->Draw();
+mUDataCos2phivsPTmoments->SetLineColor(kGreen-2);
+mAuDataCos2phivsPTmoments->SetLineColor(kBlack);
+mAuDataCos2phivsPTmoments->SetTitle("AuAu vs. UU 2<cos2#phi> vs. Pair P_{T} (0.65 < M_{#pi#pi} < 0.9 GeV); Pair P_{T}; 2<cos2#phi>");
+mUDataCos2phivsPTmoments->Draw();
+mAuDataCos2phivsPTmoments->Draw();
 auto legend12 = new TLegend(0.65,0.1,0.95,0.4);
-legend12->AddEntry(mUCorrectedCos2phivsPTmoments,"U+U Like-sign corrected");
-legend12->AddEntry(mAuCorrectedCos2phivsPTmoments,"Au+Au Like-sign corrected");
+legend12->AddEntry(mUDataCos2phivsPTmoments,"U+U");
+legend12->AddEntry(mAuDataCos2phivsPTmoments,"Au+Au");
 legend12->Draw();
-gPad->Print( "plots/dataVmodel/PT/plot_mLikeCorrAuvsU.pdf");
+gPad->Print( "plots/dataVmodel/PT/plot_mDataAuvsU.pdf");
 
 }

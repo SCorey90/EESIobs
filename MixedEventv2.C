@@ -67,21 +67,25 @@ void MixedEventv2() {
     TFile * fo = new TFile( "MixedEventplotsv2.root", "RECREATE" );
 
     //data histograms
-    //auto * mDataCos2phivsPT = new TH2F("mDataCos2phivsPT", "Data Cos2#phi signal vs. parent P_{T}; 2cos2#phi;  P_{T} (GeV/c); counts", 100, -2, 2, 100, 0, 0.5);
+    auto * mDataCos2phivsPT = new TH2F("mDataCos4phivsPT", "Data Cos4#phi signal vs. parent P_{T}; 4cos2#phi;  P_{T} (GeV/c); counts", 100, -2, 2, 15, 0, 0.25);
 
-    auto * mDataCos1phivsPTvsMass = new TH3F("mDataCos1phivsPTvsMass", "Data Cos1#phi signal vs. parent P_{T}; 2cos1#phi;  P_{T} (GeV/c); Mass (GeV); counts", 100, -2, 2, 50, 0, 0.5, 100, 0.25, 2 );
-    auto * mDataCos2phivsPTvsMass = new TH3F("mDataCos2phivsPTvsMass", "Data Cos2#phi signal vs. parent P_{T}; 2cos2#phi;  P_{T} (GeV/c); Mass (GeV); counts", 100, -2, 2, 50, 0, 0.5, 100, 0.25, 2 );
-    auto * mDataCos3phivsPTvsMass = new TH3F("mDataCos3phivsPTvsMass", "Data Cos3#phi signal vs. parent P_{T}; 2cos3#phi;  P_{T} (GeV/c); Mass (GeV); counts", 100, -2, 2, 50, 0, 0.5, 100, 0.25, 2 );
-    auto * mDataCos4phivsPTvsMass = new TH3F("mDataCos4phivsPTvsMass", "Data Cos4#phi signal vs. parent P_{T}; 2cos4#phi;  P_{T} (GeV/c); Mass (GeV); counts", 100, -2, 2, 50, 0, 0.5, 100, 0.25, 2 );
+    auto * mDataCos1phivsPTvsMass = new TH3F("mDataCos1phivsPTvsMass", "Data Cos1#phi signal vs. parent P_{T}; 2cos1#phi;  P_{T} (GeV/c); Mass (GeV); counts", 100, -2, 2, 15, 0, 0.25, 50, 0.25, 2 );
+    auto * mDataCos2phivsPTvsMass = new TH3F("mDataCos2phivsPTvsMass", "Data Cos2#phi signal vs. parent P_{T}; 2cos2#phi;  P_{T} (GeV/c); Mass (GeV); counts", 100, -2, 2, 25, 0, 0.25, 50, 0.25, 2 );
+    auto * mDataCos3phivsPTvsMass = new TH3F("mDataCos3phivsPTvsMass", "Data Cos3#phi signal vs. parent P_{T}; 2cos3#phi;  P_{T} (GeV/c); Mass (GeV); counts", 100, -2, 2, 15, 0, 0.25, 50, 0.25, 2 );
+    auto * mDataCos4phivsPTvsMass = new TH3F("mDataCos4phivsPTvsMass", "Data Cos4#phi signal vs. parent P_{T}; 2cos4#phi;  P_{T} (GeV/c); Mass (GeV); counts", 100, -2, 2, 15, 0, 0.25, 50, 0.25, 2 );
 
+    auto * mLikeCos1phivsPTvsMass = new TH3F("mLikeCos1phivsPTvsMass", "Like Cos1#phi signal vs. parent P_{T}; 2cos1#phi;  P_{T} (GeV/c); Mass (GeV); counts", 100, -2, 2, 4, 0, 0.25, 50, 0.25, 2 );
+    auto * mLikeCos2phivsPTvsMass = new TH3F("mLikeCos2phivsPTvsMass", "Like Cos2#phi signal vs. parent P_{T}; 2cos2#phi;  P_{T} (GeV/c); Mass (GeV); counts", 100, -2, 2, 4, 0, 0.25, 50, 0.25, 2 );
+    auto * mLikeCos3phivsPTvsMass = new TH3F("mLikeCos3phivsPTvsMass", "Like Cos3#phi signal vs. parent P_{T}; 2cos3#phi;  P_{T} (GeV/c); Mass (GeV); counts", 100, -2, 2, 4, 0, 0.25, 50, 0.25, 2 );
+    auto * mLikeCos4phivsPTvsMass = new TH3F("mLikeCos4phivsPTvsMass", "Like Cos4#phi signal vs. parent P_{T}; 2cos4#phi;  P_{T} (GeV/c); Mass (GeV); counts", 100, -2, 2, 4, 0, 0.25, 50, 0.25, 2 );
 
     //mixed histograms
     //auto * mMixedCos2phivsPT = new TH2F("mMixedCos2phivsPT", "Mixed Cos2#phi signal vs. parent P_{T}; 2cos2#phi;  P_{T} (GeV/c); counts", 100, -2, 2, 100, 0, 0.5);
 
-    auto * mMixedCos1phivsPTvsMass = new TH3F("mMixedCos1phivsPTvsMass", "Mixed Cos1#phi signal vs. parent P_{T}; 2cos1#phi;  P_{T} (GeV/c); Mass (GeV); counts", 100, -2, 2, 50, 0, 0.5, 100, 0.25, 2 );
-    auto * mMixedCos2phivsPTvsMass = new TH3F("mMixedCos2phivsPTvsMass", "Mixed Cos2#phi signal vs. parent P_{T}; 2cos2#phi;  P_{T} (GeV/c); Mass (GeV); counts", 100, -2, 2, 50, 0, 0.5, 100, 0.25, 2 );
-    auto * mMixedCos3phivsPTvsMass = new TH3F("mMixedCos3phivsPTvsMass", "Mixed Cos3#phi signal vs. parent P_{T}; 2cos3#phi;  P_{T} (GeV/c); Mass (GeV); counts", 100, -2, 2, 50, 0, 0.5, 100, 0.25, 2 );
-    auto * mMixedCos4phivsPTvsMass = new TH3F("mMixedCos4phivsPTvsMass", "Mixed Cos4#phi signal vs. parent P_{T}; 2cos4#phi;  P_{T} (GeV/c); Mass (GeV); counts", 100, -2, 2, 50, 0, 0.5, 100, 0.25, 2 );
+    auto * mMixedCos1phivsPTvsMass = new TH3F("mMixedCos1phivsPTvsMass", "Mixed Cos1#phi signal vs. parent P_{T}; 2cos1#phi;  P_{T} (GeV/c); Mass (GeV); counts", 100, -2, 2, 15, 0, 0.25, 50, 0.25, 2 );
+    auto * mMixedCos2phivsPTvsMass = new TH3F("mMixedCos2phivsPTvsMass", "Mixed Cos2#phi signal vs. parent P_{T}; 2cos2#phi;  P_{T} (GeV/c); Mass (GeV); counts", 100, -2, 2, 25, 0, 0.25, 50, 0.25, 2 );
+    auto * mMixedCos3phivsPTvsMass = new TH3F("mMixedCos3phivsPTvsMass", "Mixed Cos3#phi signal vs. parent P_{T}; 2cos3#phi;  P_{T} (GeV/c); Mass (GeV); counts", 100, -2, 2, 15, 0, 0.25, 50, 0.25, 2 );
+    auto * mMixedCos4phivsPTvsMass = new TH3F("mMixedCos4phivsPTvsMass", "Mixed Cos4#phi signal vs. parent P_{T}; 2cos4#phi;  P_{T} (GeV/c); Mass (GeV); counts", 100, -2, 2, 15, 0, 0.25, 50, 0.25, 2 );
 
     //data analysis and filling buffers
     //TFile *myFile = TFile::Open("/Users/samcorey/code/data/pair_dst_Run12UU.root");
@@ -109,7 +113,7 @@ void MixedEventv2() {
         double wZDC = pair->mZDCWest;
         double vertex = pair->mVertexZ;
 
-        int buffer_size = 50;
+        int buffer_size = 1000;
 
         TLorentzVector lv1, lv2;
         lv1.SetPtEtaPhiM( pair->d1_mPt, pair->d1_mEta, pair->d1_mPhi, 0.135 );
@@ -117,19 +121,20 @@ void MixedEventv2() {
 
         double ddTOFval = ddTOF( 0.135, lv1.P(), pair->d1_mTof, pair->d1_mLength, lv2.P(), pair->d2_mTof, pair->d2_mLength );
 
-        if ( chipipi <10  && dca1 <3 && dca2 <3 && pair->d1_mMatchFlag !=0 && pair->d2_mMatchFlag !=0 && abs(ddTOFval) < 0.3  ){
+        if ( chipipi <10  && dca1 <3 && dca2 <3  ){
             
             //fill histograms
-            if ( abs(pair->mChargeSum)==0 && abs((lv1+lv2).Rapidity()) < 1) {
+            if ( abs(pair->mChargeSum)==0 && abs((lv1+lv2).Rapidity()) < 1  && pair->d1_mMatchFlag !=0 && pair->d2_mMatchFlag !=0 && abs(ddTOFval) < 0.3) {
                 TLorentzVector lv = lv1 + lv2 ;
                 double dataPairPhi = calc_Phi(lv1, lv2);
                 mDataCos1phivsPTvsMass->Fill( 2*cos(1*dataPairPhi), lv.Pt(), lv.M() );
                 mDataCos2phivsPTvsMass->Fill( 2*cos(2*dataPairPhi), lv.Pt(), lv.M() );
                 mDataCos3phivsPTvsMass->Fill( 2*cos(3*dataPairPhi), lv.Pt(), lv.M() );
                 mDataCos4phivsPTvsMass->Fill( 2*cos(4*dataPairPhi), lv.Pt(), lv.M() );
+                if ( lv.M() < 0.9 && lv.M() >0.65 ) { mDataCos2phivsPT->Fill( 2*cos(4*dataPairPhi), lv.Pt() ); }
 
                 //combine signal lvs with mixed lvs
-                for ( TLorentzVector mixed_lv1 : posBuffer ) {
+                /*for ( TLorentzVector mixed_lv1 : posBuffer ) {
                     TLorentzVector mixed_lv = mixed_lv1 + lv2 ;
                     double mixedPairPhi = calc_Phi(mixed_lv1, lv2);
                     if ( abs(mixed_lv.Rapidity()) < 1 ) {
@@ -149,28 +154,35 @@ void MixedEventv2() {
                         mMixedCos3phivsPTvsMass->Fill( 2*cos(3*mixedPairPhi), mixed_lv.Pt(), mixed_lv.M() );
                         mMixedCos4phivsPTvsMass->Fill( 2*cos(4*mixedPairPhi), mixed_lv.Pt(), mixed_lv.M() );
                     }
-                }
+                }*/
             }
 
             //update buffers
-            int buff_index = rng.Integer(buffer_size - 1 );
+            /*int buff_index = rng.Integer(buffer_size - 1 );
             int buff_index_2 = rng.Integer(buffer_size - 1 );
             if ( pair->mChargeSum == 2 ) { 
                 posBuffer = update_buffer( posBuffer, lv1, buffer_size, buff_index );
-                posBuffer = update_buffer( posBuffer, lv2, buffer_size, buff_index_2 ); 
+                //posBuffer = update_buffer( posBuffer, lv2, buffer_size, buff_index_2 ); 
             }
             if ( pair->mChargeSum == -2 ) { 
                 negBuffer = update_buffer( negBuffer, lv1, buffer_size, buff_index ); 
                 negBuffer = update_buffer( negBuffer, lv2, buffer_size, buff_index_2 );
-            }
+            }*/
 
             //this way doesn't use signal pairs!
 
-            /*if ( abs(pair->mChargeSum)==2 ) {
+            if ( abs(pair->mChargeSum)==2 ) {
+                TLorentzVector lv = lv1+lv2;
+                double dataPairPhi = calc_Phi(lv1, lv2);
+                mLikeCos1phivsPTvsMass->Fill( 2*cos(1*dataPairPhi), lv.Pt(), lv.M() );
+                mLikeCos2phivsPTvsMass->Fill( 2*cos(2*dataPairPhi), lv.Pt(), lv.M() );
+                mLikeCos3phivsPTvsMass->Fill( 2*cos(3*dataPairPhi), lv.Pt(), lv.M() );
+                mLikeCos4phivsPTvsMass->Fill( 2*cos(4*dataPairPhi), lv.Pt(), lv.M() );
+
                 for ( TLorentzVector mixed_lv1 : posBuffer ) {
                     TLorentzVector mixed_lv = mixed_lv1 + lv2 ;
                     double mixedPairPhi = calc_Phi(mixed_lv1, lv2);
-                    if ( abs(mixed_lv.Rapidity()) < 1 ) {
+                    if ( abs(mixed_lv.Rapidity()) < 1 && pair->d1_mMatchFlag !=0 && pair->d2_mMatchFlag !=0 && abs(ddTOFval) < 0.3 ) {
                         mMixedCos1phivsPTvsMass->Fill( 2*cos(1*mixedPairPhi), mixed_lv.Pt(), mixed_lv.M() );
                         mMixedCos2phivsPTvsMass->Fill( 2*cos(2*mixedPairPhi), mixed_lv.Pt(), mixed_lv.M() );
                         mMixedCos3phivsPTvsMass->Fill( 2*cos(3*mixedPairPhi), mixed_lv.Pt(), mixed_lv.M() );
@@ -180,7 +192,7 @@ void MixedEventv2() {
                 for ( TLorentzVector mixed_lv2 : negBuffer ) {
                     TLorentzVector mixed_lv = lv1 + mixed_lv2 ;
                     double mixedPairPhi = calc_Phi(lv1, mixed_lv2);
-                    if ( abs(mixed_lv.Rapidity()) < 1 ) {
+                    if ( abs(mixed_lv.Rapidity()) < 1 && pair->d1_mMatchFlag !=0 && pair->d2_mMatchFlag !=0 && abs(ddTOFval) < 0.3 ) {
                         mMixedCos1phivsPTvsMass->Fill( 2*cos(1*mixedPairPhi), mixed_lv.Pt(), mixed_lv.M() );
                         mMixedCos2phivsPTvsMass->Fill( 2*cos(2*mixedPairPhi), mixed_lv.Pt(), mixed_lv.M() );
                         mMixedCos3phivsPTvsMass->Fill( 2*cos(3*mixedPairPhi), mixed_lv.Pt(), mixed_lv.M() );
@@ -192,10 +204,14 @@ void MixedEventv2() {
                 posBuffer = update_buffer( posBuffer, lv1, buffer_size, buff_index );
                 negBuffer = update_buffer( negBuffer, lv2, buffer_size, buff_index );
 
-            }*/
+            }
         }
     }
 
 fo->Write();
+
+auto * mTest = mDataCos2phivsPT->ProfileY("mTest", 1, -1);
+makeCanvas();
+mTest->Draw();
 
 }

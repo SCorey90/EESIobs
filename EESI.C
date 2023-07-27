@@ -96,7 +96,7 @@ void EESI() {
     auto * mZDCEastvsWest = new TH2F("mZDCEastvsWest", "ZDC East vs. West; ZDC East; ZDC West counts", 200, 0, 1300, 200, 0, 1300);
     auto * mZDCTotal = new TH1F("mZDCtotal", "ZDC (East^{2} + West^{2})^{1/2}; ZDC (East^{2} + West^{2})^{1/2}; counts", 1000, 0, 1900);
     
-    auto * mPairPhi = new TH1F("mPairPhi", "0.65 < M_{#pi#pi} < 0.9 GeV, P_{T} < 0.06 MeV/c (U+U) ;#phi (rad);norm. counts", 100, -3.13, 3.13);
+    auto * mPairPhi = new TH1F("mPairPhi", "0.65 < M_{#pi#pi} < 0.9 GeV, Pair P_{T} < 60 MeV/c (U+U) ;#phi (rad);norm. counts", 100, -3.13, 3.13);
     auto * mLabPairPhi = new TH1F("mLabPairPhi", "#pi_{#pm} #phi distribution;#phi (rad);# events", 100, -3.13, 3.13);
     auto * mPxvsPy = new TH2F("mPxvsPy", "#rho^{0} 2D momentum dist; P_{x} (GeV/c); P_{y} (GeV/c); Counts", 200, -0.1, 0.1, 200, -0.1, 0.1);
     auto * mPhivsMass = new TH2F("mPhivsMass", "#pi_{#pm} #phi distribution vs. parent mass; #phi (rad); Parent Mass (GeV); Counts", 100, -3.14, 3.14, 50, 0.3, 1.35);
@@ -113,7 +113,7 @@ void EESI() {
 
     auto * mCos2phivsEastZDC = new TH2F("mCos2phivsEastZDC", "cos2#phi distribution vs East ZDC; 2cos2#phi; East ZDC readout; counts", 100, -2, 2, 50, 0, 1300);
     auto * mCos2phivsWestZDC = new TH2F("mCos2phivsWestZDC", "cos2#phi distribution vs West ZDC; 2cos2#phi; West ZDC readout; counts", 100, -2, 2, 50, 0, 1300);
-    auto * mCos2phivsTotalZDC = new TH2F("mCos2phivsTotalZDC", "cos2#phi distribution vs ZDC (East^{2} + West^{2})^{1/2}; 2cos2#phi; ZDC (East^{2} + West^{2})^{1/2}; counts", 100, -2, 2, 50, 0, 1700);
+    auto * mCos2phivsTotalZDC = new TH2F("mCos2phivsTotalZDC", "cos2#phi distribution vs ZDC (East^{2} + West^{2})^{1/2}; 2cos2#phi; ZDC (East^{2} + West^{2})^{1/2}; counts", 100, -2, 2, 25, 0, 1700);
 
     auto * mCos2phivsPT = new TH2F("mCos2phivsPT", "cos2#phi distribution vs P_{T}", 100, -2, 2, 25, 0, 0.25);
     auto * mCos1phivsPT = new TH2F("mCos1phivsPT", "cos1#phi distribution vs P_{T}", 100, -2, 2, 10, 0, 0.25);
@@ -183,7 +183,7 @@ void EESI() {
         double absPperp = lv.Pt();
         double PairPhi = calc_Phi( lv1, lv2);
         //like sign
-        if ( chipipi <10 && dca1 <1 && dca2 <1 && abs(pair->mChargeSum)==2 /* && pair->d1_mMatchFlag !=0 && pair->d2_mMatchFlag !=0 && abs(ddTOFval) < 0.3 */  ){
+        if ( chipipi <10 && dca1 <3 && dca2 <3 && abs(pair->mChargeSum)==2 /* && pair->d1_mMatchFlag !=0 && pair->d2_mMatchFlag !=0 && abs(ddTOFval) < 0.3 */  ){
             if ( lv.M() > 0.65 && lv.M() <0.9 ){
                 mLikeCos1phivsPT->Fill( 2*cos(1*calc_Phi(lv1, lv2)), lv.Pt() );
                 mLikeCos2phivsPT->Fill( 2*cos(2*calc_Phi(lv1, lv2)), lv.Pt() );
@@ -206,7 +206,7 @@ void EESI() {
         }
  
         //signal
-        if ( chipipi <10 && dca1 <1 && dca2 <1 && pair->mChargeSum==0  /* && pair->d1_mMatchFlag !=0 && pair->d2_mMatchFlag !=0 && abs(ddTOFval) < 0.3 */ ){
+        if ( chipipi <10 && dca1 <3 && dca2 <3 && pair->mChargeSum==0  /* && pair->d1_mMatchFlag !=0 && pair->d2_mMatchFlag !=0 && abs(ddTOFval) < 0.3 */ ){
 
             //mChiChi->Fill( chipipi, chiee );
       
@@ -224,7 +224,7 @@ void EESI() {
             mUnlikePiPTvsRhoPT->Fill( lv1.Pt(), lv.Pt() );
             mCos2phivsPTvsMass->Fill( lv.M(), lv.Pt(), 2*cos( PairPhi ));
 
-            if ( lv.M() > 0.65 && lv.M() <0.9 ){
+            if ( lv.M() > 0.76 && lv.M() <0.78 ){
 
                 if ( absPperp < 0.06){
 
@@ -279,7 +279,7 @@ mPhi2n1n->Scale(2*3.1415/(mPhi2n1n->Integral("width")));
 mPhi2n2n->Scale(2*3.1415/(mPhi2n2n->Integral("width")));
 
 auto * mPTcos1phimoments = mCos1phivsPT->ProfileY("mPTcos1phimoments", 1, -1);
-auto * mPTcos2phimoments = mCos2phivsPT->ProfileY("mPTcos2phimoments", 1, -1);
+TProfile * mPTcos2phimoments = mCos2phivsPT->ProfileY("mPTcos2phimoments", 1, -1);
 auto * mlabPTcos2phimoments = mLabCos2phivsPT->ProfileY("mlabPTcos2phimoments", 1, -1);
 auto * mPTcos3phimoments = mCos3phivsPT->ProfileY("mPTcos3phimoments", 1, -1);
 auto * mPTcos4phimoments = mCos4phivsPT->ProfileY("mPTcos4phimoments", 1, -1);
@@ -309,7 +309,7 @@ auto * mPTvsMasscos2phimoments = mCos2phivsPTvsMass->Project3DProfile("xy");
 
 mRapiditycos2phimoments->Fit("pol0","", "", -0.8, 0.8);
 
-mTotalZDCcos2phimoments->Fit("pol0", "","", 600, 1600);
+//mTotalZDCcos2phimoments->Fit("pol0", "","", 600, 1600);
 
 //auto * mCorrectedPTcos2phimoments = new TH1F("mCorrectedPTcos2phimoments", "Corrected  (0.65 < M_{#pi#pi} < 0.9 GeV); P_{T} (GeV/c); 2<cos2#phi>", 25, 0, 0.25);
 for (int i = 0; i < (mCorrectedPTcos2phimoments->GetNbinsX()) - 1; i++) {
@@ -627,16 +627,16 @@ legend2->AddEntry(mWestZDCcos2phimoments,"West ZDC");
 legend2->Draw();
 gPad->Print( "plots/data/ZDC/plot_mEWZDCcos2phimoments.pdf" );
 gPad->Print( "plots/data/ZDC/plot_mEWZDCcos2phimoments.png" );
-
+*/
 makeCanvas();
 mTotalZDCcos2phimoments->SetLineColor(kBlack);
-mTotalZDCcos2phimoments->SetTitle("cos(2#phi) moments vs. ZDC (East^{2} + West^{2})^{1/2}; ZDC (East^{2} + West^{2})^{1/2}; 2<cos2#phi>");
+mTotalZDCcos2phimoments->SetTitle("cos(2#phi) moments vs. ZDC (U+U); ZDC (East^{2} + West^{2})^{1/2}; 2<cos2#phi>");
 mTotalZDCcos2phimoments->SetMinimum(0.15);
 mTotalZDCcos2phimoments->SetMaximum(0.4);
 mTotalZDCcos2phimoments->Draw();
 gPad->Print( "plots/data/ZDC/plot_mTotalZDCcos2phimoments.pdf" );
 gPad->Print( "plots/data/ZDC/plot_mTotalZDCcos2phimoments.png" );
-
+/*
 makeCanvas();
 mLowZDCPTcos2phimoments->SetLineColor(kBlack);
 mLowZDCPTcos2phimoments->SetTitle("cos(2#phi) moments vs. P_{T} at ZDC (East^{2} + West^{2})^{1/2} < 300; P_{T} (GeV/c); 2<cos2#phi>");
@@ -745,20 +745,24 @@ gPad->Print( "plots/data/PT/plot_mLikeCorrectionCos1PhivsPTmoments.pdf" );
 makeCanvas();
 mLikePTcos2phimoments->SetLineColor(kBlack);
 mPTcos2phimoments->SetLineColor(kGreen+2);
-mCorrectedPTcos2phimoments->SetLineColor(kMagenta);
+//mCorrectedPTcos2phimoments->SetLineColor(kMagenta);
 mLikePTcos2phimoments->SetTitle( "2<cos2#phi> (0.65 < M_{#pi#pi} < 0.9 GeV) (U+U); Pair P_{T} (GeV/c); 2<cos2#phi>" );
 mLikePTcos2phimoments->SetMaximum(0.5);
 mLikePTcos2phimoments->SetLineWidth(2);
 mPTcos2phimoments->SetLineWidth(2);
-mCorrectedPTcos2phimoments->SetLineWidth(2);
+//mCorrectedPTcos2phimoments->SetLineWidth(2);
 mLikePTcos2phimoments->Draw();
 mPTcos2phimoments->Draw("SAME");
-mCorrectedPTcos2phimoments->Draw("SAME");
+//mCorrectedPTcos2phimoments->Draw("SAME");
+TLine *l4 = new TLine(0,0,0.25,0);
+l4->SetLineColor(kBlack);
+l4->SetLineStyle(kDashed);
+l4->Draw("Same");
 auto legend5 = new TLegend(0.65,0.1,0.95,0.4);
 legend5->SetHeader("Legend","C"); // option "C" allows to center the header
 legend5->AddEntry(mLikePTcos2phimoments,"Like sign pairs");
 legend5->AddEntry(mPTcos2phimoments,"Unike sign pairs");
-legend5->AddEntry(mCorrectedPTcos2phimoments,"Baseline subtracted signal");
+//legend5->AddEntry(mCorrectedPTcos2phimoments,"Baseline subtracted signal");
 legend5->Draw();
 gPad->Print( "plots/data/PT/plot_mLikeCorrectionCos2PhivsPTmoments.png" );
 gPad->Print( "plots/data/PT/plot_mLikeCorrectionCos2PhivsPTmoments.pdf" );
